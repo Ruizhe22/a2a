@@ -1,6 +1,6 @@
 parser A2AIngressParser( 
     packet_in pkt, 
-    out a2a_ingress_headers_t ig_hdr, 
+    out a2a_headers_t hdr, 
     out a2a_ingress_metadata_t ig_md, 
     out ingress_intrinsic_metadata_t ig_intr_md) 
 {  
@@ -12,8 +12,8 @@ parser A2AIngressParser(
     }  
     
     state parse_eth { 
-        pkt.extract(ig_hdr.eth); 
-        transition select(ig_hdr.eth.ether_type) { 
+        pkt.extract(hdr.eth); 
+        transition select(hdr.eth.ether_type) { 
             ETHERTYPE_IPV4 : parse_ipv4; 
             default : accept; 
         }
@@ -55,27 +55,32 @@ parser A2AIngressParser(
 
     state parse_write_reth {
         pkt.extract(hdr.reth);
+        ig_md.bridge.has_reth = true;
         transition parse_payload;
     }
 
     state parse_read_aeth {
         pkt.extract(hdr.aeth);
+        ig_md.bridge.has_aeth = true;
         transition parse_payload;
     }
 
     // for RDMA_OP_READ_REQ, no payload
     state parse_read_reth {
         pkt.extract(hdr.reth);
+        ig_md.bridge.has_reth = true;
         transition accept;
     }
 
     state parse_payload {
         packet.extract(hdr.payload);
-        transition parse_icrc;
+        ig_md.bridge.has_payload = true;
+        transition accept;
     } 
 
     state parse_ack_aeth {
         pkt.extract(hdr.aeth);
+        ig_md.bridge.has_aeth = true;
         transition accept;
     }
 }

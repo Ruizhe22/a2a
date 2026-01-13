@@ -1,5 +1,5 @@
 control A2AIngress(
-    inout a2a_ingress_headers_t hdr,
+    inout a2a_headers_t hdr,
     inout a2a_ingress_metadata_t ig_md,
     in ingress_intrinsic_metadata_t ig_intr_md,
     in ingress_intrinsic_metadata_from_parser_t ig_prsr_md,
@@ -15,14 +15,15 @@ control A2AIngress(
      * Classify dispatch and combine traffic based on QP, IP, etc.
      */
     
-    action set_a2a_traffic(CONN_PHASE conn_phase, CONN_SEMANTICS conn_semantics, bit<32> channel_id) {
-        ig_md.conn_phase = conn_phase;
-        ig_md.conn_semantics = conn_semantics;
-        ig_md.channel_id = channel_id;
+    action set_a2a_traffic(CONN_PHASE conn_phase, CONN_SEMANTICS conn_semantics, bit<32> channel_id, bit<32> ing_rank_id) {
+        ig_md.bridge.conn_phase = conn_phase;
+        ig_md.bridge.conn_semantics = conn_semantics;
+        ig_md.bridge.channel_id = channel_id;
+        ig_md.bridge.ing_rank_id = ing_rank_id;
     }
 
     action set_unknown_traffic() {
-        ig_md.conn_phase = CONN_UNKNOWN;
+        ig_md.bridge.conn_phase = CONN_UNKNOWN;
     }
     
     // classification table: distinguish traffic type and connection info based on QPN and IPs
@@ -51,13 +52,25 @@ control A2AIngress(
         traffic_classify.apply();
         
         // Invoke corresponding processing logic based on traffic type
-        if (ig_md.conn_phase == CONN_DISPATCH) {
-            dispatch_ctrl.apply(hdr, ig_md, ig_dprsr_md, ig_tm_md);
-        } else if (ig_md.conn_phase == CONN_COMBINE) {
-            combine_ctrl.apply(hdr, ig_md, ig_dprsr_md, ig_tm_md);
+        if (ig_md.bridge.conn_phase == CONN_DISPATCH) {
+            dispatch_ctrl.apply(hdr, ig_md, ig_intr_md, ig_dprsr_md, ig_tm_md);
+        } else if (ig_md.bridge.conn_phase == CONN_COMBINE) {
+            combine_ctrl.apply(hdr, ig_md, ig_intr_md, ig_dprsr_md, ig_tm_md);
         } else {
             // drop unknown traffic
             ig_dprsr_md.drop_ctl = 1;
         }
+    }
+}
+
+control A2AIngressDeparser(
+        packet_out pkt,
+        inout a2a_ingress_headers_t hdr,
+        in a2a_ingress_metadata_t ig_md,
+        in ingress_intrinsic_metadata_for_deparser_t ig_dprsr_md) {
+
+    apply {
+        pkt.emit(ig_md.bridge);
+        pkt.emit(hdr);
     }
 }

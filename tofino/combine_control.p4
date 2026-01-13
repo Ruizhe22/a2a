@@ -11,7 +11,7 @@ control CombineIngress(
      ***************************************************************************/
     
     // rx_epsn: 期望从每个rx收到的PSN
-    // Index: tx_id * NUM_CHANNELS * MAX_EP_SIZE + channel_id * MAX_EP_SIZE + rx_id
+    // Index: tx_id * NUM_CHANNELS * MAX_EP_SIZE + channel_id * MAX_EP_SIZE + rank_id
     Register<bit<32>, bit<32>>(MAX_RX_ENTRIES) reg_rx_epsn;
     
     // rx_msn: 每个rx连接的MSN
@@ -115,7 +115,7 @@ control CombineIngress(
      * Tables
      ***************************************************************************/
     
-    // Combine转发表：rx_id, channel_id -> tx目的信息
+    // Combine转发表：rank_id, channel_id -> tx目的信息
     action set_combine_forward(bit<48> dst_mac, bit<32> dst_ip, bit<24> dst_qp, bit<32> rkey, PortId_t egress_port) {
         hdr.eth.dst_addr = dst_mac;
         hdr.ipv4.dst_addr = dst_ip;
@@ -188,7 +188,7 @@ control CombineIngress(
         // 计算register索引
         bit<32> rx_reg_idx = ig_md.combine.tx_id * (NUM_DISPATCH_CHANNELS * MAX_EP_SIZE)
                            + ig_md.combine.channel_id * MAX_EP_SIZE
-                           + ig_md.combine.rx_id;
+                           + ig_md.combine.rank_id;
         ig_md.combine.reg_idx = rx_reg_idx;
         
         bit<32> tx_reg_idx = ig_md.combine.tx_id * NUM_DISPATCH_CHANNELS 
@@ -277,6 +277,39 @@ control CombineIngress(
             
             // Clone用于ACK返回给rx
             ig_dprsr_md.mirror_type = 2;
+        }
+    }
+}
+
+
+/*******************************************************************************
+ * Combine Egress Control
+ ******************************************************************************/
+
+control CombineEgress(
+    inout my_egress_headers_t hdr,
+    inout my_egress_metadata_t eg_md,
+    in egress_intrinsic_metadata_t eg_intr_md,
+    inout egress_intrinsic_metadata_for_deparser_t eg_dprsr_md)
+{
+    apply {
+        // Combine的egress处理较简单，因为PSN和地址已在ingress更新
+        
+        // 处理ACK clone
+        if (eg_md.is_ack_clone == 1) {
+            bit<48> tmp_mac = hdr.eth.src_addr;
+            hdr.eth.src_addr = hdr.eth.dst_addr;
+            hdr.eth.dst_addr = tmp_mac;
+            
+            bit<32> tmp_ip = hdr.ipv4.src_addr;
+            hdr.ipv4.src_addr = hdr.ipv4.dst_addr;
+            hdr.ipv4.dst_addr = tmp_ip;
+            
+            hdr.bth.opcode = RDMA_OP_ACK;
+            hdr.aeth.setValid();
+            hdr.aeth.syndrome = AETH_ACK;
+            hdr.reth.setInvalid();
+            hdr.payload.setInvalid();
         }
     }
 }

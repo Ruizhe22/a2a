@@ -68,7 +68,7 @@ header tcp_h {
 header udp_h {
     bit<16> src_port;
     bit<16> dst_port;
-    bit<16> hdr_length;
+    bit<16> length;
     bit<16> checksum;
 }
 
@@ -91,8 +91,18 @@ header reth_h {
     bit<32> len; // DMA length, padding bytes is not included
 }
 
+// --- ACK Syndrome Values ---
+
+const bit<8> AETH_ACK_CREDIT_INVALID = 8w0x1F;  // Binary: 000 11111 (Op:00, Credit:31/Invalid)
+const bit<8> AETH_ACK_CREDIT_ZERO = 8w0x00;  // Binary: 000 00000 (Op:00, Credit:0)
+
+// --- NAK Syndrome Values (OpCode: 11) --- Binary: 011 NNNNN
+const bit<8> AETH_NAK_SEQ_ERR = 8w0x60;  // NAK Code 0: PSN Sequence Error
+const bit<8> AETH_NAK_INV_REQ = 8w0x61;  // NAK Code 1: Invalid Request
+const bit<8> AETH_NAK_R_ACC_ERR = 8w0x62;  // NAK Code 2: Remote Access Error
+
 header aeth_h {
-    bit<8> syndrome; // 1 bit 0 + 2 bit flag (ACK, RNR NAK, reserved, NAK) + 5 bit number (credit cnt, RNR timer, N/A, NAK code)
+    bit<8> syndrome; // 1 bit 0 + 2 bit flag [6:5] (ACK, RNR NAK, reserved, NAK) + 5 bit number (credit cnt, RNR timer, N/A, NAK code)
     bit<24> msn; // syndrom, 24 bit message sequence number, start from 0
 }
 
@@ -115,71 +125,77 @@ header imm_h {
     bit<32> imm;
 }
 
+/* in dispatch, for tx, epsn is the next psn to switch,
+ *              for rx, epsn is the next psn to rx
+ */
+typedef bit<32> init_epsn_t; 
+typedef bit<64> init_addr_t;
+
 header payload_h {
-    agg_t data00;
-    agg_t data01;
-    agg_t data02;
-    agg_t data03;
-    agg_t data04;
-    agg_t data05;
-    agg_t data06;
-    agg_t data07;
-    agg_t data08;
-    agg_t data09;
-    agg_t data0a;
-    agg_t data0b;
-    agg_t data0c;
-    agg_t data0d;
-    agg_t data0e;
-    agg_t data0f;
-    agg_t data10;
-    agg_t data11;
-    agg_t data12;
-    agg_t data13;
-    agg_t data14;
-    agg_t data15;
-    agg_t data16;
-    agg_t data17;
-    agg_t data18;
-    agg_t data19;
-    agg_t data1a;
-    agg_t data1b;
-    agg_t data1c;
-    agg_t data1d;
-    agg_t data1e;
-    agg_t data1f;
-    agg_t data20;
-    agg_t data21;
-    agg_t data22;
-    agg_t data23;
-    agg_t data24;
-    agg_t data25;
-    agg_t data26;
-    agg_t data27;
-    agg_t data28;
-    agg_t data29;
-    agg_t data2a;
-    agg_t data2b;
-    agg_t data2c;
-    agg_t data2d;
-    agg_t data2e;
-    agg_t data2f;
-    agg_t data30;
-    agg_t data31;
-    agg_t data32;
-    agg_t data33;
-    agg_t data34;
-    agg_t data35;
-    agg_t data36;
-    agg_t data37;
-    agg_t data38;
-    agg_t data39;
-    agg_t data3a;
-    agg_t data3b;
-    agg_t data3c;
-    agg_t data3d;
-    agg_t data3e;
-    agg_t data3f;
+    bit<32> data00;
+    bit<32> data01;
+    bit<32> data02;
+    bit<32> data03;
+    bit<32> data04;
+    bit<32> data05;
+    bit<32> data06;
+    bit<32> data07;
+    bit<32> data08;
+    bit<32> data09;
+    bit<32> data0a;
+    bit<32> data0b;
+    bit<32> data0c;
+    bit<32> data0d;
+    bit<32> data0e;
+    bit<32> data0f;
+    bit<32> data10;
+    bit<32> data11;
+    bit<32> data12;
+    bit<32> data13;
+    bit<32> data14;
+    bit<32> data15;
+    bit<32> data16;
+    bit<32> data17;
+    bit<32> data18;
+    bit<32> data19;
+    bit<32> data1a;
+    bit<32> data1b;
+    bit<32> data1c;
+    bit<32> data1d;
+    bit<32> data1e;
+    bit<32> data1f;
+    bit<32> data20;
+    bit<32> data21;
+    bit<32> data22;
+    bit<32> data23;
+    bit<32> data24;
+    bit<32> data25;
+    bit<32> data26;
+    bit<32> data27;
+    bit<32> data28;
+    bit<32> data29;
+    bit<32> data2a;
+    bit<32> data2b;
+    bit<32> data2c;
+    bit<32> data2d;
+    bit<32> data2e;
+    bit<32> data2f;
+    bit<32> data30;
+    bit<32> data31;
+    bit<32> data32;
+    bit<32> data33;
+    bit<32> data34;
+    bit<32> data35;
+    bit<32> data36;
+    bit<32> data37;
+    bit<32> data38;
+    bit<32> data39;
+    bit<32> data3a;
+    bit<32> data3b;
+    bit<32> data3c;
+    bit<32> data3d;
+    bit<32> data3e;
+    bit<32> data3f;
 }
 
 

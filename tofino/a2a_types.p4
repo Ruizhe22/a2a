@@ -15,7 +15,7 @@ enum bit<2> CONN_SEMANTICS {
     CONN_BITMAP = 3 // only for combine
 }
 
-struct a2a_ingress_headers_t {  
+struct a2a_headers_t {  
     eth_h eth; 
     ipv4_h ipv4;
     udp_h udp;
@@ -26,42 +26,49 @@ struct a2a_ingress_headers_t {
     icrc_h icrc;
 }
 
-struct a2a_ingress_metadata_t {
-    bool is_roce;
+
+header bridge_h {
+    bit<8> ing_rank_id;
+    bool has_reth;
+    bool has_aeth;
+    bool has_payload;
     CONN_PHASE  conn_phase;    // dispatch or combine
     CONN_SEMANTICS conn_semantics;
     bit<32>    channel_id;
-}
-
-struct a2a_dispatch_metadata_t {
-    bit<32> tx_id;
-    bit<32> channel_id;
-    bit<32> rx_id;
-    bit<32> tx_reg_idx;
-    bit<32> rx_reg_idx;
-    bit<64> bitmap;
-    bit<32> expected_psn;
-    bit<32> current_msn;
-    bit<32> pkt_psn;
-    bit<2>  packet_type;
-    bit<2>  psn_status;
-    bit<1>  is_write_first_or_only;
+    bitmap_tofino_t    bitmap;
     bit<16> payload_len;
 }
 
-struct a2a_combine_metadata_t {
-    bit<32> rx_id;           // combine中的发送方（原dispatch的rx）
-    bit<32> channel_id;
-    bit<32> tx_id;           // combine中的接收方（原dispatch的tx）
-    bit<32> reg_idx;
-    bit<32> expected_psn;
-    bit<32> current_msn;
-    bit<32> pkt_psn;
-    bit<2>  packet_type;
-    bit<2>  psn_status;
-    bit<16> payload_len;
-    // combine特有：聚合相关
-    bit<32> agg_count;       // 已聚合的数量
-    bit<32> agg_total;       // 需要聚合的总数
+
+struct a2a_ingress_metadata_t {
+    bool is_roce;
+    bridge_h bridge;
 }
 
+struct a2a_egress_metadata_t {
+    bit<8> eg_rank_id;
+    bridge_h bridge;
+}
+
+/* Although the bitmap is defined to be 64 bits, we only use lower 32 bits in practice
+ * as the total number of ports in tofino is limited to 32 in current design.
+ */
+struct bitmap_t {
+    bit<32> lo;
+    bit<32> hi;
+}
+
+
+struct addr_tofino_t {
+    bit<32> lo;
+    bit<32> hi;
+}
+
+typedef bit<32> bitmap_tofino_t;
+
+enum bit<2> DISPATCH_REG_OP {
+    OP_NONE = 0,
+    OP_INIT = 1,
+    OP_READ_INC = 2,
+    OP_READ_ADD = 3
+} 
