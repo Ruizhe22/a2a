@@ -1,5 +1,5 @@
 /* EP_SIZE(N) 8 */
-#define TX_DISPATCH_CHANNELS_NUM 8 // 每个 tx 的通道数
+#define TX_DISPATCH_CHANNELS_NUM 8 // number of channels per tx
 #define DISPATCH_CHANNELS_NUM (EP_SIZE * TX_DISPATCH_CHANNELS_NUM)
 
 /***************************************************************************
@@ -195,7 +195,7 @@ control DispatchIngress(
 
 
 /*******************************************************************************
- * RxPsnSlot - 单个 RX 的 PSN 管理
+ * RxPsnSlot - PSN management for a single RX
  ******************************************************************************/
 control RxPsnSlot(
     out bit<32> result_psn,
@@ -231,7 +231,7 @@ control RxPsnSlot(
 }
 
 /*******************************************************************************
- * RxAddrSlot - 单个 RX 的地址管理
+ * RxAddrSlot - Address management for a single RX
  ******************************************************************************/
 control RxAddrSlot(
     out bit<32> result_addr_lo,
@@ -318,8 +318,8 @@ control DispatchEgress(
     bit<32> payload_len_32;
 
     /***************************************************************************
-     * Table - 根据 egress_rid 设置 RX 信息
-     ***************************************************************************/
+     * Table - Set RX info based on egress_rid
+     **************************************************************************/
     action get_rank_id(bit<8> rank_id) {
         eg_md.eg_rank_id = rank_id;
     }
@@ -364,7 +364,7 @@ control DispatchEgress(
      * Apply
      ***************************************************************************/
     action set_ack_egress() {
-        // 移除不需要的头
+        // Remove unnecessary headers
         hdr.reth.setInvalid();
         hdr.payload.setInvalid();
         
@@ -395,10 +395,10 @@ control DispatchEgress(
         dispatch_rank_info.apply();
         channel_idx = (bit<32>)eg_md.bridge.channel_id;
 
-        // ==================== 控制连接：初始化所有 RX ====================
+        // ==================== Control connection: initialize all RX ====================
         if (eg_md.bridge.conn_semantics == CONN_SEMANTICS.CONN_CONTROL) {
             
-            // 初始化 PSN (payload: data00 - data07)
+            // Initialize PSN (payload: data00 - data07)
             psn_slot_0.apply(result_psn, hdr.payload.data00, DISPATCH_REG_OP.OP_INIT, channel_idx);
             psn_slot_1.apply(result_psn, hdr.payload.data01, DISPATCH_REG_OP.OP_INIT, channel_idx);
             psn_slot_2.apply(result_psn, hdr.payload.data02, DISPATCH_REG_OP.OP_INIT, channel_idx);
@@ -408,8 +408,8 @@ control DispatchEgress(
             psn_slot_6.apply(result_psn, hdr.payload.data06, DISPATCH_REG_OP.OP_INIT, channel_idx);
             psn_slot_7.apply(result_psn, hdr.payload.data07, DISPATCH_REG_OP.OP_INIT, channel_idx);
 
-            // 初始化 Addr (payload: data08-data17, 每个地址 64 位 = lo + hi)
-            // addr_tofino_t 结构: {lo, hi}
+            // Initialize Addr (payload: data08-data17, each address 64-bit = lo + hi)
+            // addr_tofino_t structure: {lo, hi}
             addr_slot_0.apply(result_addr_lo, result_addr_hi,
                               hdr.payload.data08, hdr.payload.data09,
                               0, DISPATCH_REG_OP.OP_INIT, channel_idx);
@@ -440,7 +440,7 @@ control DispatchEgress(
             return;
         }
 
-        // ==================== 数据连接：Multicast replica 处理 ====================
+        // ==================== Data connection: Multicast replica processing ====================
         if (eg_md.bridge.conn_semantics == CONN_SEMANTICS.CONN_TX) {
             if((eg_intr_md.egress_rid == 0)&&(em_md.bridge.ing_rank_id == eg_md.eg_rank_id)) {
                 set_ack_egress.apply();
@@ -448,10 +448,10 @@ control DispatchEgress(
             else if(((eg_md.bridge.bitmap >> em_md.eg_rank_id) & 1) == 1){
                 // Bcast packet to all replicas
                 payload_len_32 = 1024;  // to add addr
-                // 根据 egress_rid 查表设置 RX 信息
+                // Lookup and set RX info based on egress_rid
                 dispatch_rx_info.apply();
 
-                // ===== PSN: 根据 rank_id 选择对应槽位 =====
+                // ===== PSN: select corresponding slot based on rank_id =====
                 if (eg_md.eg_rank_id == 0) {
                     psn_slot_0.apply(result_psn, 0, DISPATCH_REG_OP.OP_READ_INC, channel_idx);
                 } else if (eg_md.eg_rank_id == 1) {
@@ -470,10 +470,10 @@ control DispatchEgress(
                     psn_slot_7.apply(result_psn, 0, DISPATCH_REG_OP.OP_READ_INC, channel_idx);
                 }
 
-                // 更新 BTH PSN
+                // Update BTH PSN
                 hdr.bth.psn = result_psn[23:0];
 
-                // ===== Addr: 只有 RETH 有效时才更新 =====
+                // ===== Addr: only update when RETH is valid =====
                 if (hdr.reth.isValid() && 
                     (hdr.bth.opcode == RDMA_OP_WRITE_FIRST || 
                     hdr.bth.opcode == RDMA_OP_WRITE_ONLY)) {
@@ -503,7 +503,7 @@ control DispatchEgress(
                                         payload_len_32, DISPATCH_REG_OP.OP_READ_ADD, channel_idx);
                     }
 
-                    // 更新 RETH addr (addr_tofino_t: lo在前，hi在后)
+                    // Update RETH addr (addr_tofino_t: lo first, hi second)
                     hdr.reth.addr[31:0] = result_addr_lo;
                     hdr.reth.addr[63:32] = result_addr_hi;
                 }

@@ -122,14 +122,14 @@ enum bit<2> COMBINE_QUEUE_POINTER_REG_OP {
     OP_INIT     = 0,
     OP_READ     = 1,
     OP_INC    = 2,
-    OP_READ_ADD = 3     // 读取并加固定值8（环形）
+    OP_READ_ADD = 3     // read and add a fixed value 8 (circular)
 }
 
 enum bit<2> COMBINE_BITMAP_REG_OP {
     OP_READ      = 1,
     OP_WRITE     = 2,
-    OP_CLEAR_BIT = 3,    // XOR 清除指定位，返回清除后的值
-    OP_RESET     = 0     // 重置为 0
+    OP_CLEAR_BIT = 3,    // XOR clear specified bit(s), return value after clear
+    OP_RESET     = 0     // reset to 0
 }
 
 enum bit<2> COMBINE_ADDR_REG_OP {

@@ -1,25 +1,25 @@
 /*******************************************************************************
  * Combine Control for AllToAll Communication - In-Network Aggregation
  * 
- * 聚合每个 packet 的前 4 bytes
+ * Aggregate the first 4 bytes of each packet
  * 
- * 连接类型：
- * - CONN_CONTROL: 查询队列指针 (READ)
- * - CONN_BITMAP: rx 写入 bitmap (WRITE)
- * - CONN_TX: tx 写入 token 进行聚合 (WRITE)
- * - CONN_RX: rx 读取聚合结果 (READ)
+ * Connection types:
+ * - CONN_CONTROL: query queue pointer (READ)
+ * - CONN_BITMAP: rx writes bitmap (WRITE)
+ * - CONN_TX: tx writes token for aggregation (WRITE)
+ * - CONN_RX: rx reads aggregation result (READ)
  * 
- * 数据结构：
- * - tx_epsn[j]: 期望从第j个tx收到的PSN
- * - tx_msn[j]: 第j个tx的MSN
- * - tx_loc[j]: 第j个tx当前token的队列位置
- * - tx_packet_offset[j]: 第j个tx当前token内的packet偏移
- * - rx_bitmap_epsn: bitmap连接的ePSN
- * - rx_token_epsn: token连接的ePSN
- * - rx_token_msn: token连接的MSN
- * - bitmap_buffer[loc]: 剩余需要聚合的tx bitmap
- * - agg_count[loc][packet]: 已聚合的tx数量
- * - queue_head, queue_tail, queue_incomplete: 队列指针
+ * Data structures:
+ * - tx_epsn[j]: expected PSN from j-th tx
+ * - tx_msn[j]: MSN of j-th tx
+ * - tx_loc[j]: queue position of current token for j-th tx
+ * - tx_packet_offset[j]: packet offset within current token for j-th tx
+ * - rx_bitmap_epsn: ePSN for bitmap connection
+ * - rx_token_epsn: ePSN for token connection
+ * - rx_token_msn: MSN for token connection
+ * - bitmap_buffer[loc]: remaining tx bitmap to aggregate
+ * - agg_count[loc][packet]: number of tx aggregated
+ * - queue_head, queue_tail, queue_incomplete: queue pointers
  ******************************************************************************/
 
 #define NUM_COMBINE_CHANNELS_PER_RX 8
@@ -27,19 +27,19 @@
 #define TOKEN_SIZE 7168                // 7K bytes
 #define PAYLOAD_LEN 1024               // 1K per packet
 #define TOKEN_PACKETS (TOKEN_SIZE / PAYLOAD_LEN) // 7
-#define N_AGG_SLOTS 32                 // 聚合槽位数 (128 bytes / 4)
-#define BYTES_PER_SLOT 4               // 每个槽位 4 bytes, bit<32>
-#define BITMAP_PER_PACKET 8            // 每个bitmap write packet对应bitmap的个数
+#define N_AGG_SLOTS 32                 // number of aggregation slots (128 bytes / 4)
+#define BYTES_PER_SLOT 4               // each slot 4 bytes, bit<32>
+#define BITMAP_PER_PACKET 8            // number of bitmaps per bitmap write packet
 
-// 索引计算
+// Index calculations
 #define COMBINE_CHANNELS_TOTAL (EP_SIZE * NUM_COMBINE_CHANNELS_PER_RX)                    // 64
-#define PACKET_NUM_PER_CHANNEL_BUFFER (COMBINE_QUEUE_LENGTH * TOKEN_PACKETS)    // 每个entry对应一个offset位置，448
+#define PACKET_NUM_PER_CHANNEL_BUFFER (COMBINE_QUEUE_LENGTH * TOKEN_PACKETS)    // each entry corresponds to an offset position, 448
 #define COMBINE_BUFFER_ENTRIES (COMBINE_CHANNELS_TOTAL * PACKET_NUM_PER_CHANNEL_BUFFER)   // 28672, entry->packet
 #define COMBINE_TX_ENTRIES (COMBINE_CHANNELS_TOTAL * EP_SIZE)                      // 512
 #define COMBINE_BITMAP_ENTRIES (COMBINE_CHANNELS_TOTAL * COMBINE_QUEUE_LENGTH)     // 4096
 
 /*******************************************************************************
- * Queue Pointer Slot - 管理每个连接的队列指针
+ * Queue Pointer Slot - manage queue pointer for each connection
  * channel_id = channel_class * EP_SIZE + _rank_id
  ******************************************************************************/
 
@@ -98,9 +98,9 @@ control QueuePointerSlot(
 }
 
 /*******************************************************************************
- * BitmapSlot - 单个 RX 的 Bitmap Buffer 管理
- * 
- * 每个 slot 管理一个 rx 的所有 queue 位置的 bitmap
+ * BitmapSlot - Bitmap buffer management for a single RX
+ *
+ * Each slot manages the bitmaps for all queue positions of one RX
  ******************************************************************************/
 control BitmapSlot(
         out bitmap_tofino_t result,
@@ -156,9 +156,9 @@ control BitmapSlot(
 
 
 /*******************************************************************************
- * AddrSlot - Addr Buffer 的 1/8
- * 
- * 相邻的 token 分散到 8 个 slot 中
+ * AddrSlot - 1/8 of the Addr Buffer
+ *
+ * Adjacent tokens are distributed across 8 slots
  * token_idx = channel_id * COMBINE_QUEUE_LENGTH + loc
  * slot_id = token_idx % 8 = token_idx[2:0]
  * slot_index = token_idx / 8 = token_idx >> 3
@@ -172,17 +172,17 @@ control AddrSlot(
     
     addr_tofino_t w_val;
 
-    // 每个 slot 存储 COMBINE_BITMAP_ENTRIES / 8 个 addr
+    // each slot stores COMBINE_BITMAP_ENTRIES / 8 addrs
     Register<addr_tofino_t, bit<32>>(COMBINE_BITMAP_ENTRIES >> 3) reg_addr;
 
-    // 读取
+    // read
     RegisterAction<addr_tofino_t, bit<32>, addr_tofino_t>(reg_addr) ra_read = {
         void apply(inout addr_tofino_t value, out addr_tofino_t res) {
             res = value;
         }
     };
 
-    // 写入
+    // write
     RegisterAction<addr_tofino_t, bit<32>, void>(reg_addr) ra_write = {
         void apply(inout addr_tofino_t value) {
             value = w_val;
@@ -201,7 +201,7 @@ control AddrSlot(
 
 
 /*******************************************************************************
- * CombineIngress - 主控制逻辑
+ * CombineIngress - main control logic
  ******************************************************************************/
 control CombineIngress(
     inout a2a_ingress_headers_t hdr,
@@ -275,8 +275,8 @@ control CombineIngress(
     };
 
     RegisterAction<bit<8>, bit<32>, void>(reg_tx_packet_offset) ra_reset_tx_offset = {
-        void apply(inout bit<8> value) {
-            value = 1;  // 重置为 1（当前包是第 0 个，下一个是第 1 个）
+            void apply(inout bit<8> value) {
+            value = 1;  // reset to 1 (current packet is 0, next is 1)
         }
     };
 
@@ -298,7 +298,7 @@ control CombineIngress(
         void apply(inout bit<32> value, out bit<32> result) {
             result = value;
             if (psn_to_check == value) {
-                // PSN 匹配，递增并返回 0
+                // PSN matches: increment value
                 value = value + 1;
             }
         }
@@ -311,14 +311,14 @@ control CombineIngress(
     };
 
 
-    // 读取当前 epsn（不更新）
+    // Read current epsn (do not update)
     RegisterAction<bit<32>, bit<32>, bit<32>>(reg_rx_token_epsn) ra_read_rx_token_epsn = {
         void apply(inout bit<32> value, out bit<32> result) {
             result = value;
         }
     };
 
-    // 读取并增加 TOKEN_PACKETS
+    // Read and add TOKEN_PACKETS
     RegisterAction<bit<32>, bit<32>, bit<32>>(reg_rx_token_epsn) ra_read_add_rx_token_epsn = {
         void apply(inout bit<32> value, out bit<32> result) {
             result = value;
@@ -343,7 +343,7 @@ control CombineIngress(
      * Queue State Registers
      * Index: rank_id choose which slot and channel_class is the index 
      * Queue Pointer Slots (EP_SIZE = 8)
-     * 每个 rx 有自己的 queue_head, queue_tail
+    * Each RX has its own queue_head and queue_tail
      ***************************************************************************/
     
     // Queue Head Slots
@@ -401,10 +401,10 @@ control CombineIngress(
 
     /***************************************************************************
      * Buffer Token State Registers
-     * 每个token一个元素
-     * Index: channel_id * COMBINE_QUEUE_LENGTH + loc / / bitmap中，loc = queue_tail (inc之前)
-     * Bitmap Slots - 每个packet对应BITMAP_PER_PACKET（8）个bitmap slots，用于分散写入
-     * Addr Slots - 每个packet对应8个addr slots，用于分散写入
+    * One element per token
+    * Index: channel_id * COMBINE_QUEUE_LENGTH + loc  // in bitmap, loc = queue_tail (before inc)
+    * Bitmap Slots - each packet corresponds to BITMAP_PER_PACKET (8) bitmap slots for distributed writes
+    * Addr Slots - each packet corresponds to 8 addr slots for distributed writes
      ***************************************************************************/
 
     BitmapSlot() bitmap_slot_0;
@@ -430,11 +430,11 @@ control CombineIngress(
     addr_tofino_t addr_write_val;
     
 
-    // 在调用前，需要设置 ig_md.bridge.tx_offset_val, 因为一个Register只能被读一次，所以必须这么写
+    // Before calling, set ig_md.bridge.tx_offset_val; a Register can only be read once, so write it this way
     RegisterAction<bit<8>, bit<32>, bit<8>>(reg_clear_buffer) ra_read_set_clear = {
         void apply(inout bit<8> value, out bit<8> result) {
             result = value;
-            if(value <= ig_md.bridge.tx_offset_val){ // 按理说只能 ==
+            if(value <= ig_md.bridge.tx_offset_val){ // ideally should be ==
                 value = value + 1;
             }
         }
@@ -465,7 +465,7 @@ control CombineIngress(
     action set_aeth_ingress(bit<8> syndrome, bit<24> psn, bit<24> msn) {
         ig_md.bridge.has_aeth = true;
         //hdr.bth.opcode = RDMA_OP_ACK;
-        hdr.bth.psn = psn; // 如果有ack头，比如RDMA_OP_ACK或者Read response，psn只取决于ack，所以在这里设置
+        hdr.bth.psn = psn; // If there's an ack header (e.g., RDMA_OP_ACK or Read response), PSN is determined by the ack, set here
         hdr.aeth.setValid();
         hdr.aeth.syndrome = syndrome;
         hdr.aeth.msn = msn;
@@ -488,7 +488,7 @@ control CombineIngress(
     }
 
     action set_ack_len() {
-        // ACK 包: UDP(8) + BTH(12) + AETH(4) + ICRC(4) = 28
+        // ACK packet: UDP(8) + BTH(12) + AETH(4) + ICRC(4) = 28
         hdr.udp.length = 28;
         hdr.ipv4.total_len = 48;
         hdr.udp.checksum = 0;
@@ -512,12 +512,12 @@ control CombineIngress(
         bit<3> slot_id;
         bit<32> slot_index;
         // ================================================================
-        // CONN_CONTROL: 查询队列指针 (READ)
+        // CONN_CONTROL: query queue pointer (READ)
         // ================================================================
         if (ig_md.bridge.conn_semantics == CONN_SEMANTICS.CONN_CONTROL) {
             if (hdr.bth.opcode == RDMA_OP_READ_REQ) {
          
-                // 构造 READ_RESPONSE_ONLY
+                // Construct READ_RESPONSE_ONLY
                 queue_head_slot_0.apply(queue_head, COMBINE_QUEUE_POINTER_REG_OP.OP_READ, channel_class);
                 queue_tail_slot_0.apply(queue_tail, COMBINE_QUEUE_POINTER_REG_OP.OP_READ, channel_class);
                 hdr.payload.data00 = ((bit<32>)queue_head << 16) | (bit<32>)queue_tail;
@@ -557,7 +557,7 @@ control CombineIngress(
         }
 
         // ================================================================
-        // CONN_BITMAP: rx 写入 bitmap (WRITE_ONLY)
+        // CONN_BITMAP: rx writes bitmap (WRITE_ONLY)
         // ================================================================
         if (ig_md.bridge.conn_semantics == CONN_SEMANTICS.CONN_BITMAP) {
             if (hdr.bth.opcode != RDMA_OP_WRITE_ONLY) {
@@ -568,9 +568,9 @@ control CombineIngress(
             bit<32> expected_psn = ra_read_cond_inc_rx_bitmap_epsn.execute(channel_id);
             
             if ((bit<32>)hdr.bth.psn == expected_psn) {
-                // PSN 匹配，写入 bitmap
+                // PSN matches, write bitmap
                 channel_class = channel_id >> 3; // EP_SIZE=8
-                // 根据 rx_id 选择对应的 slot 读取 queue_tail 并更新
+                // Select corresponding slot by rx_id to read and update queue_tail
                 if (ig_md.bridge.ing_rank_id == 0) {
                     queue_tail_slot_0.apply(queue_tail, COMBINE_QUEUE_POINTER_REG_OP.OP_READ_ADD, channel_class);
                 } else if (ig_md.bridge.ing_rank_id == 1) {
@@ -589,7 +589,7 @@ control CombineIngress(
                     queue_tail_slot_7.apply(queue_tail, COMBINE_QUEUE_POINTER_REG_OP.OP_READ_ADD, channel_class);
                 }
                 
-                // 写入 bitmap 和 addr
+                // Write bitmap and addr
 
                 token_idx = channel_id * COMBINE_QUEUE_LENGTH + (bit<32>)queue_tail;
                 slot_index = token_idx >> 3;      // token_idx / 8
@@ -636,17 +636,17 @@ control CombineIngress(
                 addr_write_val.hi = hdr.payload.data17;
                 addr_slot_7.apply(addr_result, addr_write_val, COMBINE_ADDR_REG_OP.OP_WRITE, slot_index);
 
-                // 返回 ACK
+                // return ACK
                 set_aeth_ingress(AETH_ACK_CREDIT_INVALID, hdr.bth.psn, hdr.bth.psn + 1);
                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
                 
             } else if ((bit<32>)hdr.bth.psn < expected_psn) {
-                // 重复包
+                // duplicate packet
                 set_aeth_ingress(AETH_ACK_CREDIT_INVALID, (bit<24>)(expected_psn - 1), (bit<24>)expected_psn);
                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
                 
             } else {
-                // 丢包，返回 NAK
+                // packet loss, return NAK
                 set_aeth_ingress(AETH_NAK_SEQ_ERR, (bit<24>)(expected_psn - 1), (bit<24>)expected_psn);
                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
             }
@@ -654,9 +654,9 @@ control CombineIngress(
         }
 
         // ================================================================
-        // CONN_TX: tx 写入 token (WRITE) - 聚合
-        // bitmap存储必须在ingress，因为要确定是否token的聚合完成然后广播
-        // token buffer必须在egress，因为广播需要读取不同offset的packet
+        // CONN_TX: tx writes token (WRITE) - aggregation
+        // Bitmap storage must be in ingress to determine if token aggregation is complete and then broadcast
+        // Token buffer must be in egress because broadcast needs to read packets at different offsets
         // ================================================================
         if (ig_md.bridge.conn_semantics == CONN_SEMANTICS.CONN_TX && ig_intr_md.ingress_port != LOOPBACK_PORT) {
             if (hdr.bth.opcode != RDMA_OP_WRITE_FIRST && 
@@ -671,27 +671,27 @@ control CombineIngress(
             bit<32> current_msn = ra_read_tx_msn.execute(tx_reg_idx);
             
             if ((bit<32>)hdr.bth.psn == expected_psn) {
-                // PSN 匹配
-                // 获取 loc 和 packet_offset
+                // PSN matches
+                // Get loc and packet_offset
                 if (hdr.bth.opcode == RDMA_OP_WRITE_FIRST || 
                     hdr.bth.opcode == RDMA_OP_WRITE_ONLY) {
-                    // 从 reth.addr 获取 loc
+                    // Get loc from reth.addr
                     ig_md.bridge.tx_loc_val = hdr.reth.addr[63:48];
                     ig_md.bridge.tx_offset_val = 0;
                     ra_write_tx_loc.execute(tx_reg_idx);
                     ra_reset_tx_offset.execute(tx_reg_idx);
                 } else {
-                    // 从寄存器获取
+                    // Get from registers
                     ig_md.bridge.tx_loc_val = ra_read_tx_loc.execute(tx_reg_idx);
                     ig_md.bridge.tx_offset_val = ra_read_inc_tx_offset.execute(tx_reg_idx);
                 }
                 
                 token_idx = channel_id * COMBINE_QUEUE_LENGTH + (bit<32>)ig_md.bridge.tx_loc_val;
                 slot_id = token_idx[2:0];
-                // 检查是否是第一个到达的 tx
+                // Check whether this is the first tx to arrive
                 ig_md.bridge.clear_offset = ra_read_set_clear.execute(token_idx);
                 
-                // 如果是 WRITE_LAST/ONLY，清除 bitmap 中的 tx 位，更新 MSN
+                // If WRITE_LAST/ONLY: clear tx bit in bitmap and update MSN
                 if (hdr.bth.opcode == RDMA_OP_WRITE_ONLY || 
                     hdr.bth.opcode == RDMA_OP_WRITE_LAST) {
                     
@@ -728,7 +728,7 @@ control CombineIngress(
                     if (bitmap_result == 0) {
                         queue_incomplete = ra_read_cond_inc_queue_incomplete.excute(channel_id);
                         if( queue_incomplete == ig_md.bridge.tx_loc_val) {
-                            // 更新queue_head，与queue_incomplete保持一致
+                            // Update queue_head to match queue_incomplete
                             if (ig_md.bridge.ing_rank_id == 0) {
                                 queue_head_slot_0.apply(queue_head, COMBINE_QUEUE_POINTER_REG_OP.OP_INC, channel_class);
                             } else if (ig_md.bridge.ing_rank_id == 1) {
@@ -749,7 +749,8 @@ control CombineIngress(
                             
                             ig_tm_md.mcast_grp_b = 200; // loopback group
                             
-                            // 把包改造为write first，没有设置长度和其他字，第一次启动的loop，来的时候没有reth，放不下
+                            // Convert packet to WRITE_FIRST; length and other fields are not set.
+                            // On the first loop startup the incoming packet may have no RETH and may not fit.
                             //hdr.reth.setValid();
                             //hdr.reth.addr[31:0] = addr_result.lo;
                             //hdr.reth.addr[63:32] = addr_result.hi;
@@ -758,17 +759,17 @@ control CombineIngress(
                     }
                 }
 
-                // 返回 ACK
+                // return ACK
                 set_aeth_ingress(AETH_ACK_CREDIT_INVALID, (bit<24>)expected_psn, (bit<24>)current_msn);
                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
                 
             } else if ((bit<32>)hdr.bth.psn < expected_psn) {
-                // 重复包
+                // duplicate packet
                 set_aeth_ingress(AETH_ACK_CREDIT_INVALID, (bit<24>)(expected_psn - 1), (bit<24>)current_msn);
                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
                 
             } else {
-                // 丢包
+                // packet loss
                 set_aeth_ingress(AETH_NAK_SEQ_ERR, (bit<24>)(expected_psn - 1), (bit<24>)current_msn);
                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
             }
@@ -776,28 +777,28 @@ control CombineIngress(
         }
 
         // ================================================================
-        // loopback port， LOOPBACK_PORT还未定义
-        // 这个包，一定是一个write first
+        // loopback port; LOOPBACK_PORT not defined yet
+        // This packet is guaranteed to be a WRITE_FIRST
         // reth
-        //  data00 在ingress期间是这个token bcsat的loc，egress期间是这个next token bcast的loc
-        //  addr这个token的接收，全程保持不变，egress期间 loopback port 再重新设置为下一个 token 地址，该地址在 ingress 存到bridge中
-        //  这个包的字段，基本上都是上一次的egress设置了，除了psn，opcode，payload这些每个包不一样的部分。
+        //  data00: during ingress it's the token's bcast loc; during egress it's the next token's bcast loc
+        // addr for this token remains unchanged during reception; during egress the loopback port will be set to the next token address stored in bridge during ingress
+        // Fields of this packet are mostly set by the previous egress, except PSN, opcode, and payload which vary per packet.
         // ================================================================
         if (ig_intr_md.ingress_port == LOOPBACK_PORT && 
             hdr.bth.opcode == RDMA_OP_WRITE_FIRST) {
             
-            // 从 payload 获取当前 loc
+            // Get current loc from payload
             bit<16> current_loc = hdr.payload.data00[15:0];
             ig_md.bridge.tx_loc_val = current_loc;
             ig_md.bridge.is_loopback = true;
             
-            // 设置组播到 rx（TOKEN_PACKETS 个包）
+            // Set multicast to rx (TOKEN_PACKETS packets)
             ig_tm_md.mcast_grp_a = (bit<16>)(100 + ig_md.bridge.root_rank_id);
             
             bit<32> base_psn = ra_read_add_rx_token_epsn.execute(channel_id);
             hdr.bth.psn = (bit<24>)base_psn;
 
-            // 计算下一个 loc（环形队列）
+            // Compute next loc (circular queue)
             bit<8> next_loc;
             if (current_loc >= COMBINE_QUEUE_LENGTH - 1) {
                 next_loc = 0;
@@ -805,7 +806,7 @@ control CombineIngress(
                 next_loc = current_loc + 1;
             }
             
-            // 读取 queue_tail 检查是否到达尾部
+            // Read queue_tail to check if tail is reached
             if (ig_md.bridge.root_rank_id == 0) {
                 queue_tail_slot_0.apply(queue_tail, COMBINE_QUEUE_POINTER_REG_OP.OP_READ, channel_class);
             } else if (ig_md.bridge.root_rank_id == 1) {
@@ -824,9 +825,9 @@ control CombineIngress(
                 queue_tail_slot_7.apply(queue_tail, COMBINE_QUEUE_POINTER_REG_OP.OP_READ, channel_class);
             }
             
-            // 如果 next_loc == queue_tail，说明已经处理完所有 token，不再 loopback
+            // If next_loc == queue_tail, all tokens are processed; stop loopback
             if (next_loc != queue_tail) {
-                // 检查下一个 loc 的 bitmap 是否为 0
+                // Check if bitmap of next loc is zero
                 bit<32> next_token_idx = channel_id * COMBINE_QUEUE_LENGTH + (bit<32>)next_loc;
                 bit<3> next_slot_id = next_token_idx[2:0];
                 bit<32> next_slot_index = next_token_idx >> 3;
@@ -859,12 +860,12 @@ control CombineIngress(
                     addr_slot_7.apply(addr_result, addr_write_val, COMBINE_ADDR_REG_OP.OP_READ, next_slot_index);
                 }
                 
-                // 检查 queue_incomplete
+                // Check queue_incomplete
                 //bit<8> queue_incomplete_val = ra_read_queue_incomplete.execute(channel_id);
                 
-                // 如果下一个 token 准备好了，继续 loopback
+                // If next token is ready, continue loopback
                 if (next_bitmap_result == 0 ) { //&& next_loc == queue_incomplete_val
-                    // 更新 queue_incomplete 和 queue_head
+                    // Update queue_incomplete and queue_head
                     ig_md.bridge.tx_loc_val = next_loc;
                     ra_read_cond_inc_queue_incomplete.execute(channel_id);
                     
@@ -886,14 +887,14 @@ control CombineIngress(
                         queue_head_slot_7.apply(queue_head, COMBINE_QUEUE_POINTER_REG_OP.OP_INC, channel_class);
                     }
                     
-                    // 设置 loopback 继续，同时更新 payload的第一个值 为 next_loc
+                    // Set loopback to continue and update payload.data00 to next_loc
                     ig_tm_md.mcast_grp_b = LOOPBACK_MCAST_GRP;
                     hdr.payload.data00 = (bit<32>)next_loc;
                     hdr.bridge.next_token_addr = addr_result;
                 }
             }
             
-            // 恢复当前 loc 用于 egress
+            // Restore current loc for egress
             ig_md.bridge.tx_loc_val = current_loc;
             
             return;
@@ -905,11 +906,11 @@ control CombineIngress(
 
 /*******************************************************************************
  * CombineEgress
- * 处理：
- * 1. Loopback 端口输出 - 构造 WRITE_FIRST 继续 loop
- * 2. 广播到 rx - 根据 rid 设置 opcode，读取聚合结果
- * 3. CONN_TX - 聚合并返回 ACK
- * 4. 其他 ACK 包
+ * Processing:
+ * 1. Loopback port output - construct WRITE_FIRST to continue loop
+ * 2. Broadcast to rx - set opcode by rid, read aggregation result
+ * 3. CONN_TX - aggregate and return ACK
+ * 4. Other ACK packets
  ******************************************************************************/
 control CombineEgress(
     inout a2a_headers_t hdr,
@@ -919,7 +920,7 @@ control CombineEgress(
     inout egress_intrinsic_metadata_for_deparser_t eg_dprsr_md)
 {
     /***************************************************************************
-     * 聚合器
+     * Aggregator
      * Index: channel_id * PACKET_NUM_PER_CHANNEL_BUFFER + loc * TOKEN_PACKETS + packet_offset 
      ***************************************************************************/
     bit<32> agg_val;
@@ -989,7 +990,7 @@ control CombineEgress(
     }
 
     /***************************************************************************
-     * RX 信息设置表 - 用于 loopback 构造 WRITE_FIRST
+     * RX info table - used to construct WRITE_FIRST for loopback
      ***************************************************************************/
     action set_rx_info(bit<48> dst_mac, bit<32> dst_ip, bit<24> dst_qp, bit<32> rkey) {
         hdr.eth.dst_addr = dst_mac;
@@ -1019,110 +1020,110 @@ control CombineEgress(
         channel_id = (bit<32>)eg_md.bridge.channel_id;
         
         // ================================================================
-        // 1. Loopback 端口输出 - 构造 WRITE_FIRST 发往 loopback 继续处理
+        // 1. Loopback port output - construct WRITE_FIRST to send to loopback for continued processing
         // ================================================================
         if (eg_intr_md.egress_port == LOOPBACK_PORT) {
-            // 构造完整的 WRITE_FIRST
+            // Construct full WRITE_FIRST
             hdr.bth.opcode = RDMA_OP_WRITE_FIRST;
             
-            // 设置 RETH
+            // Set RETH
             hdr.reth.setValid();
             hdr.reth.addr[31:0] = eg_md.bridge.next_token_addr.lo;
             hdr.reth.addr[63:32] = eg_md.bridge.next_token_addr.hi;
             hdr.reth.length = TOKEN_SIZE;
             
-            // 设置 payload.data00 存储 loc
+            // Set payload.data00 to store loc
             hdr.payload.setValid();
             if (!eg_md.bridge.is_loopback) {
-                // 来自 CONN_TX，第一次启动 loop，设置当前 loc
+                // From CONN_TX: first time starting loop, set current loc
                 hdr.payload.data00 = (bit<32>)eg_md.bridge.tx_loc_val;
             }
-            // 如果 is_loopback，payload.data00 已经在 ingress 设置了 next_loc
+            // If is_loopback, payload.data00 was already set to next_loc in ingress
             
-            // 查表设置 rx 信息（dst_mac, dst_ip, dst_qp, rkey）
+            // Lookup table to set rx info (dst_mac, dst_ip, dst_qp, rkey)
             tbl_rx_info.apply();
             
-            // 设置包长度
+            // Set packet length
             set_write_first_len();
             
-            // AETH 无效
+            // AETH invalid
             hdr.aeth.setInvalid();
             
             return;
         }
         
         // ================================================================
-        // 2. is_loopback 广播包 - 发送到 rx 的 TOKEN_PACKETS 个包
+        // 2. is_loopback broadcast packets - send TOKEN_PACKETS packets to rx
         // ================================================================
         if (eg_intr_md.egress_port != LOOPBACK_PORT && eg_md.bridge.is_loopback) {
-            // 根据 egress_rid 确定这是第几个包（0 到 TOKEN_PACKETS-1）
+            // Determine which packet based on egress_rid (0 to TOKEN_PACKETS-1)
             bit<8> pkt_offset = (bit<8>)eg_intr_md.egress_rid;
             
-            // 处理 PSN
+            // Process PSN
             hdr.bth.psn = hdr.bth.psn + (bit<24>)pkt_offset;
             
-            // 计算 buffer index 并读取聚合结果
+            // Compute buffer index and read aggregation result
             buffer_idx = channel_id * PACKET_NUM_PER_CHANNEL_BUFFER 
                        + (bit<32>)eg_md.bridge.tx_loc_val * TOKEN_PACKETS 
                        + (bit<32>)pkt_offset;
             
             bit<32> agg_result = ra_read_agg.execute(buffer_idx);
             
-            // 设置 payload
+            // Set payload
             hdr.payload.setValid();
             hdr.payload.data00 = agg_result;
             
-            // 根据 pkt_offset 设置 opcode 和 header
+            // Set opcode and header based on pkt_offset
             if (pkt_offset == 0) {
-                // 第一个包: WRITE_FIRST
+                // First packet: WRITE_FIRST
                 hdr.bth.opcode = RDMA_OP_WRITE_FIRST;
-                // reth 地址已在 ingress 从原始包保留
+                // RETH address preserved from original packet during ingress
                 hdr.reth.setValid();
                 hdr.reth.length = TOKEN_SIZE;
                 set_write_first_len();
             } else if (pkt_offset == TOKEN_PACKETS - 1) {
-                // 最后一个包: WRITE_LAST
+                // Last packet: WRITE_LAST
                 hdr.bth.opcode = RDMA_OP_WRITE_LAST;
                 hdr.reth.setInvalid();
                 set_write_middle_len();
             } else {
-                // 中间的包: WRITE_MIDDLE
+                // Middle packet: WRITE_MIDDLE
                 hdr.bth.opcode = RDMA_OP_WRITE_MIDDLE;
                 hdr.reth.setInvalid();
                 set_write_middle_len();
             }
             
-            // AETH 无效（WRITE 包没有 AETH）
+            // AETH invalid (WRITE packets do not have AETH)
             hdr.aeth.setInvalid();
             
             return;
         }
         
         // ================================================================
-        // 3. CONN_TX - 聚合数据并返回 ACK
+        // 3. CONN_TX - aggregate data and return ACK
         // ================================================================
         if (eg_md.bridge.conn_semantics == CONN_SEMANTICS.CONN_TX && 
             eg_intr_md.egress_port != LOOPBACK_PORT) {
-            // 计算 buffer index
+            // Compute buffer index
             buffer_idx = channel_id * PACKET_NUM_PER_CHANNEL_BUFFER 
                        + (bit<32>)eg_md.bridge.tx_loc_val * TOKEN_PACKETS 
                        + (bit<32>)eg_md.bridge.tx_offset_val;
 
             agg_val = hdr.payload.data00;
 
-            // 聚合或存储
+            // Aggregate or store
             if (eg_md.bridge.clear_offset <= eg_md.bridge.tx_offset_val) {
                 ra_store.execute(buffer_idx);
             } else {
                 ra_aggregate.execute(buffer_idx);
             }
             
-            // 设置 ACK 包
+            // Set ACK packet
             swap_l2_l3_l4();
             set_ack_len();
             
-            // 设置 header valid/invalid
-            // AETH 已在 ingress 设置了 syndrome/psn/msn
+            // Set header valid/invalid
+            // AETH syndrome/psn/msn already set in ingress
             hdr.aeth.setValid();
             hdr.bth.opcode = RDMA_OP_ACK;
             hdr.reth.setInvalid();
@@ -1132,10 +1133,10 @@ control CombineEgress(
         }
         
         // ================================================================
-        // 4. CONN_CONTROL READ_RESPONSE（已在 ingress 完成，只需要设置）
+        // 4. CONN_CONTROL READ_RESPONSE (completed in ingress, only need to set)
         // ================================================================
         if (eg_md.bridge.conn_semantics == CONN_SEMANTICS.CONN_CONTROL) {
-            // 设置包长度 UDP: BTH(12) + AETH(4) + Payload(128) + ICRC(4) = 148, + UDP header(8) = 156 IP: UDP(156) + IP header(20) = 176
+            // Set packet length: UDP: BTH(12) + AETH(4) + Payload(128) + ICRC(4) = 148, + UDP header(8) = 156; IP: UDP(156) + IP header(20) = 176
             hdr.udp.length = 156;
             hdr.ipv4.total_len = 176;
             hdr.udp.checksum = 0;
@@ -1147,7 +1148,7 @@ control CombineEgress(
         }
 
         // ================================================================
-        // 5. 其他 ACK 包（CONN_BITMAP）
+        // 5. Other ACK packets (CONN_BITMAP)
         // ================================================================
         if (eg_md.bridge.has_aeth) {
             swap_l2_l3_l4();
