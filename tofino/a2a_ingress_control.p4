@@ -15,15 +15,16 @@ control A2AIngress(
      * Classify dispatch and combine traffic based on QP, IP, etc.
      */
     
-    action set_a2a_traffic(CONN_PHASE conn_phase, CONN_SEMANTICS conn_semantics, bit<32> channel_id, bit<32> ing_rank_id) {
+    action set_a2a_traffic(CONN_PHASE conn_phase, CONN_SEMANTICS conn_semantics, bit<16> channel_id, bit<8> ing_rank_id, bit<8> root_rank_id) {
         ig_md.bridge.conn_phase = conn_phase;
         ig_md.bridge.conn_semantics = conn_semantics;
         ig_md.bridge.channel_id = channel_id;
         ig_md.bridge.ing_rank_id = ing_rank_id;
+        ig_md.bridge.root_rank_id = root_rank_id;
     }
 
     action set_unknown_traffic() {
-        ig_md.bridge.conn_phase = CONN_UNKNOWN;
+        ig_md.bridge.conn_phase = CONN_PHASE.CONN_UNKNOWN;
     }
     
     // classification table: distinguish traffic type and connection info based on QPN and IPs
@@ -52,9 +53,9 @@ control A2AIngress(
         traffic_classify.apply();
         
         // Invoke corresponding processing logic based on traffic type
-        if (ig_md.bridge.conn_phase == CONN_DISPATCH) {
+        if (ig_md.bridge.conn_phase == CONN_PHASE.CONN_DISPATCH) {
             dispatch_ctrl.apply(hdr, ig_md, ig_intr_md, ig_dprsr_md, ig_tm_md);
-        } else if (ig_md.bridge.conn_phase == CONN_COMBINE) {
+        } else if (ig_md.bridge.conn_phase == CONN_PHASE.CONN_COMBINE) {
             combine_ctrl.apply(hdr, ig_md, ig_intr_md, ig_dprsr_md, ig_tm_md);
         } else {
             // drop unknown traffic

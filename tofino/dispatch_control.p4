@@ -22,17 +22,14 @@ control DispatchIngress(
     
     /* tx_epsn */
     Register<bit<32>, bit<32>>(DISPATCH_CHANNELS_NUM) reg_tx_epsn;
+    bit<32> psn_to_check;
 
-    RegisterAction<bit<32>, bit<32>, bit<32>>(reg_tx_epsn) ra_read_tx_epsn = {
+    RegisterAction<bit<32>, bit<32>, bit<32>>(reg_tx_epsn) ra_read_cond_inc_tx_epsn = {
         void apply(inout bit<32> value, out bit<32> result) {
             result = value;
-        }
-    };
-
-    RegisterAction<bit<32>, bit<32>, bit<32>>(reg_tx_epsn) ra_read_inc_tx_epsn = {
-        void apply(inout bit<32> value, out bit<32> result) {
-            result = value;
-            value = value + 1;
+            if (psn_to_check == value) {
+                value = value + 1;
+            }
         }
     };
 
@@ -97,16 +94,6 @@ control DispatchIngress(
         hdr.aeth.msn = msn;
     }
     
-    action calc_write_payload_len() {
-
-        if (hdr.bth.opcode == RDMA_OP_WRITE_FIRST || 
-                hdr.bth.opcode == RDMA_OP_WRITE_ONLY) {
-            ig_md.payload_len = hdr.udp.length - 8 - 12 - 16 - 4; // udp - udp header - bth - reth
-        } else {
-            ig_md.payload_len = hdr.udp.length - 8 - 12 - 4; // udp - - udp header - bth
-        }
-    }
-    
     
     /***************************************************************************
      * Apply
@@ -114,21 +101,21 @@ control DispatchIngress(
     
     apply {
 
+        bit<32> channel_idx = (bit<32>)ig_md.bridge.channel_id;
         // process ACK/NAK from rx
-        if (ig_md.bridge.conn_semantics == CONN_RX && hdr.bth.opcode == RDMA_OP_ACK) {
+        if (ig_md.bridge.conn_semantics == CONN_SEMANTICS.CONN_RX && hdr.bth.opcode == RDMA_OP_ACK) {
             if (hdr.aeth.syndrome[6:5] != AETH_ACK) {
-                ra_invalidate_tx_epsn.execute(ig_md.bridge.channel_id);
+                ra_invalidate_tx_epsn.execute(channel_idx);
             }
             ig_dprsr_md.drop_ctl = 1;
             return;
         }
 
-        calc_write_payload_len();
         // process control connection
-        if (ig_md.bridge.conn_semantics == CONN_CONTROL) {
-            ra_init_tx_msn.execute(ig_md.bridge.channel_id);
+        if (ig_md.bridge.conn_semantics == CONN_SEMANTICS.CONN_CONTROL) {
+            ra_init_tx_msn.execute(channel_idx);
             // should be extract from payload, but we set 0 as an agreement with the endpoint
-            ra_init_tx_epsn.execute(ig_md.bridge.channel_id);
+            ra_init_tx_epsn.execute(channel_idx);
             set_ack_ingress(AETH_ACK_CREDIT_INVALID, hdr.bth.psn, hdr.bth.psn+1);
             ig_md.bridge.has_aeth = true;
             ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
@@ -138,7 +125,7 @@ control DispatchIngress(
         }
         
         // process data from tx
-        if (ig_md.bridge.conn_semantics == CONN_TX) {
+        if (ig_md.bridge.conn_semantics == CONN_SEMANTICS.CONN_TX) {
             if (hdr.bth.opcode != RDMA_OP_WRITE_FIRST && 
                 hdr.bth.opcode != RDMA_OP_WRITE_MIDDLE &&
                 hdr.bth.opcode != RDMA_OP_WRITE_LAST &&
@@ -148,8 +135,9 @@ control DispatchIngress(
             }
             
             // PSN validation
-            bit<24> expected_epsn = (bit<24>)ra_read_tx_epsn.execute(ig_md.bridge.channel_id);
-            bit<32> msn_saved = ra_read_tx_msn.execute(ig_md.bridge.channel_id);
+            psn_to_check = (bit<32>)hdr.bth.psn;
+            bit<24> expected_epsn = (bit<24>)ra_read_cond_inc_tx_epsn.execute(channel_idx);
+            bit<32> msn_saved = ra_read_tx_msn.execute(channel_idx);
             if(hdr.bth.psn > expected_epsn) {
                 set_ack_ingress(AETH_NAK_SEQ_ERR, expected_epsn-1, msn_saved[23:0]);
                 ig_md.bridge.has_aeth = true;
@@ -164,16 +152,13 @@ control DispatchIngress(
                 return;
             }
             
-            // PSN match
-            ra_read_inc_tx_epsn.execute(ig_md.bridge.channel_id);
-            
             // fetch bitmap
             if (hdr.bth.opcode == RDMA_OP_WRITE_FIRST || 
                 hdr.bth.opcode == RDMA_OP_WRITE_ONLY) {
                 ig_md.bridge.bitmap = hdr.reth.addr[31:0]; // 32ports in tofino
-                ra_write_tx_bitmap.execute(ig_md.bridge.channel_id);
+                ra_write_tx_bitmap.execute(channel_idx);
             } else {
-                ig_md.bridge.bitmap = ra_read_tx_bitmap.execute(ig_md.bridge.channel_id);
+                ig_md.bridge.bitmap = ra_read_tx_bitmap.execute(channel_idx);
             }
             
             // multicast group
@@ -186,7 +171,7 @@ control DispatchIngress(
             // MSN
             if (hdr.bth.opcode == RDMA_OP_WRITE_ONLY || 
                 hdr.bth.opcode == RDMA_OP_WRITE_LAST) {
-                ra_inc_tx_msn.execute(ig_md.bridge.channel_id);
+                ra_inc_tx_msn.execute(channel_idx);
             }
         }
     }
@@ -205,7 +190,6 @@ control DispatchIngress(
         CONN_SEMANTICS conn_semantics;
         bit<32>    channel_id;
         bitmap_tofino_t    bitmap;
-        bit<16> payload_len;
     }
  ***************************************************************************/
 
@@ -409,7 +393,7 @@ control DispatchEgress(
     apply {
 
         dispatch_rank_info.apply();
-        channel_idx = eg_md.bridge.channel_id;
+        channel_idx = (bit<32>)eg_md.bridge.channel_id;
 
         // ==================== 控制连接：初始化所有 RX ====================
         if (eg_md.bridge.conn_semantics == CONN_SEMANTICS.CONN_CONTROL) {
@@ -463,7 +447,7 @@ control DispatchEgress(
             }
             else if(((eg_md.bridge.bitmap >> em_md.eg_rank_id) & 1) == 1){
                 // Bcast packet to all replicas
-                payload_len_32 = (bit<32>)eg_md.bridge.payload_len; // to add addr
+                payload_len_32 = 1024;  // to add addr
                 // 根据 egress_rid 查表设置 RX 信息
                 dispatch_rx_info.apply();
 
