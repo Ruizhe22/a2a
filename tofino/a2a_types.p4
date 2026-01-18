@@ -1,6 +1,10 @@
-#include "std_header.p4"
+#include "std_types.p4"
 
 #define EP_SIZE 8
+
+#define LOOPBACK_PORT 192
+
+typedef bit<32> bitmap_tofino_t;
 
 enum bit<2> CONN_PHASE {
     CONN_DISPATCH = 1,
@@ -12,7 +16,7 @@ enum bit<2> CONN_SEMANTICS {
     CONN_CONTROL = 0,
     CONN_TX = 1,
     CONN_RX = 2,
-    CONN_BITMAP = 3, // only for combine
+    CONN_BITMAP = 3 // only for combine
 }
 
 // partial payload size which can be processed by tofino stages while remaining payload is in the real packet payload
@@ -41,14 +45,10 @@ header payload_h {
     bit<32> data15;
     bit<32> data16;
     bit<32> data17;
-    bit<32> data18;
-    bit<32> data19;
-    bit<32> data1a;
-    bit<32> data1b;
-    bit<32> data1c;
-    bit<32> data1d;
-    bit<32> data1e;
-    bit<32> data1f;
+}
+
+header payload_word_h {
+    bit<32> data;
 }
 
 #define PAYLOAD_HEADER_LEN 128 // bytes
@@ -60,6 +60,7 @@ struct a2a_headers_t {
     bth_h bth;
     aeth_h aeth;
     reth_h reth;
+    payload_word_h payload_first_word;
     payload_h payload;
     icrc_h icrc;
 }
@@ -73,25 +74,34 @@ header bridge_h {
     bool has_payload;
     CONN_PHASE  conn_phase;    
     CONN_SEMANTICS conn_semantics;
-    bit<16>  channel_id;
+    bit<32>  channel_id;
     bitmap_tofino_t    bitmap;
     // combine only, 5bytes
     bit<8> tx_loc_val;
     bit<8> tx_offset_val;
     bit<8> clear_offset;
     bool is_loopback;
-    bit<8> root_rank_id
-    // 8 bit
+    bit<8> root_rank_id;
+    // 8
     bit<64> next_token_addr;
 }
 
 
 struct a2a_ingress_metadata_t {
     bool is_roce;
+    bitmap_tofino_t bitmap_clear_mask;
+    @pa_no_overlay("ingress", "ig_md.psn")
+    bit<32> psn;
+    bit<32> msn;
+    bit<32> syndrome;
+    bit<32> channel_class;
+    bit<32> token_idx;
+    bit<32> slot_index;
     bridge_h bridge;
 }
 
 struct a2a_egress_metadata_t {
+    bit<32> psn;
     bit<8> eg_rank_id;
     bridge_h bridge;
 }
@@ -104,13 +114,10 @@ struct bitmap_t {
     bit<32> hi;
 }
 
+typedef bit<64> addr_tofino_t; 
+typedef bit<32> addr_half_t ;
 
-struct addr_tofino_t {
-    bit<32> lo;
-    bit<32> hi;
-}
 
-typedef bit<32> bitmap_tofino_t;
 
 enum bit<2> DISPATCH_REG_OP {
     OP_INIT = 0,

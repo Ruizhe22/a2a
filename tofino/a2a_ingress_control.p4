@@ -15,12 +15,13 @@ control A2AIngress(
      * Classify dispatch and combine traffic based on QP, IP, etc.
      */
     
-    action set_a2a_traffic(CONN_PHASE conn_phase, CONN_SEMANTICS conn_semantics, bit<16> channel_id, bit<8> ing_rank_id, bit<8> root_rank_id) {
+    action set_a2a_traffic(CONN_PHASE conn_phase, CONN_SEMANTICS conn_semantics, bit<32> channel_id, bit<32> channel_class, bit<8> ing_rank_id, bit<8> root_rank_id) {
         ig_md.bridge.conn_phase = conn_phase;
         ig_md.bridge.conn_semantics = conn_semantics;
         ig_md.bridge.channel_id = channel_id;
         ig_md.bridge.ing_rank_id = ing_rank_id;
         ig_md.bridge.root_rank_id = root_rank_id;
+        ig_md.channel_class = channel_class;
     }
 
     action set_unknown_traffic() {
@@ -39,7 +40,7 @@ control A2AIngress(
             set_unknown_traffic;
         }
         size = 32768;
-        default_action = set_unknown;
+        default_action = set_unknown_traffic;
     }
     
     apply {
@@ -48,7 +49,12 @@ control A2AIngress(
             ig_dprsr_md.drop_ctl = 1;
             return;
         }
-        
+
+        ig_md.psn = hdr.bth.psn;
+        if(hdr.aeth.isValid()){
+            ig_md.msn = hdr.aeth.msn & 32w0xFFFFFF00;
+            ig_md.syndrome = hdr.aeth.msn & 32w0x000000FF;
+        }
         // Traffic classification
         traffic_classify.apply();
         
@@ -66,7 +72,7 @@ control A2AIngress(
 
 control A2AIngressDeparser(
         packet_out pkt,
-        inout a2a_ingress_headers_t hdr,
+        inout a2a_headers_t hdr,
         in a2a_ingress_metadata_t ig_md,
         in ingress_intrinsic_metadata_for_deparser_t ig_dprsr_md) {
 

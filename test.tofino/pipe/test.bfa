@@ -1,0 +1,740 @@
+version:
+  run_id: "ed594cf7e0ef4d80"
+  target: Tofino
+error_mode: propagate_and_disable
+phv ingress:
+  hdr.ethernet.dst_addr.0-31: W0
+  hdr.ethernet.dst_addr.32-47: H5
+  hdr.ethernet.src_addr.0-15: H1
+  hdr.ethernet.src_addr.16-31: TH0
+  hdr.ethernet.src_addr.32-47: TH2
+  hdr.ethernet.ether_type: TH1
+  meta.counter_index.0-15: {  stage 1..9: H3 } 
+  meta.counter_index.16-31: {  stage 1..9: H2 } 
+  meta.increment_amount: {  stage 1..9: W1 } 
+  ig_intr_md_for_tm.ucast_egress_port: {  stage 1..12: H0(0..8) } 
+  ig_intr_md_for_dprsr.drop_ctl: {  stage 1..12: B1(0..2) } 
+  ig_intr_md_for_dprsr.mirror_type: {  stage 12: B0(0..2) } 
+  $tmp2: {  stage 12: H4(0..9) } 
+  hdr.ethernet.$valid: B2(0)
+phv egress:
+  eg_intr_md.egress_port: H16(0..8)
+  hdr.ethernet.dst_addr.0-31: TW5
+  hdr.ethernet.dst_addr.32-47: TH14
+  hdr.ethernet.src_addr.0-31: TW4
+  hdr.ethernet.src_addr.32-47: TH13
+  hdr.ethernet.ether_type: TH12
+  hdr.min_parse_depth_padding_0$0.packet_payload.0-31: TW6
+  hdr.min_parse_depth_padding_0$0.packet_payload.32-63: TW7
+  hdr.min_parse_depth_padding_0$0.packet_payload.64-79: TH15
+  hdr.min_parse_depth_padding_0$0.packet_payload.80-87: TB4
+  hdr.min_parse_depth_padding_0$1.packet_payload.0-15: TH6
+  hdr.min_parse_depth_padding_0$1.packet_payload.16-31: TH7
+  hdr.min_parse_depth_padding_0$1.packet_payload.32-47: TH8
+  hdr.min_parse_depth_padding_0$1.packet_payload.48-63: TH9
+  hdr.min_parse_depth_padding_0$1.packet_payload.64-79: TH16
+  hdr.min_parse_depth_padding_0$1.packet_payload.80-87: TB5
+  hdr.min_parse_depth_padding_0$2.packet_payload.0-15: TH10
+  hdr.min_parse_depth_padding_0$2.packet_payload.16-31: TH11
+  hdr.min_parse_depth_padding_0$2.packet_payload.32-63: TW8
+  hdr.min_parse_depth_padding_0$2.packet_payload.64-79: TH17
+  hdr.min_parse_depth_padding_0$2.packet_payload.80-87: TB6
+  hdr.ethernet.$valid: B17(0)
+  hdr.min_parse_depth_padding_0.$stkvalid: B16(0..2)
+  hdr.min_parse_depth_padding_0$0.$valid: {  stage 12: B16(2) } 
+  hdr.min_parse_depth_padding_0$1.$valid: {  stage 12: B16(1) } 
+  hdr.min_parse_depth_padding_0$2.$valid: B16(0)
+parser ingress:
+  start: $entry_point.start
+  init_zero: [ H3, H2, W1, B1, B0, H4, B2 ]
+  hdr_len_adj: 16
+  states:
+    $entry_point.start:
+      *:
+        16..17: H5  # ingress::hdr.ethernet.dst_addr[47:32].32-47
+        18..21: W0  # ingress::hdr.ethernet.dst_addr[31:0].0-31
+        22..23: TH2  # ingress::hdr.ethernet.src_addr[47:32].32-47
+        24..25: TH0  # ingress::hdr.ethernet.src_addr[31:16].16-31
+        26..27: H1  # ingress::hdr.ethernet.src_addr[15:0].0-15
+        B2: 1  # value 1 -> B2 bit[0]: ingress::hdr.ethernet.$valid
+        shift: 28
+        buf_req: 28
+        next: $entry_point.start.$split_0
+    $entry_point.start.$split_0:
+      *:
+        0..1: TH1  # ingress::hdr.ethernet.ether_type
+        shift: 2
+        buf_req: 2
+        next: end
+deparser ingress:
+  dictionary:
+    H5: B2(0)  # ingress::hdr.ethernet.dst_addr.32-47 if ingress::hdr.ethernet.$valid
+    W0: B2(0)  # ingress::hdr.ethernet.dst_addr.0-31 if ingress::hdr.ethernet.$valid
+    TH2: B2(0)  # ingress::hdr.ethernet.src_addr.32-47 if ingress::hdr.ethernet.$valid
+    TH0: B2(0)  # ingress::hdr.ethernet.src_addr.16-31 if ingress::hdr.ethernet.$valid
+    H1: B2(0)  # ingress::hdr.ethernet.src_addr.0-15 if ingress::hdr.ethernet.$valid
+    TH1: B2(0)  # ingress::hdr.ethernet.ether_type if ingress::hdr.ethernet.$valid
+  egress_unicast_port: H0(0..8)  # bit[8..0]: ingress::ig_intr_md_for_tm.ucast_egress_port
+  drop_ctl: B1(0..2)  # bit[2..0]: ingress::ig_intr_md_for_dprsr.drop_ctl
+  mirror:
+    select: B0(0..2)  # bit[2..0]: ingress::ig_intr_md_for_dprsr.mirror_type
+    0:
+      - H4(0..9)  # bit[9..0]: ingress::$tmp2
+parser egress:
+  start: $entry_point.start.min_parse_depth_accept_initial
+  init_zero: [ B17, B16 ]
+  bitwise_or: [ B16 ]
+  hdr_len_adj: 27
+  meta_opt: 8191
+  states:
+    $entry_point.start.min_parse_depth_accept_initial:
+      *:
+        counter:
+          imm: 24
+        0..1: H16  # bit[7..15] -> H16 bit[8..0]: egress::eg_intr_md.egress_port
+        27..28: TH14  # egress::hdr.ethernet.dst_addr[47:32].32-47
+        B17: 1  # value 1 -> B17 bit[0]: egress::hdr.ethernet.$valid
+        intr_md: 9
+        shift: 29
+        buf_req: 29
+        next: $entry_point.start.min_parse_depth_accept_initial.$ctr_stall0
+    $entry_point.start.min_parse_depth_accept_initial.$ctr_stall0:
+      *:
+        buf_req: 0
+        next: $entry_point.start.min_parse_depth_accept_initial.$split_0
+    $entry_point.start.min_parse_depth_accept_initial.$split_0:
+      match: [ ctr_neg, ctr_zero ]
+      0x0:
+        counter: dec 11
+        0..3: TW5  # egress::hdr.ethernet.dst_addr[31:0].0-31
+        4..5: TH13  # egress::hdr.ethernet.src_addr[47:32].32-47
+        6..9: TW4  # egress::hdr.ethernet.src_addr[31:0].0-31
+        10..11: TH12  # egress::hdr.ethernet.ether_type
+        12: TB4  # egress::hdr.min_parse_depth_padding_0[0].packet_payload[87:80].80-87
+        13..14: TH15  # egress::hdr.min_parse_depth_padding_0[0].packet_payload[79:64].64-79
+        15..18: TW7  # egress::hdr.min_parse_depth_padding_0[0].packet_payload[63:32].32-63
+        19..22: TW6  # egress::hdr.min_parse_depth_padding_0[0].packet_payload[31:0].0-31
+        B16: 4  # value 4 -> B16 bit[2..0]: egress::hdr.min_parse_depth_padding_0.$stkvalid
+        shift: 23
+        buf_req: 23
+        next: min_parse_depth_accept_loop.$split_0
+      0b**:
+        0..3: TW5  # egress::hdr.ethernet.dst_addr[31:0].0-31
+        4..5: TH13  # egress::hdr.ethernet.src_addr[47:32].32-47
+        6..9: TW4  # egress::hdr.ethernet.src_addr[31:0].0-31
+        10..11: TH12  # egress::hdr.ethernet.ether_type
+        shift: 12
+        buf_req: 12
+        next: end
+    min_parse_depth_accept_loop.$split_0:
+      match: [ ctr_neg, ctr_zero ]
+      option: ignore_max_depth
+      0x0:
+        counter: dec 11
+        0: TB5  # egress::hdr.min_parse_depth_padding_0[1].packet_payload[87:80].80-87
+        1..2: TH16  # egress::hdr.min_parse_depth_padding_0[1].packet_payload[79:64].64-79
+        3..4: TH9  # egress::hdr.min_parse_depth_padding_0[1].packet_payload[63:48].48-63
+        5..6: TH8  # egress::hdr.min_parse_depth_padding_0[1].packet_payload[47:32].32-47
+        7..8: TH7  # egress::hdr.min_parse_depth_padding_0[1].packet_payload[31:16].16-31
+        B16: 2  # value 2 -> B16 bit[2..0]: egress::hdr.min_parse_depth_padding_0.$stkvalid
+        shift: 9
+        buf_req: 9
+        next: min_parse_depth_accept_loop.$it1.$split_0
+      0b**:
+        buf_req: 0
+        next: end
+    min_parse_depth_accept_loop.$it1.$split_0:
+      match: [ ctr_neg, ctr_zero ]
+      option: ignore_max_depth
+      0x0:
+        counter: dec 11
+        0..1: TH6  # egress::hdr.min_parse_depth_padding_0[1].packet_payload[15:0].0-15
+        2: TB6  # egress::hdr.min_parse_depth_padding_0[2].packet_payload[87:80].80-87
+        3..4: TH17  # egress::hdr.min_parse_depth_padding_0[2].packet_payload[79:64].64-79
+        5..8: TW8  # egress::hdr.min_parse_depth_padding_0[2].packet_payload[63:32].32-63
+        9..10: TH11  # egress::hdr.min_parse_depth_padding_0[2].packet_payload[31:16].16-31
+        11..12: TH10  # egress::hdr.min_parse_depth_padding_0[2].packet_payload[15:0].0-15
+        B16: 1  # value 1 -> B16 bit[2..0]: egress::hdr.min_parse_depth_padding_0.$stkvalid
+        shift: 13
+        buf_req: 13
+        next: end
+      0b**:
+        0..1: TH6  # egress::hdr.min_parse_depth_padding_0[1].packet_payload[15:0].0-15
+        shift: 2
+        buf_req: 2
+        next: end
+deparser egress:
+  dictionary:
+    TH14: B17(0)  # egress::hdr.ethernet.dst_addr.32-47 if egress::hdr.ethernet.$valid
+    TW5: B17(0)  # egress::hdr.ethernet.dst_addr.0-31 if egress::hdr.ethernet.$valid
+    TH13: B17(0)  # egress::hdr.ethernet.src_addr.32-47 if egress::hdr.ethernet.$valid
+    TW4: B17(0)  # egress::hdr.ethernet.src_addr.0-31 if egress::hdr.ethernet.$valid
+    TH12: B17(0)  # egress::hdr.ethernet.ether_type if egress::hdr.ethernet.$valid
+    TB4: B16(2)  # egress::hdr.min_parse_depth_padding_0[0].packet_payload.80-87 if egress::hdr.min_parse_depth_padding_0[0].$valid
+    TH15: B16(2)  # egress::hdr.min_parse_depth_padding_0[0].packet_payload.64-79 if egress::hdr.min_parse_depth_padding_0[0].$valid
+    TW7: B16(2)  # egress::hdr.min_parse_depth_padding_0[0].packet_payload.32-63 if egress::hdr.min_parse_depth_padding_0[0].$valid
+    TW6: B16(2)  # egress::hdr.min_parse_depth_padding_0[0].packet_payload.0-31 if egress::hdr.min_parse_depth_padding_0[0].$valid
+    TB5: B16(1)  # egress::hdr.min_parse_depth_padding_0[1].packet_payload.80-87 if egress::hdr.min_parse_depth_padding_0[1].$valid
+    TH16: B16(1)  # egress::hdr.min_parse_depth_padding_0[1].packet_payload.64-79 if egress::hdr.min_parse_depth_padding_0[1].$valid
+    TH9: B16(1)  # egress::hdr.min_parse_depth_padding_0[1].packet_payload.48-63 if egress::hdr.min_parse_depth_padding_0[1].$valid
+    TH8: B16(1)  # egress::hdr.min_parse_depth_padding_0[1].packet_payload.32-47 if egress::hdr.min_parse_depth_padding_0[1].$valid
+    TH7: B16(1)  # egress::hdr.min_parse_depth_padding_0[1].packet_payload.16-31 if egress::hdr.min_parse_depth_padding_0[1].$valid
+    TH6: B16(1)  # egress::hdr.min_parse_depth_padding_0[1].packet_payload.0-15 if egress::hdr.min_parse_depth_padding_0[1].$valid
+    TB6: B16(0)  # egress::hdr.min_parse_depth_padding_0[2].packet_payload.80-87 if egress::hdr.min_parse_depth_padding_0[2].$valid
+    TH17: B16(0)  # egress::hdr.min_parse_depth_padding_0[2].packet_payload.64-79 if egress::hdr.min_parse_depth_padding_0[2].$valid
+    TW8: B16(0)  # egress::hdr.min_parse_depth_padding_0[2].packet_payload.32-63 if egress::hdr.min_parse_depth_padding_0[2].$valid
+    TH11: B16(0)  # egress::hdr.min_parse_depth_padding_0[2].packet_payload.16-31 if egress::hdr.min_parse_depth_padding_0[2].$valid
+    TH10: B16(0)  # egress::hdr.min_parse_depth_padding_0[2].packet_payload.0-15 if egress::hdr.min_parse_depth_padding_0[2].$valid
+  egress_unicast_port: H16(0..8)  # bit[8..0]: egress::eg_intr_md.egress_port
+stage 0 ingress:
+  phase0_match SwitchIngressParser.$PORT_METADATA:
+    p4:
+      name: SwitchIngressParser.$PORT_METADATA
+      size: 288
+      preferred_match_type: exact
+      match_type: exact
+    size: 288
+    p4_param_order:
+      ig_intr_md.ingress_port: { type: exact, size: 9 }
+    format: {ig_intr_md: 0..63}
+    constant_value: 0
+    actions:
+      set_port_metadata:
+      - handle: 0x20000000
+      - p4_param_order: { ig_intr_md: 64 } 
+  ternary_match tbl_test119_0 0:
+    p4: { name: tbl_test119_0, hidden: true }
+    hit: [  dmac_table_0 ]
+    miss:  dmac_table_0
+    indirect: tbl_test119_0$tind
+  ternary_indirect tbl_test119_0$tind:
+    row: 0
+    bus: 0
+    format: { action: 0..0 }
+    instruction: tbl_test119_0$tind(action, $DEFAULT)
+    actions:
+      test119_0(0, 1):
+      - hit_allowed: { allowed: true }
+      - default_action: { allowed: true, is_constant: true }
+      - handle: 0x20000001
+      - next_table: 0
+      - set meta.counter_index.0-15(0..11), hdr.ethernet.src_addr.0-15(0..11)
+      - set meta.increment_amount, 1
+    default_action: test119_0
+  exact_match dmac_table_0 1:
+    p4: { name: SwitchIngress.dmac_table, size: 1024 }
+    p4_param_order: 
+      hdr.ethernet.dst_addr: { type: exact, size: 48, full_size: 48 }
+    row: 7
+    bus: 0
+    column: [ 2, 3, 4, 5 ]
+    stash: 
+      row: [ 7 ]
+      col: [ 2 ]
+      unit: [ 0 ]
+    ways:
+      - { group: 0, index: 0..9, select: 40..51 & 0x0, rams: [[7, 2]] }
+      - { group: 0, index: 10..19, select: 40..51 & 0x0, rams: [[7, 3]] }
+      - { group: 0, index: 20..29, select: 40..51 & 0x0, rams: [[7, 4]] }
+      - { group: 0, index: 30..39, select: 40..51 & 0x0, rams: [[7, 5]] }
+    input_xbar:
+      exact group 0: { 0: hdr.ethernet.dst_addr.0-31, 32: hdr.ethernet.dst_addr.32-47 }
+      hash 0:
+        0..7: random(hdr.ethernet.dst_addr.0-31, hdr.ethernet.dst_addr.32-47(10..15)) ^ hdr.ethernet.dst_addr.32-47(0..7)
+        8..9: random(hdr.ethernet.dst_addr.0-31, hdr.ethernet.dst_addr.32-47(10..15)) ^ hdr.ethernet.dst_addr.32-47(8..9)
+        11..18: random(hdr.ethernet.dst_addr.0-31, hdr.ethernet.dst_addr.32-47(10..15)) ^ hdr.ethernet.dst_addr.32-47(0..7)
+        19: random(hdr.ethernet.dst_addr.0-31, hdr.ethernet.dst_addr.32-47(10..15)) ^ hdr.ethernet.dst_addr.32-47(8)
+        10: random(hdr.ethernet.dst_addr.0-31, hdr.ethernet.dst_addr.32-47(10..15)) ^ hdr.ethernet.dst_addr.32-47(9)
+        22..29: random(hdr.ethernet.dst_addr.0-31, hdr.ethernet.dst_addr.32-47(10..15)) ^ hdr.ethernet.dst_addr.32-47(0..7)
+        20..21: random(hdr.ethernet.dst_addr.0-31, hdr.ethernet.dst_addr.32-47(10..15)) ^ hdr.ethernet.dst_addr.32-47(8..9)
+        33..39: random(hdr.ethernet.dst_addr.0-31, hdr.ethernet.dst_addr.32-47(10..15)) ^ hdr.ethernet.dst_addr.32-47(0..6)
+        30: random(hdr.ethernet.dst_addr.0-31, hdr.ethernet.dst_addr.32-47(10..15)) ^ hdr.ethernet.dst_addr.32-47(7)
+        31..32: random(hdr.ethernet.dst_addr.0-31, hdr.ethernet.dst_addr.32-47(10..15)) ^ hdr.ethernet.dst_addr.32-47(8..9)
+      hash group 0:
+        table: [0]
+        seed: 0xdc0a759f1
+    format: { action(0): 0..1, immediate(0): 4..12, version(0): 112..115, match(0): [ 66..71, 32..63 ], action(1): 2..3, immediate(1): 13..21, version(1): 116..119, match(1): [ 106..111, 72..103 ] }
+    match: [ hdr.ethernet.dst_addr.32-47(10..15), hdr.ethernet.dst_addr.0-31(0..7), hdr.ethernet.dst_addr.0-31(8..15), hdr.ethernet.dst_addr.0-31(16..23), hdr.ethernet.dst_addr.0-31(24..31) ]
+    match_group_map: [ [ 0, 1 ] ]
+    hit: [  tbl_test123 ]
+    miss:  tbl_test123
+    action_bus: { 32..33 : immediate(0..8) }
+    instruction: dmac_table_0(action, $DEFAULT)
+    actions:
+      SwitchIngress.forward(0, 2):
+      - p4_param_order: { port: 9 }
+      - hit_allowed: { allowed: true }
+      - default_action: { allowed: true }
+      - handle: 0x2000000b
+      - next_table: 0
+      - { port: immediate(0..8) }
+      - set ig_intr_md_for_tm.ucast_egress_port, port
+      SwitchIngress.drop(1, 3):
+      - hit_allowed: { allowed: true }
+      - default_action: { allowed: true }
+      - handle: 0x2000000c
+      - next_table: 0
+      - {  }
+      - set ig_intr_md_for_dprsr.drop_ctl, 1
+      NoAction(2, 0):
+      - hit_allowed: { allowed: true }
+      - default_action: { allowed: true }
+      - handle: 0x2000000d
+      - next_table: 0
+      - {  }
+    default_action: SwitchIngress.drop
+stage 1 ingress:
+  dependency: action
+  ternary_match tbl_test123 0:
+    p4: { name: tbl_test123, hidden: true }
+    hit: [  tbl_test71 ]
+    miss:  tbl_test71
+    indirect: tbl_test123$tind
+  ternary_indirect tbl_test123$tind:
+    row: 0
+    bus: 0
+    format: { action: 0..0 }
+    instruction: tbl_test123$tind(action, $DEFAULT)
+    actions:
+      test123(0, 1):
+      - hit_allowed: { allowed: true }
+      - default_action: { allowed: true, is_constant: true }
+      - handle: 0x20000002
+      - next_table: 0
+      - shru meta.counter_index.16-31, meta.counter_index.16-31, 4
+      - funnel-shift meta.counter_index.0-15, meta.counter_index.16-31, meta.counter_index.0-15, 4
+    default_action: test123
+stage 2 ingress:
+  dependency: match
+  hash_action tbl_test71 0:
+    p4: { name: tbl_test71, hidden: true }
+    row: 0
+    result_bus: 0
+    hash_dist:
+      0: { hash: 0, mask: 0x7fffff, shift: 5, expand: 0 }
+    input_xbar:
+      exact group 0: { 0: meta.counter_index.16-31, 16: meta.counter_index.0-15 }
+      hash 0:
+        0..15: meta.counter_index.0-15
+        32..38: meta.counter_index.16-31(0..6)
+      hash group 0:
+        table: [0]
+        seed: 0x0
+    gateway:
+      name: tbl_test71-gateway
+      row: 0
+      bus: 0
+      unit: 0
+      0x0:  tbl_test71_0
+      miss:  tbl_test71_0
+      condition: 
+        expression: "true(always hit)"
+        true:  tbl_test71_0
+        false:  tbl_test71_0
+    next: []
+    stateful: tbl_test71$salu.SwitchIngress.counter_ctrl_1.counters(hash_dist 0, $DEFAULT, $DEFAULT)
+    instruction: tbl_test71($DEFAULT, $DEFAULT)
+    actions:
+      test71(0, 1):
+      - hit_allowed: { allowed: true }
+      - default_action: { allowed: true, is_constant: true }
+      - handle: 0x20000003
+      - next_table: 0
+      - shru meta.counter_index.16-31, meta.counter_index.16-31, 4
+      - funnel-shift meta.counter_index.0-15, meta.counter_index.16-31, meta.counter_index.0-15, 4
+      - tbl_test71$salu.SwitchIngress.counter_ctrl_1.counters(counter_ctrl_1_increment_counter, $hash_dist)
+    default_action: test71
+  stateful tbl_test71$salu.SwitchIngress.counter_ctrl_1.counters:
+    p4: { name: SwitchIngress.counter_ctrl_1.counters, size: 4096 }
+    row: 15
+    logical_bus: S
+    column: [ 0, 1 ]
+    maprams: [ 0, 1 ]
+    home_row: 15
+    input_xbar:
+      exact group 0: { 64: meta.increment_amount }
+    data_bytemask: 15
+    format: { lo: 32 }
+    actions:
+      counter_ctrl_1_increment_counter:
+      - add lo, lo, phv_lo
+stage 3 ingress:
+  dependency: match
+  hash_action tbl_test71_0 0:
+    p4: { name: tbl_test71_0, hidden: true }
+    row: 0
+    result_bus: 0
+    hash_dist:
+      0: { hash: 0, mask: 0x7fffff, shift: 5, expand: 0 }
+    input_xbar:
+      exact group 0: { 0: meta.counter_index.16-31, 16: meta.counter_index.0-15 }
+      hash 0:
+        0..15: meta.counter_index.0-15
+        32..38: meta.counter_index.16-31(0..6)
+      hash group 0:
+        table: [0]
+        seed: 0x0
+    gateway:
+      name: tbl_test71_0-gateway
+      row: 0
+      bus: 0
+      unit: 0
+      0x0:  tbl_test71_1
+      miss:  tbl_test71_1
+      condition: 
+        expression: "true(always hit)"
+        true:  tbl_test71_1
+        false:  tbl_test71_1
+    next: []
+    stateful: tbl_test71_0$salu.SwitchIngress.counter_ctrl_2.counters(hash_dist 0, $DEFAULT, $DEFAULT)
+    instruction: tbl_test71_0($DEFAULT, $DEFAULT)
+    actions:
+      test71_0(0, 1):
+      - hit_allowed: { allowed: true }
+      - default_action: { allowed: true, is_constant: true }
+      - handle: 0x20000004
+      - next_table: 0
+      - shru meta.counter_index.16-31, meta.counter_index.16-31, 4
+      - funnel-shift meta.counter_index.0-15, meta.counter_index.16-31, meta.counter_index.0-15, 4
+      - tbl_test71_0$salu.SwitchIngress.counter_ctrl_2.counters(counter_ctrl_2_increment_counter, $hash_dist)
+    default_action: test71_0
+  stateful tbl_test71_0$salu.SwitchIngress.counter_ctrl_2.counters:
+    p4: { name: SwitchIngress.counter_ctrl_2.counters, size: 4096 }
+    row: 15
+    logical_bus: S
+    column: [ 0, 1 ]
+    maprams: [ 0, 1 ]
+    home_row: 15
+    input_xbar:
+      exact group 0: { 64: meta.increment_amount }
+    data_bytemask: 15
+    format: { lo: 32 }
+    actions:
+      counter_ctrl_2_increment_counter:
+      - add lo, lo, phv_lo
+stage 4 ingress:
+  dependency: match
+  hash_action tbl_test71_1 0:
+    p4: { name: tbl_test71_1, hidden: true }
+    row: 0
+    result_bus: 0
+    hash_dist:
+      0: { hash: 0, mask: 0x7fffff, shift: 5, expand: 0 }
+    input_xbar:
+      exact group 0: { 0: meta.counter_index.16-31, 16: meta.counter_index.0-15 }
+      hash 0:
+        0..15: meta.counter_index.0-15
+        32..38: meta.counter_index.16-31(0..6)
+      hash group 0:
+        table: [0]
+        seed: 0x0
+    gateway:
+      name: tbl_test71_1-gateway
+      row: 0
+      bus: 0
+      unit: 0
+      0x0:  tbl_test71_2
+      miss:  tbl_test71_2
+      condition: 
+        expression: "true(always hit)"
+        true:  tbl_test71_2
+        false:  tbl_test71_2
+    next: []
+    stateful: tbl_test71_1$salu.SwitchIngress.counter_ctrl_3.counters(hash_dist 0, $DEFAULT, $DEFAULT)
+    instruction: tbl_test71_1($DEFAULT, $DEFAULT)
+    actions:
+      test71_1(0, 1):
+      - hit_allowed: { allowed: true }
+      - default_action: { allowed: true, is_constant: true }
+      - handle: 0x20000005
+      - next_table: 0
+      - shru meta.counter_index.16-31, meta.counter_index.16-31, 4
+      - funnel-shift meta.counter_index.0-15, meta.counter_index.16-31, meta.counter_index.0-15, 4
+      - tbl_test71_1$salu.SwitchIngress.counter_ctrl_3.counters(counter_ctrl_3_increment_counter, $hash_dist)
+    default_action: test71_1
+  stateful tbl_test71_1$salu.SwitchIngress.counter_ctrl_3.counters:
+    p4: { name: SwitchIngress.counter_ctrl_3.counters, size: 4096 }
+    row: 15
+    logical_bus: S
+    column: [ 0, 1 ]
+    maprams: [ 0, 1 ]
+    home_row: 15
+    input_xbar:
+      exact group 0: { 64: meta.increment_amount }
+    data_bytemask: 15
+    format: { lo: 32 }
+    actions:
+      counter_ctrl_3_increment_counter:
+      - add lo, lo, phv_lo
+stage 5 ingress:
+  dependency: match
+  hash_action tbl_test71_2 0:
+    p4: { name: tbl_test71_2, hidden: true }
+    row: 0
+    result_bus: 0
+    hash_dist:
+      0: { hash: 0, mask: 0x7fffff, shift: 5, expand: 0 }
+    input_xbar:
+      exact group 0: { 0: meta.counter_index.16-31, 16: meta.counter_index.0-15 }
+      hash 0:
+        0..15: meta.counter_index.0-15
+        32..38: meta.counter_index.16-31(0..6)
+      hash group 0:
+        table: [0]
+        seed: 0x0
+    gateway:
+      name: tbl_test71_2-gateway
+      row: 0
+      bus: 0
+      unit: 0
+      0x0:  tbl_test71_3
+      miss:  tbl_test71_3
+      condition: 
+        expression: "true(always hit)"
+        true:  tbl_test71_3
+        false:  tbl_test71_3
+    next: []
+    stateful: tbl_test71_2$salu.SwitchIngress.counter_ctrl_4.counters(hash_dist 0, $DEFAULT, $DEFAULT)
+    instruction: tbl_test71_2($DEFAULT, $DEFAULT)
+    actions:
+      test71_2(0, 1):
+      - hit_allowed: { allowed: true }
+      - default_action: { allowed: true, is_constant: true }
+      - handle: 0x20000006
+      - next_table: 0
+      - shru meta.counter_index.16-31, meta.counter_index.16-31, 4
+      - funnel-shift meta.counter_index.0-15, meta.counter_index.16-31, meta.counter_index.0-15, 4
+      - tbl_test71_2$salu.SwitchIngress.counter_ctrl_4.counters(counter_ctrl_4_increment_counter, $hash_dist)
+    default_action: test71_2
+  stateful tbl_test71_2$salu.SwitchIngress.counter_ctrl_4.counters:
+    p4: { name: SwitchIngress.counter_ctrl_4.counters, size: 4096 }
+    row: 15
+    logical_bus: S
+    column: [ 0, 1 ]
+    maprams: [ 0, 1 ]
+    home_row: 15
+    input_xbar:
+      exact group 0: { 64: meta.increment_amount }
+    data_bytemask: 15
+    format: { lo: 32 }
+    actions:
+      counter_ctrl_4_increment_counter:
+      - add lo, lo, phv_lo
+stage 6 ingress:
+  dependency: match
+  hash_action tbl_test71_3 0:
+    p4: { name: tbl_test71_3, hidden: true }
+    row: 0
+    result_bus: 0
+    hash_dist:
+      0: { hash: 0, mask: 0x7fffff, shift: 5, expand: 0 }
+    input_xbar:
+      exact group 0: { 0: meta.counter_index.16-31, 16: meta.counter_index.0-15 }
+      hash 0:
+        0..15: meta.counter_index.0-15
+        32..38: meta.counter_index.16-31(0..6)
+      hash group 0:
+        table: [0]
+        seed: 0x0
+    gateway:
+      name: tbl_test71_3-gateway
+      row: 0
+      bus: 0
+      unit: 0
+      0x0:  tbl_test71_4
+      miss:  tbl_test71_4
+      condition: 
+        expression: "true(always hit)"
+        true:  tbl_test71_4
+        false:  tbl_test71_4
+    next: []
+    stateful: tbl_test71_3$salu.SwitchIngress.counter_ctrl_5.counters(hash_dist 0, $DEFAULT, $DEFAULT)
+    instruction: tbl_test71_3($DEFAULT, $DEFAULT)
+    actions:
+      test71_3(0, 1):
+      - hit_allowed: { allowed: true }
+      - default_action: { allowed: true, is_constant: true }
+      - handle: 0x20000007
+      - next_table: 0
+      - shru meta.counter_index.16-31, meta.counter_index.16-31, 4
+      - funnel-shift meta.counter_index.0-15, meta.counter_index.16-31, meta.counter_index.0-15, 4
+      - tbl_test71_3$salu.SwitchIngress.counter_ctrl_5.counters(counter_ctrl_5_increment_counter, $hash_dist)
+    default_action: test71_3
+  stateful tbl_test71_3$salu.SwitchIngress.counter_ctrl_5.counters:
+    p4: { name: SwitchIngress.counter_ctrl_5.counters, size: 4096 }
+    row: 15
+    logical_bus: S
+    column: [ 0, 1 ]
+    maprams: [ 0, 1 ]
+    home_row: 15
+    input_xbar:
+      exact group 0: { 64: meta.increment_amount }
+    data_bytemask: 15
+    format: { lo: 32 }
+    actions:
+      counter_ctrl_5_increment_counter:
+      - add lo, lo, phv_lo
+stage 7 ingress:
+  dependency: match
+  hash_action tbl_test71_4 0:
+    p4: { name: tbl_test71_4, hidden: true }
+    row: 0
+    result_bus: 0
+    hash_dist:
+      0: { hash: 0, mask: 0x7fffff, shift: 5, expand: 0 }
+    input_xbar:
+      exact group 0: { 0: meta.counter_index.16-31, 16: meta.counter_index.0-15 }
+      hash 0:
+        0..15: meta.counter_index.0-15
+        32..38: meta.counter_index.16-31(0..6)
+      hash group 0:
+        table: [0]
+        seed: 0x0
+    gateway:
+      name: tbl_test71_4-gateway
+      row: 0
+      bus: 0
+      unit: 0
+      0x0:  tbl_test71_5
+      miss:  tbl_test71_5
+      condition: 
+        expression: "true(always hit)"
+        true:  tbl_test71_5
+        false:  tbl_test71_5
+    next: []
+    stateful: tbl_test71_4$salu.SwitchIngress.counter_ctrl_6.counters(hash_dist 0, $DEFAULT, $DEFAULT)
+    instruction: tbl_test71_4($DEFAULT, $DEFAULT)
+    actions:
+      test71_4(0, 1):
+      - hit_allowed: { allowed: true }
+      - default_action: { allowed: true, is_constant: true }
+      - handle: 0x20000008
+      - next_table: 0
+      - shru meta.counter_index.16-31, meta.counter_index.16-31, 4
+      - funnel-shift meta.counter_index.0-15, meta.counter_index.16-31, meta.counter_index.0-15, 4
+      - tbl_test71_4$salu.SwitchIngress.counter_ctrl_6.counters(counter_ctrl_6_increment_counter, $hash_dist)
+    default_action: test71_4
+  stateful tbl_test71_4$salu.SwitchIngress.counter_ctrl_6.counters:
+    p4: { name: SwitchIngress.counter_ctrl_6.counters, size: 4096 }
+    row: 15
+    logical_bus: S
+    column: [ 0, 1 ]
+    maprams: [ 0, 1 ]
+    home_row: 15
+    input_xbar:
+      exact group 0: { 64: meta.increment_amount }
+    data_bytemask: 15
+    format: { lo: 32 }
+    actions:
+      counter_ctrl_6_increment_counter:
+      - add lo, lo, phv_lo
+stage 8 ingress:
+  dependency: match
+  hash_action tbl_test71_5 0:
+    p4: { name: tbl_test71_5, hidden: true }
+    row: 0
+    result_bus: 0
+    hash_dist:
+      0: { hash: 0, mask: 0x7fffff, shift: 5, expand: 0 }
+    input_xbar:
+      exact group 0: { 0: meta.counter_index.16-31, 16: meta.counter_index.0-15 }
+      hash 0:
+        0..15: meta.counter_index.0-15
+        32..38: meta.counter_index.16-31(0..6)
+      hash group 0:
+        table: [0]
+        seed: 0x0
+    gateway:
+      name: tbl_test71_5-gateway
+      row: 0
+      bus: 0
+      unit: 0
+      0x0:  tbl_test71_6
+      miss:  tbl_test71_6
+      condition: 
+        expression: "true(always hit)"
+        true:  tbl_test71_6
+        false:  tbl_test71_6
+    next: []
+    stateful: tbl_test71_5$salu.SwitchIngress.counter_ctrl_7.counters(hash_dist 0, $DEFAULT, $DEFAULT)
+    instruction: tbl_test71_5($DEFAULT, $DEFAULT)
+    actions:
+      test71_5(0, 1):
+      - hit_allowed: { allowed: true }
+      - default_action: { allowed: true, is_constant: true }
+      - handle: 0x20000009
+      - next_table: 0
+      - shru meta.counter_index.16-31, meta.counter_index.16-31, 4
+      - funnel-shift meta.counter_index.0-15, meta.counter_index.16-31, meta.counter_index.0-15, 4
+      - tbl_test71_5$salu.SwitchIngress.counter_ctrl_7.counters(counter_ctrl_7_increment_counter, $hash_dist)
+    default_action: test71_5
+  stateful tbl_test71_5$salu.SwitchIngress.counter_ctrl_7.counters:
+    p4: { name: SwitchIngress.counter_ctrl_7.counters, size: 4096 }
+    row: 15
+    logical_bus: S
+    column: [ 0, 1 ]
+    maprams: [ 0, 1 ]
+    home_row: 15
+    input_xbar:
+      exact group 0: { 64: meta.increment_amount }
+    data_bytemask: 15
+    format: { lo: 32 }
+    actions:
+      counter_ctrl_7_increment_counter:
+      - add lo, lo, phv_lo
+stage 9 ingress:
+  dependency: match
+  hash_action tbl_test71_6 0:
+    p4: { name: tbl_test71_6, hidden: true }
+    row: 0
+    result_bus: 0
+    hash_dist:
+      0: { hash: 0, mask: 0x7fffff, shift: 5, expand: 0 }
+    input_xbar:
+      exact group 0: { 0: meta.counter_index.16-31, 16: meta.counter_index.0-15 }
+      hash 0:
+        0..15: meta.counter_index.0-15
+        32..38: meta.counter_index.16-31(0..6)
+      hash group 0:
+        table: [0]
+        seed: 0x0
+    gateway:
+      name: tbl_test71_6-gateway
+      row: 0
+      bus: 0
+      unit: 0
+      0x0:  END
+      miss:  END
+      condition: 
+        expression: "true(always hit)"
+        true:  END
+        false:  END
+    next: []
+    stateful: tbl_test71_6$salu.SwitchIngress.counter_ctrl_8.counters(hash_dist 0, $DEFAULT, $DEFAULT)
+    instruction: tbl_test71_6($DEFAULT, $DEFAULT)
+    actions:
+      test71_6(0, 0):
+      - hit_allowed: { allowed: true }
+      - default_action: { allowed: true, is_constant: true }
+      - handle: 0x2000000a
+      - next_table: 0
+      - tbl_test71_6$salu.SwitchIngress.counter_ctrl_8.counters(counter_ctrl_8_increment_counter, $hash_dist)
+    default_action: test71_6
+  stateful tbl_test71_6$salu.SwitchIngress.counter_ctrl_8.counters:
+    p4: { name: SwitchIngress.counter_ctrl_8.counters, size: 4096 }
+    row: 15
+    logical_bus: S
+    column: [ 0, 1 ]
+    maprams: [ 0, 1 ]
+    home_row: 15
+    input_xbar:
+      exact group 0: { 64: meta.increment_amount }
+    data_bytemask: 15
+    format: { lo: 32 }
+    actions:
+      counter_ctrl_8_increment_counter:
+      - add lo, lo, phv_lo
+
+
+primitives: "test.prim.json"
+dynhash: "test.dynhash.json"

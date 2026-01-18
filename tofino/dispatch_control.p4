@@ -9,7 +9,7 @@
  ***************************************************************************/
 
 control DispatchIngress(
-    inout a2a_ingress_headers_t hdr,
+    inout a2a_headers_t hdr,
     inout a2a_ingress_metadata_t ig_md,
     in ingress_intrinsic_metadata_t ig_intr_md,
     inout ingress_intrinsic_metadata_for_deparser_t ig_dprsr_md,
@@ -69,7 +69,7 @@ control DispatchIngress(
     /* tx_bitmap */
 
 
-    Register<bitmap_tofino_tofino_t, bit<32>>(DISPATCH_CHANNELS_NUM) reg_tx_bitmap;
+    Register<bitmap_tofino_t, bit<32>>(DISPATCH_CHANNELS_NUM) reg_tx_bitmap;
     
     RegisterAction<bitmap_tofino_t, bit<32>, bitmap_tofino_t>(reg_tx_bitmap) ra_read_tx_bitmap = {
         void apply(inout bitmap_tofino_t value, out bitmap_tofino_t result) {
@@ -87,11 +87,10 @@ control DispatchIngress(
      * Utility Actions
      ***************************************************************************/
     
-    action set_ack_ingress(bit<8> syndrome, bit<24> psn, bit<24> msn) {
+    action set_ack_ingress(bit<8> syndrome, bit<32> psn, bit<32> msn) {
         hdr.bth.psn = psn;
         hdr.aeth.setValid();
-        hdr.aeth.syndrome = syndrome;
-        hdr.aeth.msn = msn;
+        hdr.aeth.msn = msn<<8 | (bit<32>)syndrome;
     }
     
     
@@ -104,7 +103,7 @@ control DispatchIngress(
         bit<32> channel_idx = (bit<32>)ig_md.bridge.channel_id;
         // process ACK/NAK from rx
         if (ig_md.bridge.conn_semantics == CONN_SEMANTICS.CONN_RX && hdr.bth.opcode == RDMA_OP_ACK) {
-            if (hdr.aeth.syndrome[6:5] != AETH_ACK) {
+            if (ig_md.syndrome > 32) {
                 ra_invalidate_tx_epsn.execute(channel_idx);
             }
             ig_dprsr_md.drop_ctl = 1;
@@ -116,7 +115,7 @@ control DispatchIngress(
             ra_init_tx_msn.execute(channel_idx);
             // should be extract from payload, but we set 0 as an agreement with the endpoint
             ra_init_tx_epsn.execute(channel_idx);
-            set_ack_ingress(AETH_ACK_CREDIT_INVALID, hdr.bth.psn, hdr.bth.psn+1);
+            set_ack_ingress(AETH_ACK_CREDIT_INVALID, ig_md.psn, ig_md.psn+1);
             ig_md.bridge.has_aeth = true;
             ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
             //ig_intr_md_for_dprsr.drop_ctl = 1;
@@ -135,18 +134,18 @@ control DispatchIngress(
             }
             
             // PSN validation
-            psn_to_check = (bit<32>)hdr.bth.psn;
-            bit<24> expected_epsn = (bit<24>)ra_read_cond_inc_tx_epsn.execute(channel_idx);
+            psn_to_check = ig_md.psn;
+            bit<32> expected_epsn = ra_read_cond_inc_tx_epsn.execute(channel_idx);
             bit<32> msn_saved = ra_read_tx_msn.execute(channel_idx);
-            if(hdr.bth.psn > expected_epsn) {
-                set_ack_ingress(AETH_NAK_SEQ_ERR, expected_epsn-1, msn_saved[23:0]);
+            if(ig_md.psn > expected_epsn) {
+                set_ack_ingress(AETH_NAK_SEQ_ERR, expected_epsn-1, msn_saved);
                 ig_md.bridge.has_aeth = true;
                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
                 //ig_intr_md_for_dprsr.drop_ctl = 1;
                 //ig_tm_md.mirror_session_id = ig_md.ing_rank_id;
                 return;
-            } else if(hdr.bth.psn < expected_epsn){
-                set_ack_ingress(AETH_ACK_CREDIT_INVALID, expected_epsn-1, msn_saved[23:0]);
+            } else if(ig_md.psn < expected_epsn){
+                set_ack_ingress(AETH_ACK_CREDIT_INVALID, expected_epsn-1, msn_saved);
                 ig_md.bridge.has_aeth = true;
                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
                 return;
@@ -165,7 +164,7 @@ control DispatchIngress(
             ig_tm_md.mcast_grp_a = 100; // group id 100 is to all ports
 
             // ACK to ingress port
-            set_ack_ingress(AETH_ACK_CREDIT_INVALID, expected_epsn-1, msn_saved[23:0]);
+            set_ack_ingress(AETH_ACK_CREDIT_INVALID, expected_epsn-1, msn_saved);
             ig_md.bridge.has_aeth = true;
             ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
             // MSN
@@ -209,7 +208,7 @@ control RxPsnSlot(
 
     RegisterAction<bit<32>, bit<32>, void>(reg_psn) ra_init = {
         void apply(inout bit<32> value) {
-            value = init_val;
+            value = 0;
         }
     };
 
@@ -234,43 +233,59 @@ control RxPsnSlot(
  * RxAddrSlot - Address management for a single RX
  ******************************************************************************/
 control RxAddrSlot(
-    out bit<32> result_addr_lo,
-    out bit<32> result_addr_hi,
-    in bit<32> init_addr_lo,
-    in bit<32> init_addr_hi,
+    out addr_tofino_t result_addr,
+    in addr_tofino_t init_addr,
     in bit<32> add_value,
     in DISPATCH_REG_OP operation,
-    in bit<32> channel_idx
-) {
-    addr_tofino_t init_addr;
+    in bit<32> channel_idx) 
+{
+    
     bit<32> add_val;
 
-    Register<addr_tofino_t, bit<32>>(TX_DISPATCH_CHANNELS_NUM) reg_addr;
+    // ==================== Low 32 bits ====================
+    Register<bit<32>, bit<32>>(TX_DISPATCH_CHANNELS_NUM) reg_addr_lo;
 
-    RegisterAction<addr_tofino_t, bit<32>, void>(reg_addr) ra_init = {
-        void apply(inout addr_tofino_t value) {
-            value.lo = init_addr.lo;
-            value.hi = init_addr.hi;
+    // init lo
+    RegisterAction<bit<32>, bit<32>, void>(reg_addr_lo) ra_lo_init = {
+        void apply(inout bit<32> value) {
+            value = 0;
         }
     };
 
-    RegisterAction<addr_tofino_t, bit<32>, addr_tofino_t>(reg_addr) ra_read_add = {
-        void apply(inout addr_tofino_t value, out addr_tofino_t result) {
-            result = value;
-            value.lo = value.lo + add_val;
+    // read and add lo, return 1 if overflow (for carry)
+    RegisterAction<bit<32>, bit<32>, bit<32>>(reg_addr_lo) ra_lo_read_add = {
+        void apply(inout bit<32> value, out bit<32> res) {
+            res = value;
+            value = value + add_val;
+        }
+    };
+
+    // ==================== High 32 bits ====================
+    Register<bit<32>, bit<32>>(TX_DISPATCH_CHANNELS_NUM) reg_addr_hi;
+
+    // init hi
+    RegisterAction<bit<32>, bit<32>, void>(reg_addr_hi) ra_hi_init = {
+        void apply(inout bit<32> value) {
+            value = 0;
+        }
+    };
+
+    // read hi (no add since add_value is 32-bit, only affects lo)
+    RegisterAction<bit<32>, bit<32>, bit<32>>(reg_addr_hi) ra_hi_read = {
+        void apply(inout bit<32> value, out bit<32> res) {
+            res = value;
         }
     };
 
     apply {
         if (operation == DISPATCH_REG_OP.OP_INIT) {
-            init_addr.lo = init_addr_lo;
-            init_addr.hi = init_addr_hi;
-            ra_init.execute(channel_idx);
+            ra_lo_init.execute(channel_idx);
+            ra_hi_init.execute(channel_idx);
+
         } else if (operation == DISPATCH_REG_OP.OP_READ_ADD) {
             add_val = add_value;
-            addr_tofino_t tmp = ra_read_add.execute(channel_idx);
-            result_addr_lo = tmp.lo;
-            result_addr_hi = tmp.hi;
+            result_addr[31:0] = ra_lo_read_add.execute(channel_idx);
+            result_addr[63:32] = ra_hi_read.execute(channel_idx);
         }
     }
 }
@@ -313,8 +328,7 @@ control DispatchEgress(
      ***************************************************************************/
     bit<32> channel_idx;
     bit<32> result_psn;
-    bit<32> result_addr_lo;
-    bit<32> result_addr_hi;
+    bit<64> result_addr;
     bit<32> payload_len_32;
 
     /***************************************************************************
@@ -339,7 +353,7 @@ control DispatchEgress(
 
 
     action set_rx_info(bit<48> dst_mac, bit<32> dst_ip, 
-                       bit<24> dst_qp, bit<32> rkey) {
+                       bit<32> dst_qp, bit<32> rkey) {
 
         hdr.eth.dst_addr = dst_mac;
         hdr.ipv4.dst_addr = dst_ip;
@@ -399,53 +413,53 @@ control DispatchEgress(
         if (eg_md.bridge.conn_semantics == CONN_SEMANTICS.CONN_CONTROL) {
             
             // Initialize PSN (payload: data00 - data07)
-            psn_slot_0.apply(result_psn, hdr.payload.data00, DISPATCH_REG_OP.OP_INIT, channel_idx);
-            psn_slot_1.apply(result_psn, hdr.payload.data01, DISPATCH_REG_OP.OP_INIT, channel_idx);
-            psn_slot_2.apply(result_psn, hdr.payload.data02, DISPATCH_REG_OP.OP_INIT, channel_idx);
-            psn_slot_3.apply(result_psn, hdr.payload.data03, DISPATCH_REG_OP.OP_INIT, channel_idx);
-            psn_slot_4.apply(result_psn, hdr.payload.data04, DISPATCH_REG_OP.OP_INIT, channel_idx);
-            psn_slot_5.apply(result_psn, hdr.payload.data05, DISPATCH_REG_OP.OP_INIT, channel_idx);
-            psn_slot_6.apply(result_psn, hdr.payload.data06, DISPATCH_REG_OP.OP_INIT, channel_idx);
-            psn_slot_7.apply(result_psn, hdr.payload.data07, DISPATCH_REG_OP.OP_INIT, channel_idx);
+            // psn_slot_0.apply(result_psn, hdr.payload.data00, DISPATCH_REG_OP.OP_INIT, channel_idx);
+            // psn_slot_1.apply(result_psn, hdr.payload.data01, DISPATCH_REG_OP.OP_INIT, channel_idx);
+            // psn_slot_2.apply(result_psn, hdr.payload.data02, DISPATCH_REG_OP.OP_INIT, channel_idx);
+            // psn_slot_3.apply(result_psn, hdr.payload.data03, DISPATCH_REG_OP.OP_INIT, channel_idx);
+            // psn_slot_4.apply(result_psn, hdr.payload.data04, DISPATCH_REG_OP.OP_INIT, channel_idx);
+            // psn_slot_5.apply(result_psn, hdr.payload.data05, DISPATCH_REG_OP.OP_INIT, channel_idx);
+            // psn_slot_6.apply(result_psn, hdr.payload.data06, DISPATCH_REG_OP.OP_INIT, channel_idx);
+            // psn_slot_7.apply(result_psn, hdr.payload.data07, DISPATCH_REG_OP.OP_INIT, channel_idx);
 
-            // Initialize Addr (payload: data08-data17, each address 64-bit = lo + hi)
-            // addr_tofino_t structure: {lo, hi}
-            addr_slot_0.apply(result_addr_lo, result_addr_hi,
-                              hdr.payload.data08, hdr.payload.data09,
-                              0, DISPATCH_REG_OP.OP_INIT, channel_idx);
-            addr_slot_1.apply(result_addr_lo, result_addr_hi,
-                              hdr.payload.data0a, hdr.payload.data0b,
-                              0, DISPATCH_REG_OP.OP_INIT, channel_idx);
-            addr_slot_2.apply(result_addr_lo, result_addr_hi,
-                              hdr.payload.data0c, hdr.payload.data0d,
-                              0, DISPATCH_REG_OP.OP_INIT, channel_idx);
-            addr_slot_3.apply(result_addr_lo, result_addr_hi,
-                              hdr.payload.data0e, hdr.payload.data0f,
-                              0, DISPATCH_REG_OP.OP_INIT, channel_idx);
-            addr_slot_4.apply(result_addr_lo, result_addr_hi,
-                              hdr.payload.data10, hdr.payload.data11,
-                              0, DISPATCH_REG_OP.OP_INIT, channel_idx);
-            addr_slot_5.apply(result_addr_lo, result_addr_hi,
-                              hdr.payload.data12, hdr.payload.data13,
-                              0, DISPATCH_REG_OP.OP_INIT, channel_idx);
-            addr_slot_6.apply(result_addr_lo, result_addr_hi,
-                              hdr.payload.data14, hdr.payload.data15,
-                              0, DISPATCH_REG_OP.OP_INIT, channel_idx);
-            addr_slot_7.apply(result_addr_lo, result_addr_hi,
-                              hdr.payload.data16, hdr.payload.data17,
-                              0, DISPATCH_REG_OP.OP_INIT, channel_idx);
+            // // Initialize Addr (payload: data08-data17, each address 64-bit = lo + hi)
+            // // addr_tofino_t structure: {lo, hi}
+            // addr_slot_0.apply(result_addr,
+            //                   hdr.payload.data08, hdr.payload.data09,
+            //                   0, DISPATCH_REG_OP.OP_INIT, channel_idx);
+            // addr_slot_1.apply(result_addr,
+            //                   hdr.payload.data0a, hdr.payload.data0b,
+            //                   0, DISPATCH_REG_OP.OP_INIT, channel_idx);
+            // addr_slot_2.apply(result_addr,
+            //                   hdr.payload.data0c, hdr.payload.data0d,
+            //                   0, DISPATCH_REG_OP.OP_INIT, channel_idx);
+            // addr_slot_3.apply(result_addr,
+            //                   hdr.payload.data0e, hdr.payload.data0f,
+            //                   0, DISPATCH_REG_OP.OP_INIT, channel_idx);
+            // addr_slot_4.apply(result_addr,
+            //                   hdr.payload.data10, hdr.payload.data11,
+            //                   0, DISPATCH_REG_OP.OP_INIT, channel_idx);
+            // addr_slot_5.apply(result_addr,
+            //                   hdr.payload.data12, hdr.payload.data13,
+            //                   0, DISPATCH_REG_OP.OP_INIT, channel_idx);
+            // addr_slot_6.apply(result_addr,
+            //                   hdr.payload.data14, hdr.payload.data15,
+            //                   0, DISPATCH_REG_OP.OP_INIT, channel_idx);
+            // addr_slot_7.apply(result_addr,
+            //                   hdr.payload.data16, hdr.payload.data17,
+            //                   0, DISPATCH_REG_OP.OP_INIT, channel_idx);
 
-            set_ack_egress.apply();
+            set_ack_egress();
 
             return;
         }
 
         // ==================== Data connection: Multicast replica processing ====================
         if (eg_md.bridge.conn_semantics == CONN_SEMANTICS.CONN_TX) {
-            if((eg_intr_md.egress_rid == 0)&&(em_md.bridge.ing_rank_id == eg_md.eg_rank_id)) {
-                set_ack_egress.apply();
+            if((eg_intr_md.egress_rid == 0)&&(eg_md.bridge.ing_rank_id == eg_md.eg_rank_id)) {
+                set_ack_egress();
             }
-            else if(((eg_md.bridge.bitmap >> em_md.eg_rank_id) & 1) == 1){
+            else if(((eg_md.bridge.bitmap >> eg_md.eg_rank_id) & 1) == 1){
                 // Bcast packet to all replicas
                 payload_len_32 = 1024;  // to add addr
                 // Lookup and set RX info based on egress_rid
@@ -471,41 +485,40 @@ control DispatchEgress(
                 }
 
                 // Update BTH PSN
-                hdr.bth.psn = result_psn[23:0];
+                hdr.bth.psn = result_psn;
 
                 // ===== Addr: only update when RETH is valid =====
                 if (hdr.reth.isValid() && 
                     (hdr.bth.opcode == RDMA_OP_WRITE_FIRST || 
                     hdr.bth.opcode == RDMA_OP_WRITE_ONLY)) {
                     if (eg_md.eg_rank_id == 0) {
-                        addr_slot_0.apply(result_addr_lo, result_addr_hi, 0, 0,
+                        addr_slot_0.apply(result_addr, 0, 
                                         payload_len_32, DISPATCH_REG_OP.OP_READ_ADD, channel_idx);
                     } else if (eg_md.eg_rank_id == 1) {
-                        addr_slot_1.apply(result_addr_lo, result_addr_hi, 0, 0,
+                        addr_slot_1.apply(result_addr, 0, 
                                         payload_len_32, DISPATCH_REG_OP.OP_READ_ADD, channel_idx);
                     } else if (eg_md.eg_rank_id == 2) {
-                        addr_slot_2.apply(result_addr_lo, result_addr_hi, 0, 0,
+                        addr_slot_2.apply(result_addr, 0, 
                                         payload_len_32, DISPATCH_REG_OP.OP_READ_ADD, channel_idx);
                     } else if (eg_md.eg_rank_id == 3) {
-                        addr_slot_3.apply(result_addr_lo, result_addr_hi, 0, 0,
+                        addr_slot_3.apply(result_addr, 0, 
                                         payload_len_32, DISPATCH_REG_OP.OP_READ_ADD, channel_idx);
                     } else if (eg_md.eg_rank_id == 4) {
-                        addr_slot_4.apply(result_addr_lo, result_addr_hi, 0, 0,
+                        addr_slot_4.apply(result_addr, 0, 
                                         payload_len_32, DISPATCH_REG_OP.OP_READ_ADD, channel_idx);
                     } else if (eg_md.eg_rank_id == 5) {
-                        addr_slot_5.apply(result_addr_lo, result_addr_hi, 0, 0,
+                        addr_slot_5.apply(result_addr, 0, 
                                         payload_len_32, DISPATCH_REG_OP.OP_READ_ADD, channel_idx);
                     } else if (eg_md.eg_rank_id == 6) {
-                        addr_slot_6.apply(result_addr_lo, result_addr_hi, 0, 0,
+                        addr_slot_6.apply(result_addr, 0, 
                                         payload_len_32, DISPATCH_REG_OP.OP_READ_ADD, channel_idx);
                     } else if (eg_md.eg_rank_id == 7) {
-                        addr_slot_7.apply(result_addr_lo, result_addr_hi, 0, 0,
+                        addr_slot_7.apply(result_addr, 0, 
                                         payload_len_32, DISPATCH_REG_OP.OP_READ_ADD, channel_idx);
                     }
 
                     // Update RETH addr (addr_tofino_t: lo first, hi second)
-                    hdr.reth.addr[31:0] = result_addr_lo;
-                    hdr.reth.addr[63:32] = result_addr_hi;
+                    hdr.reth.addr = result_addr;
                 }
 
                 hdr.aeth.setInvalid();

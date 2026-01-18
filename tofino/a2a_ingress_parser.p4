@@ -7,6 +7,7 @@ parser A2AIngressParser(
     state start { 
         pkt.extract(ig_intr_md); 
         pkt.advance(PORT_METADATA_SIZE); 
+        ig_md.bridge.setValid();
         ig_md.is_roce = false;
         transition parse_eth; 
     }  
@@ -73,7 +74,7 @@ parser A2AIngressParser(
     }
 
     state parse_payload {
-        packet.extract(hdr.payload);
+        pkt.extract(hdr.payload);
         ig_md.bridge.has_payload = true;
         transition accept;
     } 

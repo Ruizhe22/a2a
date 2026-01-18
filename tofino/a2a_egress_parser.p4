@@ -38,12 +38,12 @@ parser A2AEgressParser(
     state check_payload {
         transition select(eg_md.bridge.has_payload) {
             true  : parse_payload;
-            false : parse_icrc;
+            false : accept;
         }
     }
 
     state parse_payload {
-        pkt.extract(hdr.payload);
+        pkt.extract(hdr.payload_first_word);
         transition accept;
     }
 }
