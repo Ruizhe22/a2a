@@ -92,13 +92,13 @@ header reth_h {
 
 // --- ACK Syndrome Values ---
 
-const bit<8> AETH_ACK_CREDIT_INVALID = 8w0x1F;  // Binary: 000 11111 (Op:00, Credit:31/Invalid)
-const bit<8> AETH_ACK_CREDIT_ZERO = 8w0x00;  // Binary: 000 00000 (Op:00, Credit:0)
+const bit<32> AETH_ACK_CREDIT_INVALID = 32w0x1F;  // Binary: 000 11111 (Op:00, Credit:31/Invalid)
+const bit<32> AETH_ACK_CREDIT_ZERO = 32w0x00;  // Binary: 000 00000 (Op:00, Credit:0)
 
 // --- NAK Syndrome Values (OpCode: 11) --- Binary: 011 NNNNN
-const bit<8> AETH_NAK_SEQ_ERR = 8w0x60;  // NAK Code 0: PSN Sequence Error
-const bit<8> AETH_NAK_INV_REQ = 8w0x61;  // NAK Code 1: Invalid Request
-const bit<8> AETH_NAK_R_ACC_ERR = 8w0x62;  // NAK Code 2: Remote Access Error
+const bit<32> AETH_NAK_SEQ_ERR = 32w0x60;  // NAK Code 0: PSN Sequence Error
+const bit<32> AETH_NAK_INV_REQ = 32w0x61;  // NAK Code 1: Invalid Request
+const bit<32> AETH_NAK_R_ACC_ERR = 32w0x62;  // NAK Code 2: Remote Access Error
 
 header aeth_h {
      // 1 bit 0 + 2 bit flag [6:5] (ACK, RNR NAK, reserved, NAK) + 5 bit number (credit cnt, RNR timer, N/A, NAK code)

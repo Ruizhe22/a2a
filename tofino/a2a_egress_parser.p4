@@ -5,14 +5,15 @@ parser A2AEgressParser(
     out egress_intrinsic_metadata_t eg_intr_md)
 {  
     state start { 
+
         pkt.extract(eg_intr_md); 
-        pkt.extract(eg_md.bridge);
+        pkt.extract(hdr.bridge);
         pkt.extract(hdr.eth); 
         pkt.extract(hdr.ipv4);
         pkt.extract(hdr.udp);
         pkt.extract(hdr.bth);
         
-        transition select(eg_md.bridge.has_aeth) {
+        transition select(hdr.bridge.has_aeth) {
             true  : parse_aeth;
             false : check_reth; 
         } 
@@ -24,7 +25,7 @@ parser A2AEgressParser(
     }
 
     state check_reth {
-        transition select(eg_md.bridge.has_reth) {
+        transition select(hdr.bridge.has_reth) {
             true  : parse_reth;
             false : check_payload;
         }
@@ -36,7 +37,7 @@ parser A2AEgressParser(
     }
 
     state check_payload {
-        transition select(eg_md.bridge.has_payload) {
+        transition select(hdr.bridge.has_payload) {
             true  : parse_payload;
             false : accept;
         }

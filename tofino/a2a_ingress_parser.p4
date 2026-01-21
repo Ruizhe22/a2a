@@ -7,7 +7,6 @@ parser A2AIngressParser(
     state start { 
         pkt.extract(ig_intr_md); 
         pkt.advance(PORT_METADATA_SIZE); 
-        ig_md.bridge.setValid();
         ig_md.is_roce = false;
         transition parse_eth; 
     }  

@@ -15,7 +15,7 @@ control A2AIngress(
      * Classify dispatch and combine traffic based on QP, IP, etc.
      */
     
-    action set_a2a_traffic(CONN_PHASE conn_phase, CONN_SEMANTICS conn_semantics, bit<32> channel_id, bit<32> channel_class, bit<8> ing_rank_id, bit<8> root_rank_id) {
+    action set_a2a_traffic(CONN_PHASE conn_phase, CONN_SEMANTICS conn_semantics, bit<32> channel_id, bit<32> channel_class, bit<32> ing_rank_id, bit<32> root_rank_id) {
         ig_md.bridge.conn_phase = conn_phase;
         ig_md.bridge.conn_semantics = conn_semantics;
         ig_md.bridge.channel_id = channel_id;
@@ -42,6 +42,72 @@ control A2AIngress(
         size = 32768;
         default_action = set_unknown_traffic;
     }
+
+    action set_bridge_ing_rank_id() {
+        hdr.bridge.ing_rank_id = ig_md.bridge.ing_rank_id;
+    }
+
+    action set_bridge_has_reth() {
+        hdr.bridge.has_reth = ig_md.bridge.has_reth;
+    }
+
+    action set_bridge_has_aeth() {
+        hdr.bridge.has_aeth = ig_md.bridge.has_aeth;
+    }
+
+    action set_bridge_has_payload() {
+        hdr.bridge.has_payload = ig_md.bridge.has_payload;
+    }
+
+    action set_bridge_conn_phase() {
+        hdr.bridge.conn_phase = ig_md.bridge.conn_phase;
+    }
+
+    action set_bridge_conn_semantics() {
+        hdr.bridge.conn_semantics = ig_md.bridge.conn_semantics;
+    }
+
+    action set_bridge_channel_id() {
+        hdr.bridge.channel_id = ig_md.bridge.channel_id;
+    }
+
+    action set_bridge_bitmap() {
+        hdr.bridge.bitmap = ig_md.bridge.bitmap;
+    }
+
+    action set_bridge_tx_loc_val() {
+        hdr.bridge.tx_loc_val = ig_md.bridge.tx_loc_val;
+    }
+
+    action set_bridge_tx_offset_val() {
+        hdr.bridge.tx_offset_val = ig_md.bridge.tx_offset_val;
+    }
+
+    action set_bridge_clear_offset() {
+        hdr.bridge.clear_offset = ig_md.bridge.clear_offset;
+    }
+
+    action set_bridge_is_loopback() {
+        hdr.bridge.is_loopback = ig_md.bridge.is_loopback;
+    }
+
+    action set_bridge_root_rank_id_lo() {
+        hdr.bridge.root_rank_id[15:0] = ig_md.bridge.root_rank_id[15:0];
+    }
+
+    action set_bridge_root_rank_id_hi() {
+        hdr.bridge.root_rank_id[31:16] = ig_md.bridge.root_rank_id[31:16];
+    }
+
+    action set_bridge_next_token_addr_hi() {
+        hdr.bridge.next_token_addr[63:32] = ig_md.bridge.next_token_addr[63:32];
+    }
+
+    action set_bridge_next_token_addr_lo() {
+        hdr.bridge.next_token_addr[31:0] = ig_md.bridge.next_token_addr[31:0];
+    }
+
+    
     
     apply {
         // Process only RoCE packets
@@ -51,6 +117,7 @@ control A2AIngress(
         }
 
         ig_md.psn = hdr.bth.psn;
+        ig_md.psn[0:0] = 0;
         if(hdr.aeth.isValid()){
             ig_md.msn = hdr.aeth.msn & 32w0xFFFFFF00;
             ig_md.syndrome = hdr.aeth.msn & 32w0x000000FF;
@@ -67,6 +134,24 @@ control A2AIngress(
             // drop unknown traffic
             ig_dprsr_md.drop_ctl = 1;
         }
+
+        hdr.bridge.setValid();
+        set_bridge_ing_rank_id();
+        set_bridge_has_reth();
+        set_bridge_has_aeth();
+        set_bridge_has_payload();
+        set_bridge_conn_phase();
+        set_bridge_conn_semantics();
+        set_bridge_channel_id();
+        set_bridge_bitmap();
+        set_bridge_tx_loc_val();
+        set_bridge_tx_offset_val();
+        set_bridge_clear_offset();
+        set_bridge_is_loopback();
+        set_bridge_root_rank_id_hi();
+        set_bridge_root_rank_id_lo();
+        set_bridge_next_token_addr_hi();
+        set_bridge_next_token_addr_lo();
     }
 }
 
@@ -76,8 +161,8 @@ control A2AIngressDeparser(
         in a2a_ingress_metadata_t ig_md,
         in ingress_intrinsic_metadata_for_deparser_t ig_dprsr_md) {
 
+
     apply {
-        pkt.emit(ig_md.bridge);
         pkt.emit(hdr);
     }
 }

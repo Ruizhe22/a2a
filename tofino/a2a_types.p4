@@ -1,5 +1,34 @@
 #include "std_types.p4"
 
+
+// @pa_container_size("ingress", "hdr.payload.data00", 32)
+// @pa_container_size("ingress", "hdr.payload.data01", 32)
+// @pa_container_size("ingress", "hdr.payload.data02", 32)
+// @pa_container_size("ingress", "hdr.payload.data03", 32)
+// @pa_container_size("ingress", "hdr.payload.data04", 32)
+// @pa_container_size("ingress", "hdr.payload.data05", 32)
+// @pa_container_size("ingress", "hdr.payload.data06", 32)
+// @pa_container_size("ingress", "hdr.payload.data07", 32)
+// @pa_container_size("ingress", "hdr.payload.data08", 32)
+// @pa_container_size("ingress", "hdr.payload.data09", 32)
+// @pa_container_size("ingress", "hdr.payload.data0a", 32)
+// @pa_container_size("ingress", "hdr.payload.data0b", 32)
+// @pa_container_size("ingress", "hdr.payload.data0c", 32)
+// @pa_container_size("ingress", "hdr.payload.data0d", 32)
+// @pa_container_size("ingress", "hdr.payload.data0e", 32)
+// @pa_container_size("ingress", "hdr.payload.data0f", 32)
+// @pa_container_size("ingress", "hdr.payload.data10", 32)
+// @pa_container_size("ingress", "hdr.payload.data11", 32)
+// @pa_container_size("ingress", "hdr.payload.data12", 32)
+// @pa_container_size("ingress", "hdr.payload.data13", 32)
+// @pa_container_size("ingress", "hdr.payload.data14", 32)
+// @pa_container_size("ingress", "hdr.payload.data15", 32)
+// @pa_container_size("ingress", "hdr.payload.data16", 32)
+// @pa_container_size("ingress", "hdr.payload.data17", 32)
+
+
+
+
 #define EP_SIZE 8
 
 #define LOOPBACK_PORT 192
@@ -53,7 +82,28 @@ header payload_word_h {
 
 #define PAYLOAD_HEADER_LEN 128 // bytes
 
-struct a2a_headers_t {  
+header bridge_h {
+    // dispatch or combine 8bytes
+    bit<32> ing_rank_id;
+    bool has_reth;
+    bool has_aeth;
+    bool has_payload;
+    CONN_PHASE  conn_phase;  
+    CONN_SEMANTICS conn_semantics;
+    bit<32>  channel_id;
+    bitmap_tofino_t    bitmap;
+    // combine only, 5bytes
+    bit<32> tx_loc_val;
+    bit<32> tx_offset_val;
+    bit<32> clear_offset;
+    bool is_loopback;
+    bit<32> root_rank_id;
+    // 8
+    bit<64> next_token_addr;
+}
+
+struct a2a_headers_t {
+    bridge_h bridge;  
     eth_h eth; 
     ipv4_h ipv4;
     udp_h udp;
@@ -66,44 +116,73 @@ struct a2a_headers_t {
 }
 
 
-header bridge_h {
+struct bridge_t {
     // dispatch or combine 8bytes
-    bit<8> ing_rank_id;
+    // @pa_no_pack("ingress", "ig_md.bridge.ing_rank_id")
+    bit<32> ing_rank_id;
+    // @pa_no_pack("ingress", "ig_md.bridge.has_reth")
     bool has_reth;
+    // @pa_no_pack("ingress", "ig_md.bridge.has_aeth")
     bool has_aeth;
+    // @pa_no_pack("ingress", "ig_md.bridge.has_payload")
     bool has_payload;
-    CONN_PHASE  conn_phase;    
+    // @pa_no_pack("ingress", "ig_md.bridge.conn_phase")
+    CONN_PHASE  conn_phase;  
+    // @pa_no_pack("ingress", "ig_md.bridge.conn_semantics")  
     CONN_SEMANTICS conn_semantics;
+    //@pa_no_pack("ingress", "ig_md.bridge.channel_id")
     bit<32>  channel_id;
+    // @pa_no_pack("ingress", "ig_md.bridge.bitmap")
     bitmap_tofino_t    bitmap;
+    // @pa_no_pack("ingress", "ig_md.bridge.tx_loc_val")
     // combine only, 5bytes
-    bit<8> tx_loc_val;
-    bit<8> tx_offset_val;
-    bit<8> clear_offset;
+    bit<32> tx_loc_val;
+    // @pa_no_pack("ingress", "ig_md.bridge.tx_offset_val")
+    bit<32> tx_offset_val;
+    // @pa_no_pack("ingress", "ig_md.bridge.clear_offset")
+    bit<32> clear_offset;
+    // @pa_no_pack("ingress", "ig_md.bridge.is_loopback")
     bool is_loopback;
-    bit<8> root_rank_id;
+    // @pa_no_pack("ingress", "ig_md.bridge.root_rank_id")
+    bit<32> root_rank_id;
+    // @pa_no_pack("ingress", "ig_md.bridge.next_token_addr")
     // 8
     bit<64> next_token_addr;
 }
 
 
+
 struct a2a_ingress_metadata_t {
     bool is_roce;
     bitmap_tofino_t bitmap_clear_mask;
-    @pa_no_overlay("ingress", "ig_md.psn")
+    //@pa_container_size("ingress", "ig_md.psn", 32)
+    //@pa_no_overlay("ingress", "ig_md.psn")
     bit<32> psn;
     bit<32> msn;
     bit<32> syndrome;
     bit<32> channel_class;
     bit<32> token_idx;
     bit<32> slot_index;
-    bridge_h bridge;
+    //@pa_container_size("ingress", "ig_md.expected_epsn", 32)
+    //@pa_no_overlay("ingress", "ig_md.expected_epsn")
+    bit<32> expected_epsn;
+    //@pa_container_size("ingress", "ig_md.msn_saved", 32)
+    //@pa_no_overlay("ingress", "ig_md.msn_saved")
+    bit<32> msn_saved;
+    //@pa_container_size("ingress", "ig_md.psn_to_check", 32)
+    //@pa_no_overlay("ingress", "ig_md.psn_to_check")
+    bit<32> psn_to_check;
+    //@pa_container_size("ingress", "ig_md.temp_queue_data", 32)
+    bit<32> temp_queue_data;
+    //@pa_container_size("ingress", "ig_md.next_loc", 32)
+    bit<32> next_loc; 
+    bridge_t bridge;
 }
 
 struct a2a_egress_metadata_t {
     bit<32> psn;
-    bit<8> eg_rank_id;
-    bridge_h bridge;
+    bit<32> eg_rank_id;
+    bridge_t bridge;
 }
 
 /* Although the bitmap is defined to be 64 bits, we only use lower 32 bits in practice

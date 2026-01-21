@@ -44,27 +44,27 @@
  ******************************************************************************/
 
 control QueuePointerSlot(
-    inout bit<8> result,
+    inout bit<32> result,
     in COMBINE_QUEUE_POINTER_REG_OP operation,
     in bit<32> channel_class) 
 {
 
-    Register<bit<8>, bit<32>>(NUM_COMBINE_CHANNELS_PER_RX) reg_ptr;
+    Register<bit<32>, bit<32>>(NUM_COMBINE_CHANNELS_PER_RX) reg_ptr;
 
-    RegisterAction<bit<8>, bit<32>, void>(reg_ptr) ra_init = {
-        void apply(inout bit<8> value) {
+    RegisterAction<bit<32>, bit<32>, void>(reg_ptr) ra_init = {
+        void apply(inout bit<32> value) {
             value = 0;
         }
     };
 
-    RegisterAction<bit<8>, bit<32>, bit<8>>(reg_ptr) ra_read = {
-        void apply(inout bit<8> value, out bit<8> res) {
+    RegisterAction<bit<32>, bit<32>, bit<32>>(reg_ptr) ra_read = {
+        void apply(inout bit<32> value, out bit<32> res) {
             res = value;
         }
     };
 
-    RegisterAction<bit<8>, bit<32>, void>(reg_ptr) ra_inc = {
-        void apply(inout bit<8> value) {
+    RegisterAction<bit<32>, bit<32>, void>(reg_ptr) ra_inc = {
+        void apply(inout bit<32> value) {
             if (value == COMBINE_QUEUE_LENGTH - 1) {
                 value = 0;
             } else {
@@ -73,8 +73,8 @@ control QueuePointerSlot(
         }
     };
 
-    RegisterAction<bit<8>, bit<32>, bit<8>>(reg_ptr) ra_read_add = {
-        void apply(inout bit<8> value, out bit<8> res) {
+    RegisterAction<bit<32>, bit<32>, bit<32>>(reg_ptr) ra_read_add = {
+        void apply(inout bit<32> value, out bit<32> res) {
             res = value;
             if (value >= COMBINE_QUEUE_LENGTH - 8) {
                 value = value + 8 - COMBINE_QUEUE_LENGTH;
@@ -281,11 +281,10 @@ control CombineIngress(
     /***************************************************************************
      * Variables
      ***************************************************************************/
-    bit<32> psn_to_check;
-    
+     
     // Temporary variables for register action results
     bit<32> tmp_result_32;
-    bit<8> tmp_result_8;
+    bit<32> tmp_result_8;
 
     /***************************************************************************
      * TX State Registers
@@ -293,14 +292,14 @@ control CombineIngress(
      ***************************************************************************/
     Register<bit<32>, bit<32>>(COMBINE_TX_ENTRIES, 0) reg_tx_epsn;
     Register<bit<32>, bit<32>>(COMBINE_TX_ENTRIES) reg_tx_msn;
-    Register<bit<8>, bit<32>>(COMBINE_TX_ENTRIES) reg_tx_loc;
-    Register<bit<8>, bit<32>>(COMBINE_TX_ENTRIES) reg_tx_packet_offset;
+    Register<bit<32>, bit<32>>(COMBINE_TX_ENTRIES) reg_tx_loc;
+    Register<bit<32>, bit<32>>(COMBINE_TX_ENTRIES) reg_tx_packet_offset;
 
 
     RegisterAction<bit<32>, bit<32>, bit<32>>(reg_tx_epsn) ra_read_cond_inc_tx_epsn = {
         void apply(inout bit<32> value, out bit<32> result) {
             result = value;
-            if( psn_to_check == value) {
+            if( ig_md.psn_to_check == value) {
                 value = value + 1;
             }
         }
@@ -331,27 +330,27 @@ control CombineIngress(
         }
     };
 
-    RegisterAction<bit<8>, bit<32>, bit<8>>(reg_tx_loc) ra_read_tx_loc = {
-        void apply(inout bit<8> value, out bit<8> result) {
+    RegisterAction<bit<32>, bit<32>, bit<32>>(reg_tx_loc) ra_read_tx_loc = {
+        void apply(inout bit<32> value, out bit<32> result) {
             result = value;
         }
     };
 
-    RegisterAction<bit<8>, bit<32>, void>(reg_tx_loc) ra_write_tx_loc = {
-        void apply(inout bit<8> value) {
+    RegisterAction<bit<32>, bit<32>, void>(reg_tx_loc) ra_write_tx_loc = {
+        void apply(inout bit<32> value) {
             value = ig_md.bridge.tx_loc_val;
         }
     };
 
-    RegisterAction<bit<8>, bit<32>, bit<8>>(reg_tx_packet_offset) ra_read_inc_tx_offset = {
-        void apply(inout bit<8> value, out bit<8> result) {
+    RegisterAction<bit<32>, bit<32>, bit<32>>(reg_tx_packet_offset) ra_read_inc_tx_offset = {
+        void apply(inout bit<32> value, out bit<32> result) {
             result = value;
             value = value + 1;
         }
     };
 
-    RegisterAction<bit<8>, bit<32>, void>(reg_tx_packet_offset) ra_reset_tx_offset = {
-            void apply(inout bit<8> value) {
+    RegisterAction<bit<32>, bit<32>, void>(reg_tx_packet_offset) ra_reset_tx_offset = {
+            void apply(inout bit<32> value) {
             value = 1;  // reset to 1 (current packet is 0, next is 1)
         }
     };
@@ -410,7 +409,7 @@ control CombineIngress(
     RegisterAction<bit<32>, bit<32>, bit<32>>(reg_rx_bitmap_epsn) ra_read_cond_inc_rx_bitmap_epsn = {
         void apply(inout bit<32> value, out bit<32> result) {
             result = value;
-            if (psn_to_check == value) {
+            if (ig_md.psn_to_check == value) {
                 // PSN matches: increment value
                 value = value + 1;
             }
@@ -514,16 +513,16 @@ control CombineIngress(
      * Ignore the packet loss, queue queue_head and incomplete pointer are the same 
      ***************************************************************************/
      
-    Register<bit<8>, bit<32>>(COMBINE_CHANNELS_TOTAL) reg_queue_incomplete;
+    Register<bit<32>, bit<32>>(COMBINE_CHANNELS_TOTAL) reg_queue_incomplete;
 
-    RegisterAction<bit<8>, bit<32>, bit<8>>(reg_queue_incomplete) ra_read_queue_incomplete = {
-        void apply(inout bit<8> value, out bit<8> result) {
+    RegisterAction<bit<32>, bit<32>, bit<32>>(reg_queue_incomplete) ra_read_queue_incomplete = {
+        void apply(inout bit<32> value, out bit<32> result) {
             result = value;
         }
     };
 
-    RegisterAction<bit<8>, bit<32>, bit<8>>(reg_queue_incomplete) ra_read_cond_inc_queue_incomplete = {
-        void apply(inout bit<8> value, out bit<8> result) {
+    RegisterAction<bit<32>, bit<32>, bit<32>>(reg_queue_incomplete) ra_read_cond_inc_queue_incomplete = {
+        void apply(inout bit<32> value, out bit<32> result) {
             result = value;
             if(value == ig_md.bridge.tx_loc_val) {
                 if (value >= COMBINE_QUEUE_LENGTH - 1) {
@@ -535,8 +534,8 @@ control CombineIngress(
         }
     };
 
-    RegisterAction<bit<8>, bit<32>, void>(reg_queue_incomplete) ra_init_queue_incomplete = {
-        void apply(inout bit<8> value) {
+    RegisterAction<bit<32>, bit<32>, void>(reg_queue_incomplete) ra_init_queue_incomplete = {
+        void apply(inout bit<32> value) {
             value = 0;
         }
     };
@@ -580,12 +579,12 @@ control CombineIngress(
     AddrSlot() addr_slot_6;
     AddrSlot() addr_slot_7;
 
-    Register<bit<8>, bit<32>>(COMBINE_BITMAP_ENTRIES) reg_clear_buffer;
+    Register<bit<32>, bit<32>>(COMBINE_BITMAP_ENTRIES) reg_clear_buffer;
     
 
     // Before calling, set ig_md.bridge.tx_offset_val; a Register can only be read once, so write it this way
-    RegisterAction<bit<8>, bit<32>, bit<8>>(reg_clear_buffer) ra_read_set_clear = {
-        void apply(inout bit<8> value, out bit<8> result) {
+    RegisterAction<bit<32>, bit<32>, bit<32>>(reg_clear_buffer) ra_read_set_clear = {
+        void apply(inout bit<32> value, out bit<32> result) {
             result = value;
             if(value <= ig_md.bridge.tx_offset_val){ // ideally should be ==
                 value = value + 1;
@@ -593,8 +592,8 @@ control CombineIngress(
         }
     };
 
-    RegisterAction<bit<8>, bit<32>, void>(reg_clear_buffer) ra_reset_clear = {
-        void apply(inout bit<8> value) {
+    RegisterAction<bit<32>, bit<32>, void>(reg_clear_buffer) ra_reset_clear = {
+        void apply(inout bit<32> value) {
             value = 0;
         }
     };
@@ -613,27 +612,38 @@ control CombineIngress(
      ***************************************************************************/
     bit<32> channel_id;
     bit<32> channel_class;
-    bit<8> queue_head;
-    bit<8> queue_tail;
-    bit<8> queue_incomplete;
+    bit<32> queue_head;
+    bit<32> queue_tail;
+    bit<32> queue_incomplete;
     bit<32> tx_reg_idx;
     bit<32> buffer_idx;
+    
+    bit<32> slot_id;
+
     //bit<32> token_idx;
 
     /***************************************************************************
      * Utility Actions
      ***************************************************************************/
-    action set_aeth_ingress(bit<8> syndrome, bit<32> psn, bit<32> msn) {
-        ig_md.bridge.has_aeth = true;
-        //hdr.bth.opcode = RDMA_OP_ACK;
-        //ig_md.psn = psn; // If there's an ack header (e.g., RDMA_OP_ACK or Read response), PSN is determined by the ack, set here
-        hdr.bth.psn = psn; // If there's an ack header (e.g., RDMA_OP_ACK or Read response), PSN is determined by the ack, set here
-        hdr.aeth.setValid();
-        hdr.aeth.msn = msn << 8 | (bit<32>)syndrome;
-        //ig_md.msn = msn[23:0];
+    bit<32> tmp_mul_256;
 
-        // hdr.reth.setInvalid();
-        // hdr.payload.setInvalid();
+    action mul_256(){
+        tmp_mul_256 = tmp_mul_256 * 256;
+    }
+
+    action set_aeth_msn() {
+        ig_md.bridge.has_aeth = true;
+        hdr.aeth.setValid();
+        hdr.aeth.msn = tmp_mul_256 * 256;
+    }
+
+    action set_aeth_syndrome(bit<32> syndrome) {
+        hdr.aeth.msn = hdr.aeth.msn + syndrome;
+    }
+
+    action set_aeth_psn(bit<32> psn) {
+        hdr.bth.psn = psn; // If there's an ack header (e.g., RDMA_OP_ACK or Read response), PSN is determined by the ack, set here
+
     }
 
     action swap_l2_l3_l4() {
@@ -767,6 +777,76 @@ control CombineIngress(
         ig_md.token_idx = ig_md.token_idx + channel_mul_64;
     }
 
+    
+    bit<32> temp_head_shifted;
+
+
+    action step1_calc_shift_head() {
+        temp_head_shifted = queue_head << 16;
+    }
+
+    action step2_calc_combine_tail() {
+        ig_md.temp_queue_data = temp_head_shifted | queue_tail;
+    }
+
+    action step3_write_payload_data_0() {
+        hdr.payload.data00 = ig_md.temp_queue_data;
+    }
+
+    action step3_write_payload_data_1() {
+        hdr.payload.data01 = ig_md.temp_queue_data;
+    }
+
+    action step3_write_payload_data_2() {
+        hdr.payload.data02 = ig_md.temp_queue_data;
+    }
+
+    action step3_write_payload_data_3() {
+        hdr.payload.data03 = ig_md.temp_queue_data;
+    }
+
+    action step3_write_payload_data_4() {
+        hdr.payload.data04 = ig_md.temp_queue_data;
+    }
+
+    action step3_write_payload_data_5() {
+        hdr.payload.data05 = ig_md.temp_queue_data;
+    }
+
+    action step3_write_payload_data_6() {
+        hdr.payload.data06 = ig_md.temp_queue_data;
+    }
+
+    action step3_write_payload_data_7() {
+        hdr.payload.data07 = ig_md.temp_queue_data;
+    }
+
+
+    action step1_calc_next_token_idx_from_next_loc() {
+        channel_mul_64 = channel_id << 6;  // channel_id * 64
+    }
+
+    action step2_calc_next_token_idx_from_next_loc() {
+        next_token_idx = ig_md.next_loc;
+    }
+
+    action step3_calc_next_token_idx_from_next_loc() {
+        next_token_idx = next_token_idx + channel_mul_64;
+    }
+
+
+    bitmap_tofino_t bitmap_result;
+    bitmap_tofino_t bitmap_write_val;
+    addr_tofino_t addr_result;
+    addr_tofino_t addr_write_val;
+
+    action step_write_addr_lo() {
+        ig_md.bridge.next_token_addr[31:0] = addr_result[31:0];
+    }
+
+    action step_write_addr_hi() {
+        ig_md.bridge.next_token_addr[63:32] = addr_result[63:32];
+    }
     /***************************************************************************
      * Apply
      ***************************************************************************/
@@ -781,52 +861,76 @@ control CombineIngress(
         //bit<32> tx_reg_idx_tmp = tx_reg_idx + channel_multiply_8;
         //tx_reg_idx = tx_reg_idx_tmp;
 
-        bitmap_tofino_t bitmap_result;
-        bitmap_tofino_t bitmap_write_val;
-        addr_tofino_t addr_result;
-        addr_tofino_t addr_write_val;
-        bit<3> slot_id;
+        
 
         // ================================================================
         // CONN_CONTROL: query queue pointer (READ)
         // ================================================================
         if (ig_md.bridge.conn_semantics == CONN_SEMANTICS.CONN_CONTROL) {
             if (hdr.bth.opcode == RDMA_OP_READ_REQ) {
-         
                 // Construct READ_RESPONSE_ONLY
                 queue_head_slot_0.apply(queue_head, COMBINE_QUEUE_POINTER_REG_OP.OP_READ, channel_class);
                 queue_tail_slot_0.apply(queue_tail, COMBINE_QUEUE_POINTER_REG_OP.OP_READ, channel_class);
-                hdr.payload.data00 = ((bit<32>)queue_head << 16) | (bit<32>)queue_tail;
+                step1_calc_shift_head();
+                step2_calc_combine_tail();
+                step3_write_payload_data_0();
+                //hdr.payload.data00 = (queue_head << 16) | queue_tail;
 
                 queue_head_slot_1.apply(queue_head, COMBINE_QUEUE_POINTER_REG_OP.OP_READ, channel_class);
                 queue_tail_slot_1.apply(queue_tail, COMBINE_QUEUE_POINTER_REG_OP.OP_READ, channel_class);
-                hdr.payload.data01 = ((bit<32>)queue_head << 16) | (bit<32>)queue_tail;
+                //hdr.payload.data01 = (queue_head << 16) | queue_tail;
+                step1_calc_shift_head();
+                step2_calc_combine_tail();
+                step3_write_payload_data_1();
 
                 queue_head_slot_2.apply(queue_head, COMBINE_QUEUE_POINTER_REG_OP.OP_READ, channel_class);
                 queue_tail_slot_2.apply(queue_tail, COMBINE_QUEUE_POINTER_REG_OP.OP_READ, channel_class);
-                hdr.payload.data02 = ((bit<32>)queue_head << 16) | (bit<32>)queue_tail;
+                //hdr.payload.data02 = (queue_head << 16) | queue_tail;
+                step1_calc_shift_head();
+                step2_calc_combine_tail();
+                step3_write_payload_data_2();
 
                 queue_head_slot_3.apply(queue_head, COMBINE_QUEUE_POINTER_REG_OP.OP_READ, channel_class);
                 queue_tail_slot_3.apply(queue_tail, COMBINE_QUEUE_POINTER_REG_OP.OP_READ, channel_class);
-                hdr.payload.data03 = ((bit<32>)queue_head << 16) | (bit<32>)queue_tail;
+                //hdr.payload.data03 = (queue_head << 16) | queue_tail;
+                step1_calc_shift_head();
+                step2_calc_combine_tail();
+                step3_write_payload_data_3();
 
                 queue_head_slot_4.apply(queue_head, COMBINE_QUEUE_POINTER_REG_OP.OP_READ, channel_class);
                 queue_tail_slot_4.apply(queue_tail, COMBINE_QUEUE_POINTER_REG_OP.OP_READ, channel_class);
-                hdr.payload.data04 = ((bit<32>)queue_head << 16) | (bit<32>)queue_tail;
+                //hdr.payload.data04 = (queue_head << 16) | queue_tail;
+                step1_calc_shift_head();
+                step2_calc_combine_tail();
+                step3_write_payload_data_4();
 
                 queue_head_slot_5.apply(queue_head, COMBINE_QUEUE_POINTER_REG_OP.OP_READ, channel_class);
                 queue_tail_slot_5.apply(queue_tail, COMBINE_QUEUE_POINTER_REG_OP.OP_READ, channel_class);
-                hdr.payload.data05 = ((bit<32>)queue_head << 16) | (bit<32>)queue_tail;
+                //hdr.payload.data05 = (queue_head << 16) | queue_tail;
+                step1_calc_shift_head();
+                step2_calc_combine_tail();
+                step3_write_payload_data_5();
 
                 queue_head_slot_6.apply(queue_head, COMBINE_QUEUE_POINTER_REG_OP.OP_READ, channel_class);
                 queue_tail_slot_6.apply(queue_tail, COMBINE_QUEUE_POINTER_REG_OP.OP_READ, channel_class);
-                hdr.payload.data06 = ((bit<32>)queue_head << 16) | (bit<32>)queue_tail;
+                //hdr.payload.data06 = (queue_head << 16) | queue_tail;
+                step1_calc_shift_head();
+                step2_calc_combine_tail();
+                step3_write_payload_data_6();
 
                 queue_head_slot_7.apply(queue_head, COMBINE_QUEUE_POINTER_REG_OP.OP_READ, channel_class);
                 queue_tail_slot_7.apply(queue_tail, COMBINE_QUEUE_POINTER_REG_OP.OP_READ, channel_class);
-                hdr.payload.data07 = ((bit<32>)queue_head << 16) | (bit<32>)queue_tail;
+                //hdr.payload.data07 = (queue_head << 16) | queue_tail;
+                step1_calc_shift_head();
+                step2_calc_combine_tail();
+                step3_write_payload_data_0();
 
-                set_aeth_ingress(AETH_ACK_CREDIT_INVALID, ig_md.psn, ig_md.psn + 1);
+                tmp_mul_256 = ig_md.psn + 32w1;
+                mul_256();
+                set_aeth_msn();
+                set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
+                set_aeth_psn(ig_md.psn);
+
                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
             }
             return;
@@ -840,7 +944,7 @@ control CombineIngress(
                 ig_dprsr_md.drop_ctl = 1;
                 return;
             }
-            psn_to_check = ig_md.psn;
+            ig_md.psn_to_check = ig_md.psn;
             do_read_cond_inc_rx_bitmap_epsn(channel_id);
             bit<32> expected_psn = tmp_result_32;
             
@@ -915,17 +1019,31 @@ control CombineIngress(
                 addr_slot_7.apply(addr_result, addr_write_val, COMBINE_ADDR_REG_OP.OP_WRITE, ig_md);
 
                 // return ACK
-                set_aeth_ingress(AETH_ACK_CREDIT_INVALID, ig_md.psn, ig_md.psn + 1);
+                tmp_mul_256 = ig_md.psn + 32w1;
+                mul_256();
+                set_aeth_msn();
+                set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
+                set_aeth_psn(ig_md.psn);
                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
                 
             } else if (ig_md.psn < expected_psn) {
                 // duplicate packet
-                set_aeth_ingress(AETH_ACK_CREDIT_INVALID, expected_psn - 1, expected_psn);
+                //set_aeth_ingress(AETH_ACK_CREDIT_INVALID, expected_psn - 1, expected_psn);
+                tmp_mul_256 = expected_psn;
+                mul_256();
+                set_aeth_msn();
+                set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
+                set_aeth_psn(expected_psn - 1);
                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
                 
             } else {
                 // packet loss, return NAK
-                set_aeth_ingress(AETH_NAK_SEQ_ERR, (expected_psn - 1), expected_psn);
+                //set_aeth_ingress(AETH_NAK_SEQ_ERR, (expected_psn - 1), expected_psn);
+                tmp_mul_256 = expected_psn;
+                mul_256();
+                set_aeth_msn();
+                set_aeth_syndrome(AETH_NAK_SEQ_ERR);
+                set_aeth_psn(expected_psn - 1);
                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
             }
             return;
@@ -945,7 +1063,7 @@ control CombineIngress(
                 return;
             }
 
-            psn_to_check = ig_md.psn;
+            ig_md.psn_to_check = ig_md.psn;
             do_read_cond_inc_tx_epsn(tx_reg_idx);
             bit<32> expected_psn = tmp_result_32;
             do_read_tx_msn(tx_reg_idx);
@@ -957,7 +1075,7 @@ control CombineIngress(
                 if (hdr.bth.opcode == RDMA_OP_WRITE_FIRST || 
                     hdr.bth.opcode == RDMA_OP_WRITE_ONLY) {
                     // Get loc from reth.addr
-                    ig_md.bridge.tx_loc_val = hdr.reth.addr[63:56];
+                    ig_md.bridge.tx_loc_val = hdr.reth.addr[63:32];
                     ig_md.bridge.tx_offset_val = 0;
                     do_write_tx_loc(tx_reg_idx);
                     do_reset_tx_offset(tx_reg_idx);
@@ -973,7 +1091,7 @@ control CombineIngress(
                 step1_calc_token_idx_from_tx_loc();
                 step2_calc_token_idx_from_tx_loc();
                 step3_calc_token_idx_from_tx_loc();
-                slot_id = ig_md.token_idx[2:0];
+                slot_id = ig_md.token_idx;
                 // Check whether this is the first tx to arrive
                 do_read_set_clear(ig_md.token_idx);
                 ig_md.bridge.clear_offset = tmp_result_8;
@@ -1042,27 +1160,43 @@ control CombineIngress(
                             
                             // Convert packet to WRITE_FIRST; length and other fields are not set.
                             // On the first loop startup the incoming packet may have no RETH and may not fit.
-                            //hdr.reth.setValid();
-                            //hdr.reth.addr[31:0] = addr_result.lo;
-                            //hdr.reth.addr[63:32] = addr_result.hi;
-                            ig_md.bridge.next_token_addr = addr_result;
+                            //ig_md.bridge.next_token_addr = addr_result;
+                            //ig_md.bridge.next_token_addr[31:0] = addr_result[31:0];
+                            //ig_md.bridge.next_token_addr[63:32] = addr_result[63:32];
+                            step_write_addr_lo();
+                            step_write_addr_hi();
 
                         }
                     }
                 }
 
                 // return ACK
-                set_aeth_ingress(AETH_ACK_CREDIT_INVALID, expected_psn, current_msn);
+                //set_aeth_ingress(AETH_ACK_CREDIT_INVALID, expected_psn, current_msn);
+                tmp_mul_256 = current_msn;
+                mul_256();
+                set_aeth_msn();
+                set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
+                set_aeth_psn(expected_psn);
                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
                 
             } else if (ig_md.psn < expected_psn) {
                 // duplicate packet
-                set_aeth_ingress(AETH_ACK_CREDIT_INVALID, (expected_psn - 1), current_msn);
+                //set_aeth_ingress(AETH_ACK_CREDIT_INVALID, (expected_psn - 1), current_msn);
+                tmp_mul_256 = current_msn;
+                mul_256();
+                set_aeth_msn();
+                set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
+                set_aeth_psn(expected_psn - 1);
                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
                 
             } else {
                 // packet loss
-                set_aeth_ingress(AETH_NAK_SEQ_ERR, (expected_psn - 1), current_msn);
+                //set_aeth_ingress(AETH_NAK_SEQ_ERR, (expected_psn - 1), current_msn);
+                tmp_mul_256 = current_msn;
+                mul_256();
+                set_aeth_msn();
+                set_aeth_syndrome(AETH_NAK_SEQ_ERR);
+                set_aeth_psn(expected_psn - 1);
                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
             }
             return;
@@ -1080,22 +1214,22 @@ control CombineIngress(
             hdr.bth.opcode == RDMA_OP_WRITE_FIRST) {
             
             // Get current loc from payload
-            bit<8> current_loc = hdr.payload.data00[7:0];
-            ig_md.bridge.tx_loc_val = current_loc;
+            //bit<32> current_loc = hdr.payload.data00;
+            ig_md.bridge.tx_loc_val = hdr.payload.data00;
             ig_md.bridge.is_loopback = true;
             
             // Set multicast to rx (TOKEN_PACKETS packets)
-            ig_tm_md.mcast_grp_a = (bit<16>)(100 + ig_md.bridge.root_rank_id);
+            bit<32> group = 100 + ig_md.bridge.root_rank_id;
+            ig_tm_md.mcast_grp_a = (bit<16>)group;
             
             do_read_add_rx_token_epsn(channel_id);
             hdr.bth.psn = tmp_result_32;
 
             // Compute next loc (circular queue)
-            bit<8> next_loc;
-            if (current_loc >= COMBINE_QUEUE_LENGTH - 1) {
-                next_loc = 0;
+            if (hdr.payload.data00 >= COMBINE_QUEUE_LENGTH - 1) {
+                ig_md.next_loc = 0;
             } else {
-                next_loc = current_loc + 1;
+                ig_md.next_loc = hdr.payload.data00 + 1;
             }
             
             // Read queue_tail to check if tail is reached
@@ -1117,11 +1251,15 @@ control CombineIngress(
                 queue_tail_slot_7.apply(queue_tail, COMBINE_QUEUE_POINTER_REG_OP.OP_READ, channel_class);
             }
             
-            // If next_loc == queue_tail, all tokens are processed; stop loopback
-            if (next_loc != queue_tail) {
+            // If ig_md.next_loc == queue_tail, all tokens are processed; stop loopback
+            if (ig_md.next_loc != queue_tail) {
                 // Check if bitmap of next loc is zero
-                bit<32> next_token_idx = channel_id * COMBINE_QUEUE_LENGTH + (bit<32>)next_loc;
-                bit<3> next_slot_id = next_token_idx[2:0];
+                //next_token_idx = channel_id * COMBINE_QUEUE_LENGTH + ig_md.next_loc;
+                step1_calc_next_token_idx_from_next_loc();
+                step2_calc_next_token_idx_from_next_loc();
+                step3_calc_next_token_idx_from_next_loc();
+
+                bit<32> next_slot_id = next_token_idx;
                 calc_slot_index_from_next_token();
                 
                 bitmap_tofino_t next_bitmap_result;
@@ -1153,14 +1291,16 @@ control CombineIngress(
                 }
                 
                 // Check queue_incomplete
-                //bit<8> queue_incomplete_val = ra_read_queue_incomplete.execute(channel_id);
+                //bit<32> queue_incomplete_val = ra_read_queue_incomplete.execute(channel_id);
                 
                 // If next token is ready, continue loopback
-                if (next_bitmap_result == 0 ) { //&& next_loc == queue_incomplete_val
+                if (next_bitmap_result == 0 ) { //&& ig_md.next_loc == queue_incomplete_val
                     // Update queue_incomplete and queue_head
-                    ig_md.bridge.tx_loc_val = next_loc;
+                    ig_md.bridge.tx_loc_val = ig_md.next_loc;
                     do_read_cond_inc_queue_incomplete(channel_id);
                     queue_incomplete = tmp_result_8;
+                    // Restore current loc for egress
+                    ig_md.bridge.tx_loc_val = hdr.payload.data00;
                     
                     if (ig_md.bridge.root_rank_id == 0) {
                         queue_head_slot_0.apply(queue_head, COMBINE_QUEUE_POINTER_REG_OP.OP_INC, channel_class);
@@ -1180,16 +1320,17 @@ control CombineIngress(
                         queue_head_slot_7.apply(queue_head, COMBINE_QUEUE_POINTER_REG_OP.OP_INC, channel_class);
                     }
                     
-                    // Set loopback to continue and update payload.data00 to next_loc
+                    // Set loopback to continue and update payload.data00 to ig_md.next_loc
                     ig_tm_md.mcast_grp_b = LOOPBACK_MCAST_GRP;
-                    hdr.payload.data00 = (bit<32>)next_loc;
-                    ig_md.bridge.next_token_addr = addr_result;
-
+                    hdr.payload.data00 = ig_md.next_loc;
+                    //ig_md.bridge.next_token_addr[31:0] = addr_result[31:0];
+                    //ig_md.bridge.next_token_addr[63:32] = addr_result[63:32];
+                    step_write_addr_lo();
+                    step_write_addr_hi();
                 }
             }
             
-            // Restore current loc for egress
-            ig_md.bridge.tx_loc_val = current_loc;
+            
             
             return;
         }
@@ -1440,9 +1581,9 @@ control CombineEgress(
             hdr.payload.setValid();
             if (!eg_md.bridge.is_loopback) {
                 // From CONN_TX: first time starting loop, set current loc
-                hdr.payload.data00 = (bit<32>)eg_md.bridge.tx_loc_val;
+                hdr.payload.data00 = eg_md.bridge.tx_loc_val;
             }
-            // If is_loopback, payload.data00 was already set to next_loc in ingress
+            // If is_loopback, payload.data00 was already set to ig_md.next_loc in ingress
             
             // Lookup table to set rx info (dst_mac, dst_ip, dst_qp, rkey)
             tbl_rx_info.apply();

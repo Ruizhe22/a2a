@@ -13,7 +13,7 @@ tables {
   match_fields {
     id: 1
     name: "ig_md.bridge.ing_rank_id"
-    bitwidth: 8
+    bitwidth: 32
     match_type: EXACT
   }
   action_refs {
@@ -109,7 +109,7 @@ tables {
   match_fields {
     id: 2
     name: "eg_md.eg_rank_id"
-    bitwidth: 8
+    bitwidth: 32
     match_type: EXACT
   }
   action_refs {
@@ -138,7 +138,7 @@ tables {
   match_fields {
     id: 2
     name: "eg_md.bridge.root_rank_id"
-    bitwidth: 8
+    bitwidth: 32
     match_type: EXACT
   }
   action_refs {
@@ -154,9 +154,30 @@ tables {
 }
 actions {
   preamble {
-    id: 20062526
-    name: "A2AIngress.dispatch_ctrl.set_ack_ingress"
-    alias: "set_ack_ingress"
+    id: 26342838
+    name: "A2AIngress.dispatch_ctrl.mul_256"
+    alias: "dispatch_ctrl.mul_256"
+  }
+}
+actions {
+  preamble {
+    id: 22498553
+    name: "A2AIngress.dispatch_ctrl.set_aeth_msn"
+    alias: "dispatch_ctrl.set_aeth_msn"
+  }
+}
+actions {
+  preamble {
+    id: 31550484
+    name: "A2AIngress.dispatch_ctrl.set_aeth_syndrome"
+    alias: "dispatch_ctrl.set_aeth_syndrome"
+  }
+}
+actions {
+  preamble {
+    id: 29256268
+    name: "A2AIngress.dispatch_ctrl.set_aeth_psn"
+    alias: "dispatch_ctrl.set_aeth_psn"
   }
 }
 actions {
@@ -1134,9 +1155,30 @@ actions {
 }
 actions {
   preamble {
-    id: 20601335
-    name: "A2AIngress.combine_ctrl.set_aeth_ingress"
-    alias: "set_aeth_ingress"
+    id: 29623030
+    name: "A2AIngress.combine_ctrl.mul_256"
+    alias: "combine_ctrl.mul_256"
+  }
+}
+actions {
+  preamble {
+    id: 31070732
+    name: "A2AIngress.combine_ctrl.set_aeth_msn"
+    alias: "combine_ctrl.set_aeth_msn"
+  }
+}
+actions {
+  preamble {
+    id: 29042212
+    name: "A2AIngress.combine_ctrl.set_aeth_syndrome"
+    alias: "combine_ctrl.set_aeth_syndrome"
+  }
+}
+actions {
+  preamble {
+    id: 29650905
+    name: "A2AIngress.combine_ctrl.set_aeth_psn"
+    alias: "combine_ctrl.set_aeth_psn"
   }
 }
 actions {
@@ -1230,6 +1272,104 @@ actions {
 }
 actions {
   preamble {
+    id: 21839468
+    name: "A2AIngress.combine_ctrl.step1_calc_shift_head"
+    alias: "step1_calc_shift_head"
+  }
+}
+actions {
+  preamble {
+    id: 18100903
+    name: "A2AIngress.combine_ctrl.step2_calc_combine_tail"
+    alias: "step2_calc_combine_tail"
+  }
+}
+actions {
+  preamble {
+    id: 30135059
+    name: "A2AIngress.combine_ctrl.step3_write_payload_data_0"
+    alias: "step3_write_payload_data_0"
+  }
+}
+actions {
+  preamble {
+    id: 19932135
+    name: "A2AIngress.combine_ctrl.step3_write_payload_data_1"
+    alias: "step3_write_payload_data_1"
+  }
+}
+actions {
+  preamble {
+    id: 25824923
+    name: "A2AIngress.combine_ctrl.step3_write_payload_data_2"
+    alias: "step3_write_payload_data_2"
+  }
+}
+actions {
+  preamble {
+    id: 21326352
+    name: "A2AIngress.combine_ctrl.step3_write_payload_data_3"
+    alias: "step3_write_payload_data_3"
+  }
+}
+actions {
+  preamble {
+    id: 17585566
+    name: "A2AIngress.combine_ctrl.step3_write_payload_data_4"
+    alias: "step3_write_payload_data_4"
+  }
+}
+actions {
+  preamble {
+    id: 19846629
+    name: "A2AIngress.combine_ctrl.step3_write_payload_data_5"
+    alias: "step3_write_payload_data_5"
+  }
+}
+actions {
+  preamble {
+    id: 32256352
+    name: "A2AIngress.combine_ctrl.step3_write_payload_data_6"
+    alias: "step3_write_payload_data_6"
+  }
+}
+actions {
+  preamble {
+    id: 28700137
+    name: "A2AIngress.combine_ctrl.step1_calc_next_token_idx_from_next_loc"
+    alias: "step1_calc_next_token_idx_from_next_loc"
+  }
+}
+actions {
+  preamble {
+    id: 31418900
+    name: "A2AIngress.combine_ctrl.step2_calc_next_token_idx_from_next_loc"
+    alias: "step2_calc_next_token_idx_from_next_loc"
+  }
+}
+actions {
+  preamble {
+    id: 27807237
+    name: "A2AIngress.combine_ctrl.step3_calc_next_token_idx_from_next_loc"
+    alias: "step3_calc_next_token_idx_from_next_loc"
+  }
+}
+actions {
+  preamble {
+    id: 24535088
+    name: "A2AIngress.combine_ctrl.step_write_addr_lo"
+    alias: "step_write_addr_lo"
+  }
+}
+actions {
+  preamble {
+    id: 22716524
+    name: "A2AIngress.combine_ctrl.step_write_addr_hi"
+    alias: "step_write_addr_hi"
+  }
+}
+actions {
+  preamble {
     id: 23149940
     name: "A2AIngress.set_a2a_traffic"
     alias: "set_a2a_traffic"
@@ -1257,12 +1397,12 @@ actions {
   params {
     id: 5
     name: "ing_rank_id"
-    bitwidth: 8
+    bitwidth: 32
   }
   params {
     id: 6
     name: "root_rank_id"
-    bitwidth: 8
+    bitwidth: 32
   }
 }
 actions {
@@ -1270,6 +1410,118 @@ actions {
     id: 16844530
     name: "A2AIngress.set_unknown_traffic"
     alias: "set_unknown_traffic"
+  }
+}
+actions {
+  preamble {
+    id: 20538933
+    name: "A2AIngress.set_bridge_ing_rank_id"
+    alias: "set_bridge_ing_rank_id"
+  }
+}
+actions {
+  preamble {
+    id: 18116057
+    name: "A2AIngress.set_bridge_has_reth"
+    alias: "set_bridge_has_reth"
+  }
+}
+actions {
+  preamble {
+    id: 19006807
+    name: "A2AIngress.set_bridge_has_aeth"
+    alias: "set_bridge_has_aeth"
+  }
+}
+actions {
+  preamble {
+    id: 16987414
+    name: "A2AIngress.set_bridge_has_payload"
+    alias: "set_bridge_has_payload"
+  }
+}
+actions {
+  preamble {
+    id: 30847830
+    name: "A2AIngress.set_bridge_conn_phase"
+    alias: "set_bridge_conn_phase"
+  }
+}
+actions {
+  preamble {
+    id: 21256104
+    name: "A2AIngress.set_bridge_conn_semantics"
+    alias: "set_bridge_conn_semantics"
+  }
+}
+actions {
+  preamble {
+    id: 30682375
+    name: "A2AIngress.set_bridge_channel_id"
+    alias: "set_bridge_channel_id"
+  }
+}
+actions {
+  preamble {
+    id: 32018589
+    name: "A2AIngress.set_bridge_bitmap"
+    alias: "set_bridge_bitmap"
+  }
+}
+actions {
+  preamble {
+    id: 18479285
+    name: "A2AIngress.set_bridge_tx_loc_val"
+    alias: "set_bridge_tx_loc_val"
+  }
+}
+actions {
+  preamble {
+    id: 24865628
+    name: "A2AIngress.set_bridge_tx_offset_val"
+    alias: "set_bridge_tx_offset_val"
+  }
+}
+actions {
+  preamble {
+    id: 24927133
+    name: "A2AIngress.set_bridge_clear_offset"
+    alias: "set_bridge_clear_offset"
+  }
+}
+actions {
+  preamble {
+    id: 25966735
+    name: "A2AIngress.set_bridge_is_loopback"
+    alias: "set_bridge_is_loopback"
+  }
+}
+actions {
+  preamble {
+    id: 28791673
+    name: "A2AIngress.set_bridge_root_rank_id_lo"
+    alias: "set_bridge_root_rank_id_lo"
+  }
+}
+actions {
+  preamble {
+    id: 23825862
+    name: "A2AIngress.set_bridge_root_rank_id_hi"
+    alias: "set_bridge_root_rank_id_hi"
+  }
+}
+actions {
+  preamble {
+    id: 26195215
+    name: "A2AIngress.set_bridge_next_token_addr_hi"
+    alias: "set_bridge_next_token_addr_hi"
+  }
+}
+actions {
+  preamble {
+    id: 32183656
+    name: "A2AIngress.set_bridge_next_token_addr_lo"
+    alias: "set_bridge_next_token_addr_lo"
   }
 }
 actions {
@@ -1289,7 +1541,7 @@ actions {
   params {
     id: 1
     name: "rank_id"
-    bitwidth: 8
+    bitwidth: 32
   }
 }
 actions {
@@ -1607,7 +1859,7 @@ externs {
         type_spec {
           bitstring {
             bit {
-              bitwidth: 8
+              bitwidth: 32
             }
           }
         }
@@ -1627,7 +1879,7 @@ externs {
         type_spec {
           bitstring {
             bit {
-              bitwidth: 8
+              bitwidth: 32
             }
           }
         }
@@ -1707,7 +1959,7 @@ externs {
         type_spec {
           bitstring {
             bit {
-              bitwidth: 8
+              bitwidth: 32
             }
           }
         }
@@ -1727,7 +1979,7 @@ externs {
         type_spec {
           bitstring {
             bit {
-              bitwidth: 8
+              bitwidth: 32
             }
           }
         }
@@ -1747,7 +1999,7 @@ externs {
         type_spec {
           bitstring {
             bit {
-              bitwidth: 8
+              bitwidth: 32
             }
           }
         }
@@ -1767,7 +2019,7 @@ externs {
         type_spec {
           bitstring {
             bit {
-              bitwidth: 8
+              bitwidth: 32
             }
           }
         }
@@ -1787,7 +2039,7 @@ externs {
         type_spec {
           bitstring {
             bit {
-              bitwidth: 8
+              bitwidth: 32
             }
           }
         }
@@ -1807,7 +2059,7 @@ externs {
         type_spec {
           bitstring {
             bit {
-              bitwidth: 8
+              bitwidth: 32
             }
           }
         }
@@ -1827,7 +2079,7 @@ externs {
         type_spec {
           bitstring {
             bit {
-              bitwidth: 8
+              bitwidth: 32
             }
           }
         }
@@ -1847,7 +2099,7 @@ externs {
         type_spec {
           bitstring {
             bit {
-              bitwidth: 8
+              bitwidth: 32
             }
           }
         }
@@ -1867,7 +2119,7 @@ externs {
         type_spec {
           bitstring {
             bit {
-              bitwidth: 8
+              bitwidth: 32
             }
           }
         }
@@ -1887,7 +2139,7 @@ externs {
         type_spec {
           bitstring {
             bit {
-              bitwidth: 8
+              bitwidth: 32
             }
           }
         }
@@ -1907,7 +2159,7 @@ externs {
         type_spec {
           bitstring {
             bit {
-              bitwidth: 8
+              bitwidth: 32
             }
           }
         }
@@ -1927,7 +2179,7 @@ externs {
         type_spec {
           bitstring {
             bit {
-              bitwidth: 8
+              bitwidth: 32
             }
           }
         }
@@ -1947,7 +2199,7 @@ externs {
         type_spec {
           bitstring {
             bit {
-              bitwidth: 8
+              bitwidth: 32
             }
           }
         }
@@ -1967,7 +2219,7 @@ externs {
         type_spec {
           bitstring {
             bit {
-              bitwidth: 8
+              bitwidth: 32
             }
           }
         }
@@ -1987,7 +2239,7 @@ externs {
         type_spec {
           bitstring {
             bit {
-              bitwidth: 8
+              bitwidth: 32
             }
           }
         }
@@ -2007,7 +2259,7 @@ externs {
         type_spec {
           bitstring {
             bit {
-              bitwidth: 8
+              bitwidth: 32
             }
           }
         }
@@ -2027,7 +2279,7 @@ externs {
         type_spec {
           bitstring {
             bit {
-              bitwidth: 8
+              bitwidth: 32
             }
           }
         }
@@ -2527,7 +2779,7 @@ externs {
         type_spec {
           bitstring {
             bit {
-              bitwidth: 8
+              bitwidth: 32
             }
           }
         }
@@ -3067,556 +3319,636 @@ externs {
         pipe: "pipe"
         fields {
           id: 1
-          name: "hdr.eth.$valid"
+          name: "hdr.bridge.$valid"
           bitwidth: 1
         }
         fields {
           id: 2
+          name: "hdr.bridge.ing_rank_id"
+          bitwidth: 32
+        }
+        fields {
+          id: 3
+          name: "hdr.bridge.conn_phase"
+          bitwidth: 2
+        }
+        fields {
+          id: 4
+          name: "hdr.bridge.conn_semantics"
+          bitwidth: 2
+        }
+        fields {
+          id: 5
+          name: "hdr.bridge.channel_id"
+          bitwidth: 32
+        }
+        fields {
+          id: 6
+          name: "hdr.bridge.bitmap"
+          bitwidth: 32
+        }
+        fields {
+          id: 7
+          name: "hdr.bridge.tx_loc_val"
+          bitwidth: 32
+        }
+        fields {
+          id: 8
+          name: "hdr.bridge.tx_offset_val"
+          bitwidth: 32
+        }
+        fields {
+          id: 9
+          name: "hdr.bridge.clear_offset"
+          bitwidth: 32
+        }
+        fields {
+          id: 10
+          name: "hdr.bridge.root_rank_id"
+          bitwidth: 32
+        }
+        fields {
+          id: 11
+          name: "hdr.bridge.next_token_addr"
+          bitwidth: 64
+        }
+        fields {
+          id: 12
+          name: "hdr.eth.$valid"
+          bitwidth: 1
+        }
+        fields {
+          id: 13
           name: "hdr.eth.dst_addr"
           bitwidth: 48
         }
         fields {
-          id: 3
+          id: 14
           name: "hdr.eth.src_addr"
           bitwidth: 48
         }
         fields {
-          id: 4
+          id: 15
           name: "hdr.eth.ether_type"
           bitwidth: 16
         }
         fields {
-          id: 5
+          id: 16
           name: "hdr.ipv4.$valid"
           bitwidth: 1
         }
         fields {
-          id: 6
+          id: 17
           name: "hdr.ipv4.ver_ihl"
           bitwidth: 8
         }
         fields {
-          id: 7
+          id: 18
           name: "hdr.ipv4.diffserv"
           bitwidth: 8
         }
         fields {
-          id: 8
+          id: 19
           name: "hdr.ipv4.total_len"
           bitwidth: 16
         }
         fields {
-          id: 9
+          id: 20
           name: "hdr.ipv4.identification"
           bitwidth: 16
         }
         fields {
-          id: 10
+          id: 21
           name: "hdr.ipv4.flag_offset"
           bitwidth: 16
         }
         fields {
-          id: 11
+          id: 22
           name: "hdr.ipv4.ttl"
           bitwidth: 8
         }
         fields {
-          id: 12
+          id: 23
           name: "hdr.ipv4.protocol"
           bitwidth: 8
         }
         fields {
-          id: 13
+          id: 24
           name: "hdr.ipv4.hdr_checksum"
           bitwidth: 16
         }
         fields {
-          id: 14
+          id: 25
           name: "hdr.ipv4.src_addr"
           bitwidth: 32
         }
         fields {
-          id: 15
+          id: 26
           name: "hdr.ipv4.dst_addr"
           bitwidth: 32
         }
         fields {
-          id: 16
+          id: 27
           name: "hdr.udp.$valid"
           bitwidth: 1
         }
         fields {
-          id: 17
+          id: 28
           name: "hdr.udp.src_port"
           bitwidth: 16
         }
         fields {
-          id: 18
+          id: 29
           name: "hdr.udp.dst_port"
           bitwidth: 16
         }
         fields {
-          id: 19
+          id: 30
           name: "hdr.udp.length"
           bitwidth: 16
         }
         fields {
-          id: 20
+          id: 31
           name: "hdr.udp.checksum"
           bitwidth: 16
         }
         fields {
-          id: 21
+          id: 32
           name: "hdr.bth.$valid"
           bitwidth: 1
         }
         fields {
-          id: 22
+          id: 33
           name: "hdr.bth.opcode"
           bitwidth: 8
         }
         fields {
-          id: 23
+          id: 34
           name: "hdr.bth.se_migreq_pad_ver"
           bitwidth: 8
         }
         fields {
-          id: 24
+          id: 35
           name: "hdr.bth.pkey"
           bitwidth: 16
         }
         fields {
-          id: 25
+          id: 36
           name: "hdr.bth.dst_qp"
           bitwidth: 32
         }
         fields {
-          id: 26
+          id: 37
           name: "hdr.bth.psn"
           bitwidth: 32
         }
         fields {
-          id: 27
+          id: 38
           name: "hdr.aeth.$valid"
           bitwidth: 1
         }
         fields {
-          id: 28
+          id: 39
           name: "hdr.aeth.msn"
           bitwidth: 32
         }
         fields {
-          id: 29
+          id: 40
           name: "hdr.reth.$valid"
           bitwidth: 1
         }
         fields {
-          id: 30
+          id: 41
           name: "hdr.reth.addr"
           bitwidth: 64
         }
         fields {
-          id: 31
+          id: 42
           name: "hdr.reth.rkey"
           bitwidth: 32
         }
         fields {
-          id: 32
+          id: 43
           name: "hdr.reth.len"
           bitwidth: 32
         }
         fields {
-          id: 33
+          id: 44
           name: "hdr.payload_first_word.$valid"
           bitwidth: 1
         }
         fields {
-          id: 34
+          id: 45
           name: "hdr.payload_first_word.data"
           bitwidth: 32
         }
         fields {
-          id: 35
+          id: 46
           name: "hdr.payload.$valid"
           bitwidth: 1
         }
         fields {
-          id: 36
+          id: 47
           name: "hdr.payload.data00"
           bitwidth: 32
         }
         fields {
-          id: 37
+          id: 48
           name: "hdr.payload.data01"
           bitwidth: 32
         }
         fields {
-          id: 38
+          id: 49
           name: "hdr.payload.data02"
           bitwidth: 32
         }
         fields {
-          id: 39
+          id: 50
           name: "hdr.payload.data03"
           bitwidth: 32
         }
         fields {
-          id: 40
+          id: 51
           name: "hdr.payload.data04"
           bitwidth: 32
         }
         fields {
-          id: 41
+          id: 52
           name: "hdr.payload.data05"
           bitwidth: 32
         }
         fields {
-          id: 42
+          id: 53
           name: "hdr.payload.data06"
           bitwidth: 32
         }
         fields {
-          id: 43
+          id: 54
           name: "hdr.payload.data07"
           bitwidth: 32
         }
         fields {
-          id: 44
+          id: 55
           name: "hdr.payload.data08"
           bitwidth: 32
         }
         fields {
-          id: 45
+          id: 56
           name: "hdr.payload.data09"
           bitwidth: 32
         }
         fields {
-          id: 46
+          id: 57
           name: "hdr.payload.data0a"
           bitwidth: 32
         }
         fields {
-          id: 47
+          id: 58
           name: "hdr.payload.data0b"
           bitwidth: 32
         }
         fields {
-          id: 48
+          id: 59
           name: "hdr.payload.data0c"
           bitwidth: 32
         }
         fields {
-          id: 49
+          id: 60
           name: "hdr.payload.data0d"
           bitwidth: 32
         }
         fields {
-          id: 50
+          id: 61
           name: "hdr.payload.data0e"
           bitwidth: 32
         }
         fields {
-          id: 51
+          id: 62
           name: "hdr.payload.data0f"
           bitwidth: 32
         }
         fields {
-          id: 52
+          id: 63
           name: "hdr.payload.data10"
           bitwidth: 32
         }
         fields {
-          id: 53
+          id: 64
           name: "hdr.payload.data11"
           bitwidth: 32
         }
         fields {
-          id: 54
+          id: 65
           name: "hdr.payload.data12"
           bitwidth: 32
         }
         fields {
-          id: 55
+          id: 66
           name: "hdr.payload.data13"
           bitwidth: 32
         }
         fields {
-          id: 56
+          id: 67
           name: "hdr.payload.data14"
           bitwidth: 32
         }
         fields {
-          id: 57
+          id: 68
           name: "hdr.payload.data15"
           bitwidth: 32
         }
         fields {
-          id: 58
+          id: 69
           name: "hdr.payload.data16"
           bitwidth: 32
         }
         fields {
-          id: 59
+          id: 70
           name: "hdr.payload.data17"
           bitwidth: 32
         }
         fields {
-          id: 60
+          id: 71
           name: "hdr.icrc.$valid"
           bitwidth: 1
         }
         fields {
-          id: 61
+          id: 72
           name: "hdr.icrc.v0"
           bitwidth: 8
         }
         fields {
-          id: 62
+          id: 73
           name: "hdr.icrc.v1"
           bitwidth: 8
         }
         fields {
-          id: 63
+          id: 74
           name: "hdr.icrc.v2"
           bitwidth: 8
         }
         fields {
-          id: 64
+          id: 75
           name: "hdr.icrc.v3"
           bitwidth: 8
         }
         fields {
-          id: 65
+          id: 76
           name: "ig_md.bitmap_clear_mask"
           bitwidth: 32
         }
         fields {
-          id: 66
+          id: 77
           name: "ig_md.psn"
           bitwidth: 32
         }
         fields {
-          id: 67
+          id: 78
           name: "ig_md.msn"
           bitwidth: 32
         }
         fields {
-          id: 68
+          id: 79
           name: "ig_md.syndrome"
           bitwidth: 32
         }
         fields {
-          id: 69
+          id: 80
           name: "ig_md.channel_class"
           bitwidth: 32
         }
         fields {
-          id: 70
+          id: 81
           name: "ig_md.token_idx"
           bitwidth: 32
         }
         fields {
-          id: 71
+          id: 82
           name: "ig_md.slot_index"
           bitwidth: 32
         }
         fields {
-          id: 72
-          name: "ig_md.bridge.ing_rank_id"
-          bitwidth: 8
+          id: 83
+          name: "ig_md.expected_epsn"
+          bitwidth: 32
         }
         fields {
-          id: 73
+          id: 84
+          name: "ig_md.msn_saved"
+          bitwidth: 32
+        }
+        fields {
+          id: 85
+          name: "ig_md.psn_to_check"
+          bitwidth: 32
+        }
+        fields {
+          id: 86
+          name: "ig_md.temp_queue_data"
+          bitwidth: 32
+        }
+        fields {
+          id: 87
+          name: "ig_md.next_loc"
+          bitwidth: 32
+        }
+        fields {
+          id: 88
+          name: "ig_md.bridge.ing_rank_id"
+          bitwidth: 32
+        }
+        fields {
+          id: 89
           name: "ig_md.bridge.conn_phase"
           bitwidth: 2
         }
         fields {
-          id: 74
+          id: 90
           name: "ig_md.bridge.conn_semantics"
           bitwidth: 2
         }
         fields {
-          id: 75
+          id: 91
           name: "ig_md.bridge.channel_id"
           bitwidth: 32
         }
         fields {
-          id: 76
+          id: 92
           name: "ig_md.bridge.bitmap"
           bitwidth: 32
         }
         fields {
-          id: 77
+          id: 93
           name: "ig_md.bridge.tx_loc_val"
-          bitwidth: 8
+          bitwidth: 32
         }
         fields {
-          id: 78
+          id: 94
           name: "ig_md.bridge.tx_offset_val"
-          bitwidth: 8
+          bitwidth: 32
         }
         fields {
-          id: 79
+          id: 95
           name: "ig_md.bridge.clear_offset"
-          bitwidth: 8
+          bitwidth: 32
         }
         fields {
-          id: 80
+          id: 96
           name: "ig_md.bridge.root_rank_id"
-          bitwidth: 8
+          bitwidth: 32
         }
         fields {
-          id: 81
+          id: 97
           name: "ig_md.bridge.next_token_addr"
           bitwidth: 64
         }
         fields {
-          id: 82
+          id: 98
           name: "ig_intr_md.resubmit_flag"
           bitwidth: 1
         }
         fields {
-          id: 83
+          id: 99
           name: "ig_intr_md._pad1"
           bitwidth: 1
         }
         fields {
-          id: 84
+          id: 100
           name: "ig_intr_md.packet_version"
           bitwidth: 2
         }
         fields {
-          id: 85
+          id: 101
           name: "ig_intr_md._pad2"
           bitwidth: 3
         }
         fields {
-          id: 86
+          id: 102
           name: "ig_intr_md.ingress_port"
           bitwidth: 9
         }
         fields {
-          id: 87
+          id: 103
           name: "ig_intr_md.ingress_mac_tstamp"
           bitwidth: 48
         }
         fields {
-          id: 88
+          id: 104
           name: "ig_prsr_md.global_tstamp"
           bitwidth: 48
         }
         fields {
-          id: 89
+          id: 105
           name: "ig_prsr_md.global_ver"
           bitwidth: 32
         }
         fields {
-          id: 90
+          id: 106
           name: "ig_prsr_md.parser_err"
           bitwidth: 16
         }
         fields {
-          id: 91
+          id: 107
           name: "ig_dprsr_md.drop_ctl"
           bitwidth: 3
         }
         fields {
-          id: 92
+          id: 108
           name: "ig_dprsr_md.digest_type"
           bitwidth: 3
         }
         fields {
-          id: 93
+          id: 109
           name: "ig_dprsr_md.resubmit_type"
           bitwidth: 3
         }
         fields {
-          id: 94
+          id: 110
           name: "ig_dprsr_md.mirror_type"
           bitwidth: 3
         }
         fields {
-          id: 95
+          id: 111
           name: "ig_tm_md.ucast_egress_port"
           bitwidth: 9
         }
         fields {
-          id: 96
+          id: 112
           name: "ig_tm_md.bypass_egress"
           bitwidth: 1
         }
         fields {
-          id: 97
+          id: 113
           name: "ig_tm_md.deflect_on_drop"
           bitwidth: 1
         }
         fields {
-          id: 98
+          id: 114
           name: "ig_tm_md.ingress_cos"
           bitwidth: 3
         }
         fields {
-          id: 99
+          id: 115
           name: "ig_tm_md.qid"
           bitwidth: 5
         }
         fields {
-          id: 100
+          id: 116
           name: "ig_tm_md.icos_for_copy_to_cpu"
           bitwidth: 3
         }
         fields {
-          id: 101
+          id: 117
           name: "ig_tm_md.copy_to_cpu"
           bitwidth: 1
         }
         fields {
-          id: 102
+          id: 118
           name: "ig_tm_md.packet_color"
           bitwidth: 2
         }
         fields {
-          id: 103
+          id: 119
           name: "ig_tm_md.disable_ucast_cutthru"
           bitwidth: 1
         }
         fields {
-          id: 104
+          id: 120
           name: "ig_tm_md.enable_mcast_cutthru"
           bitwidth: 1
         }
         fields {
-          id: 105
+          id: 121
           name: "ig_tm_md.mcast_grp_a"
           bitwidth: 16
         }
         fields {
-          id: 106
+          id: 122
           name: "ig_tm_md.mcast_grp_b"
           bitwidth: 16
         }
         fields {
-          id: 107
+          id: 123
           name: "ig_tm_md.level1_mcast_hash"
           bitwidth: 13
         }
         fields {
-          id: 108
+          id: 124
           name: "ig_tm_md.level2_mcast_hash"
           bitwidth: 13
         }
         fields {
-          id: 109
+          id: 125
           name: "ig_tm_md.level1_exclusion_id"
           bitwidth: 16
         }
         fields {
-          id: 110
+          id: 126
           name: "ig_tm_md.level2_exclusion_id"
           bitwidth: 9
         }
         fields {
-          id: 111
+          id: 127
           name: "ig_tm_md.rid"
           bitwidth: 16
         }
@@ -3635,551 +3967,606 @@ externs {
         direction: DIRECTION_EGRESS
         fields {
           id: 1
-          name: "hdr.eth.$valid"
+          name: "hdr.bridge.$valid"
           bitwidth: 1
         }
         fields {
           id: 2
+          name: "hdr.bridge.ing_rank_id"
+          bitwidth: 32
+        }
+        fields {
+          id: 3
+          name: "hdr.bridge.conn_phase"
+          bitwidth: 2
+        }
+        fields {
+          id: 4
+          name: "hdr.bridge.conn_semantics"
+          bitwidth: 2
+        }
+        fields {
+          id: 5
+          name: "hdr.bridge.channel_id"
+          bitwidth: 32
+        }
+        fields {
+          id: 6
+          name: "hdr.bridge.bitmap"
+          bitwidth: 32
+        }
+        fields {
+          id: 7
+          name: "hdr.bridge.tx_loc_val"
+          bitwidth: 32
+        }
+        fields {
+          id: 8
+          name: "hdr.bridge.tx_offset_val"
+          bitwidth: 32
+        }
+        fields {
+          id: 9
+          name: "hdr.bridge.clear_offset"
+          bitwidth: 32
+        }
+        fields {
+          id: 10
+          name: "hdr.bridge.root_rank_id"
+          bitwidth: 32
+        }
+        fields {
+          id: 11
+          name: "hdr.bridge.next_token_addr"
+          bitwidth: 64
+        }
+        fields {
+          id: 12
+          name: "hdr.eth.$valid"
+          bitwidth: 1
+        }
+        fields {
+          id: 13
           name: "hdr.eth.dst_addr"
           bitwidth: 48
         }
         fields {
-          id: 3
+          id: 14
           name: "hdr.eth.src_addr"
           bitwidth: 48
         }
         fields {
-          id: 4
+          id: 15
           name: "hdr.eth.ether_type"
           bitwidth: 16
         }
         fields {
-          id: 5
+          id: 16
           name: "hdr.ipv4.$valid"
           bitwidth: 1
         }
         fields {
-          id: 6
+          id: 17
           name: "hdr.ipv4.ver_ihl"
           bitwidth: 8
         }
         fields {
-          id: 7
+          id: 18
           name: "hdr.ipv4.diffserv"
           bitwidth: 8
         }
         fields {
-          id: 8
+          id: 19
           name: "hdr.ipv4.total_len"
           bitwidth: 16
         }
         fields {
-          id: 9
+          id: 20
           name: "hdr.ipv4.identification"
           bitwidth: 16
         }
         fields {
-          id: 10
+          id: 21
           name: "hdr.ipv4.flag_offset"
           bitwidth: 16
         }
         fields {
-          id: 11
+          id: 22
           name: "hdr.ipv4.ttl"
           bitwidth: 8
         }
         fields {
-          id: 12
+          id: 23
           name: "hdr.ipv4.protocol"
           bitwidth: 8
         }
         fields {
-          id: 13
+          id: 24
           name: "hdr.ipv4.hdr_checksum"
           bitwidth: 16
         }
         fields {
-          id: 14
+          id: 25
           name: "hdr.ipv4.src_addr"
           bitwidth: 32
         }
         fields {
-          id: 15
+          id: 26
           name: "hdr.ipv4.dst_addr"
           bitwidth: 32
         }
         fields {
-          id: 16
+          id: 27
           name: "hdr.udp.$valid"
           bitwidth: 1
         }
         fields {
-          id: 17
+          id: 28
           name: "hdr.udp.src_port"
           bitwidth: 16
         }
         fields {
-          id: 18
+          id: 29
           name: "hdr.udp.dst_port"
           bitwidth: 16
         }
         fields {
-          id: 19
+          id: 30
           name: "hdr.udp.length"
           bitwidth: 16
         }
         fields {
-          id: 20
+          id: 31
           name: "hdr.udp.checksum"
           bitwidth: 16
         }
         fields {
-          id: 21
+          id: 32
           name: "hdr.bth.$valid"
           bitwidth: 1
         }
         fields {
-          id: 22
+          id: 33
           name: "hdr.bth.opcode"
           bitwidth: 8
         }
         fields {
-          id: 23
+          id: 34
           name: "hdr.bth.se_migreq_pad_ver"
           bitwidth: 8
         }
         fields {
-          id: 24
+          id: 35
           name: "hdr.bth.pkey"
           bitwidth: 16
         }
         fields {
-          id: 25
+          id: 36
           name: "hdr.bth.dst_qp"
           bitwidth: 32
         }
         fields {
-          id: 26
+          id: 37
           name: "hdr.bth.psn"
           bitwidth: 32
         }
         fields {
-          id: 27
+          id: 38
           name: "hdr.aeth.$valid"
           bitwidth: 1
         }
         fields {
-          id: 28
+          id: 39
           name: "hdr.aeth.msn"
           bitwidth: 32
         }
         fields {
-          id: 29
+          id: 40
           name: "hdr.reth.$valid"
           bitwidth: 1
         }
         fields {
-          id: 30
+          id: 41
           name: "hdr.reth.addr"
           bitwidth: 64
         }
         fields {
-          id: 31
+          id: 42
           name: "hdr.reth.rkey"
           bitwidth: 32
         }
         fields {
-          id: 32
+          id: 43
           name: "hdr.reth.len"
           bitwidth: 32
         }
         fields {
-          id: 33
+          id: 44
           name: "hdr.payload_first_word.$valid"
           bitwidth: 1
         }
         fields {
-          id: 34
+          id: 45
           name: "hdr.payload_first_word.data"
           bitwidth: 32
         }
         fields {
-          id: 35
+          id: 46
           name: "hdr.payload.$valid"
           bitwidth: 1
         }
         fields {
-          id: 36
+          id: 47
           name: "hdr.payload.data00"
           bitwidth: 32
         }
         fields {
-          id: 37
+          id: 48
           name: "hdr.payload.data01"
           bitwidth: 32
         }
         fields {
-          id: 38
+          id: 49
           name: "hdr.payload.data02"
           bitwidth: 32
         }
         fields {
-          id: 39
+          id: 50
           name: "hdr.payload.data03"
           bitwidth: 32
         }
         fields {
-          id: 40
+          id: 51
           name: "hdr.payload.data04"
           bitwidth: 32
         }
         fields {
-          id: 41
+          id: 52
           name: "hdr.payload.data05"
           bitwidth: 32
         }
         fields {
-          id: 42
+          id: 53
           name: "hdr.payload.data06"
           bitwidth: 32
         }
         fields {
-          id: 43
+          id: 54
           name: "hdr.payload.data07"
           bitwidth: 32
         }
         fields {
-          id: 44
+          id: 55
           name: "hdr.payload.data08"
           bitwidth: 32
         }
         fields {
-          id: 45
+          id: 56
           name: "hdr.payload.data09"
           bitwidth: 32
         }
         fields {
-          id: 46
+          id: 57
           name: "hdr.payload.data0a"
           bitwidth: 32
         }
         fields {
-          id: 47
+          id: 58
           name: "hdr.payload.data0b"
           bitwidth: 32
         }
         fields {
-          id: 48
+          id: 59
           name: "hdr.payload.data0c"
           bitwidth: 32
         }
         fields {
-          id: 49
+          id: 60
           name: "hdr.payload.data0d"
           bitwidth: 32
         }
         fields {
-          id: 50
+          id: 61
           name: "hdr.payload.data0e"
           bitwidth: 32
         }
         fields {
-          id: 51
+          id: 62
           name: "hdr.payload.data0f"
           bitwidth: 32
         }
         fields {
-          id: 52
+          id: 63
           name: "hdr.payload.data10"
           bitwidth: 32
         }
         fields {
-          id: 53
+          id: 64
           name: "hdr.payload.data11"
           bitwidth: 32
         }
         fields {
-          id: 54
+          id: 65
           name: "hdr.payload.data12"
           bitwidth: 32
         }
         fields {
-          id: 55
+          id: 66
           name: "hdr.payload.data13"
           bitwidth: 32
         }
         fields {
-          id: 56
+          id: 67
           name: "hdr.payload.data14"
           bitwidth: 32
         }
         fields {
-          id: 57
+          id: 68
           name: "hdr.payload.data15"
           bitwidth: 32
         }
         fields {
-          id: 58
+          id: 69
           name: "hdr.payload.data16"
           bitwidth: 32
         }
         fields {
-          id: 59
+          id: 70
           name: "hdr.payload.data17"
           bitwidth: 32
         }
         fields {
-          id: 60
+          id: 71
           name: "hdr.icrc.$valid"
           bitwidth: 1
         }
         fields {
-          id: 61
+          id: 72
           name: "hdr.icrc.v0"
           bitwidth: 8
         }
         fields {
-          id: 62
+          id: 73
           name: "hdr.icrc.v1"
           bitwidth: 8
         }
         fields {
-          id: 63
+          id: 74
           name: "hdr.icrc.v2"
           bitwidth: 8
         }
         fields {
-          id: 64
+          id: 75
           name: "hdr.icrc.v3"
           bitwidth: 8
         }
         fields {
-          id: 112
+          id: 128
           name: "eg_md.psn"
           bitwidth: 32
         }
         fields {
-          id: 113
+          id: 129
           name: "eg_md.eg_rank_id"
-          bitwidth: 8
+          bitwidth: 32
         }
         fields {
-          id: 114
+          id: 130
           name: "eg_md.bridge.ing_rank_id"
-          bitwidth: 8
+          bitwidth: 32
         }
         fields {
-          id: 115
+          id: 131
           name: "eg_md.bridge.conn_phase"
           bitwidth: 2
         }
         fields {
-          id: 116
+          id: 132
           name: "eg_md.bridge.conn_semantics"
           bitwidth: 2
         }
         fields {
-          id: 117
+          id: 133
           name: "eg_md.bridge.channel_id"
           bitwidth: 32
         }
         fields {
-          id: 118
+          id: 134
           name: "eg_md.bridge.bitmap"
           bitwidth: 32
         }
         fields {
-          id: 119
+          id: 135
           name: "eg_md.bridge.tx_loc_val"
-          bitwidth: 8
+          bitwidth: 32
         }
         fields {
-          id: 120
+          id: 136
           name: "eg_md.bridge.tx_offset_val"
-          bitwidth: 8
+          bitwidth: 32
         }
         fields {
-          id: 121
+          id: 137
           name: "eg_md.bridge.clear_offset"
-          bitwidth: 8
+          bitwidth: 32
         }
         fields {
-          id: 122
+          id: 138
           name: "eg_md.bridge.root_rank_id"
-          bitwidth: 8
+          bitwidth: 32
         }
         fields {
-          id: 123
+          id: 139
           name: "eg_md.bridge.next_token_addr"
           bitwidth: 64
         }
         fields {
-          id: 124
+          id: 140
           name: "eg_intr_md._pad0"
           bitwidth: 7
         }
         fields {
-          id: 125
+          id: 141
           name: "eg_intr_md.egress_port"
           bitwidth: 9
         }
         fields {
-          id: 126
+          id: 142
           name: "eg_intr_md._pad1"
           bitwidth: 5
         }
         fields {
-          id: 127
+          id: 143
           name: "eg_intr_md.enq_qdepth"
           bitwidth: 19
         }
         fields {
-          id: 128
+          id: 144
           name: "eg_intr_md._pad2"
           bitwidth: 6
         }
         fields {
-          id: 129
+          id: 145
           name: "eg_intr_md.enq_congest_stat"
           bitwidth: 2
         }
         fields {
-          id: 130
+          id: 146
           name: "eg_intr_md._pad3"
           bitwidth: 14
         }
         fields {
-          id: 131
+          id: 147
           name: "eg_intr_md.enq_tstamp"
           bitwidth: 18
         }
         fields {
-          id: 132
+          id: 148
           name: "eg_intr_md._pad4"
           bitwidth: 5
         }
         fields {
-          id: 133
+          id: 149
           name: "eg_intr_md.deq_qdepth"
           bitwidth: 19
         }
         fields {
-          id: 134
+          id: 150
           name: "eg_intr_md._pad5"
           bitwidth: 6
         }
         fields {
-          id: 135
+          id: 151
           name: "eg_intr_md.deq_congest_stat"
           bitwidth: 2
         }
         fields {
-          id: 136
+          id: 152
           name: "eg_intr_md.app_pool_congest_stat"
           bitwidth: 8
         }
         fields {
-          id: 137
+          id: 153
           name: "eg_intr_md._pad6"
           bitwidth: 14
         }
         fields {
-          id: 138
+          id: 154
           name: "eg_intr_md.deq_timedelta"
           bitwidth: 18
         }
         fields {
-          id: 139
+          id: 155
           name: "eg_intr_md.egress_rid"
           bitwidth: 16
         }
         fields {
-          id: 140
+          id: 156
           name: "eg_intr_md._pad7"
           bitwidth: 7
         }
         fields {
-          id: 141
+          id: 157
           name: "eg_intr_md.egress_rid_first"
           bitwidth: 1
         }
         fields {
-          id: 142
+          id: 158
           name: "eg_intr_md._pad8"
           bitwidth: 3
         }
         fields {
-          id: 143
+          id: 159
           name: "eg_intr_md.egress_qid"
           bitwidth: 5
         }
         fields {
-          id: 144
+          id: 160
           name: "eg_intr_md._pad9"
           bitwidth: 5
         }
         fields {
-          id: 145
+          id: 161
           name: "eg_intr_md.egress_cos"
           bitwidth: 3
         }
         fields {
-          id: 146
+          id: 162
           name: "eg_intr_md._pad10"
           bitwidth: 7
         }
         fields {
-          id: 147
+          id: 163
           name: "eg_intr_md.deflection_flag"
           bitwidth: 1
         }
         fields {
-          id: 148
+          id: 164
           name: "eg_intr_md.pkt_length"
           bitwidth: 16
         }
         fields {
-          id: 149
+          id: 165
           name: "eg_prsr_md.global_tstamp"
           bitwidth: 48
         }
         fields {
-          id: 150
+          id: 166
           name: "eg_prsr_md.global_ver"
           bitwidth: 32
         }
         fields {
-          id: 151
+          id: 167
           name: "eg_prsr_md.parser_err"
           bitwidth: 16
         }
         fields {
-          id: 152
+          id: 168
           name: "eg_dprsr_md.drop_ctl"
           bitwidth: 3
         }
         fields {
-          id: 153
+          id: 169
           name: "eg_dprsr_md.mirror_type"
           bitwidth: 3
         }
         fields {
-          id: 154
+          id: 170
           name: "eg_dprsr_md.coalesce_flush"
           bitwidth: 1
         }
         fields {
-          id: 155
+          id: 171
           name: "eg_dprsr_md.coalesce_length"
           bitwidth: 7
         }
         fields {
-          id: 156
+          id: 172
           name: "eg_oport_md.capture_tstamp_on_tx"
           bitwidth: 1
         }
         fields {
-          id: 157
+          id: 173
           name: "eg_oport_md.update_delay_on_tx"
           bitwidth: 1
         }

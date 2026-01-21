@@ -22,12 +22,11 @@ control DispatchIngress(
     
     /* tx_epsn */
     Register<bit<32>, bit<32>>(DISPATCH_CHANNELS_NUM) reg_tx_epsn;
-    bit<32> psn_to_check;
 
     RegisterAction<bit<32>, bit<32>, bit<32>>(reg_tx_epsn) ra_read_cond_inc_tx_epsn = {
         void apply(inout bit<32> value, out bit<32> result) {
             result = value;
-            if (psn_to_check == value) {
+            if (ig_md.psn_to_check == value) {
                 value = value + 1;
             }
         }
@@ -87,12 +86,32 @@ control DispatchIngress(
      * Utility Actions
      ***************************************************************************/
     
-    action set_ack_ingress(bit<8> syndrome, bit<32> psn, bit<32> msn) {
-        hdr.bth.psn = psn;
-        hdr.aeth.setValid();
-        hdr.aeth.msn = msn<<8 | (bit<32>)syndrome;
+    // action set_ack_ingress(bit<32> syndrome, bit<32> psn, bit<32> msn) {
+    //     hdr.bth.psn = psn;
+    //     hdr.aeth.setValid();
+    //     hdr.aeth.msn = msn<<8 | (bit<32>)syndrome;
+    // }
+
+    bit<32> tmp_mul_256;
+
+    action mul_256(){
+        tmp_mul_256 = tmp_mul_256 * 256;
     }
-    
+
+    action set_aeth_msn() {
+        ig_md.bridge.has_aeth = true;
+        hdr.aeth.setValid();
+        hdr.aeth.msn = tmp_mul_256 * 256;
+    }
+
+    action set_aeth_syndrome(bit<32> syndrome) {
+        hdr.aeth.msn = hdr.aeth.msn + syndrome;
+    }
+
+    action set_aeth_psn(bit<32> psn) {
+        hdr.bth.psn = psn; // If there's an ack header (e.g., RDMA_OP_ACK or Read response), PSN is determined by the ack, set here
+
+    }
     
     /***************************************************************************
      * Apply
@@ -115,7 +134,12 @@ control DispatchIngress(
             ra_init_tx_msn.execute(channel_idx);
             // should be extract from payload, but we set 0 as an agreement with the endpoint
             ra_init_tx_epsn.execute(channel_idx);
-            set_ack_ingress(AETH_ACK_CREDIT_INVALID, ig_md.psn, ig_md.psn+1);
+            //set_ack_ingress(AETH_ACK_CREDIT_INVALID, ig_md.psn, ig_md.psn+1);
+            tmp_mul_256 = ig_md.psn+1;
+            mul_256();
+            set_aeth_msn();
+            set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
+            set_aeth_psn(ig_md.psn);
             ig_md.bridge.has_aeth = true;
             ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
             //ig_intr_md_for_dprsr.drop_ctl = 1;
@@ -134,18 +158,29 @@ control DispatchIngress(
             }
             
             // PSN validation
-            psn_to_check = ig_md.psn;
-            bit<32> expected_epsn = ra_read_cond_inc_tx_epsn.execute(channel_idx);
-            bit<32> msn_saved = ra_read_tx_msn.execute(channel_idx);
-            if(ig_md.psn > expected_epsn) {
-                set_ack_ingress(AETH_NAK_SEQ_ERR, expected_epsn-1, msn_saved);
+            ig_md.psn_to_check = ig_md.psn;
+
+            ig_md.expected_epsn = ra_read_cond_inc_tx_epsn.execute(channel_idx);
+            ig_md.msn_saved = ra_read_tx_msn.execute(channel_idx);
+            if(ig_md.psn > ig_md.expected_epsn) {
+                //set_ack_ingress(AETH_NAK_SEQ_ERR, ig_md.expected_epsn-1, ig_md.msn_saved);
+                tmp_mul_256 = ig_md.msn_saved;
+                mul_256();
+                set_aeth_msn();
+                set_aeth_syndrome(AETH_NAK_SEQ_ERR);
+                set_aeth_psn(ig_md.expected_epsn-1);
                 ig_md.bridge.has_aeth = true;
                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
                 //ig_intr_md_for_dprsr.drop_ctl = 1;
                 //ig_tm_md.mirror_session_id = ig_md.ing_rank_id;
                 return;
-            } else if(ig_md.psn < expected_epsn){
-                set_ack_ingress(AETH_ACK_CREDIT_INVALID, expected_epsn-1, msn_saved);
+            } else if(ig_md.psn < ig_md.expected_epsn){
+                //set_ack_ingress(AETH_ACK_CREDIT_INVALID, ig_md.expected_epsn-1, ig_md.msn_saved);
+                tmp_mul_256 = ig_md.msn_saved;
+                mul_256();
+                set_aeth_msn();
+                set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
+                set_aeth_psn(ig_md.expected_epsn-1);
                 ig_md.bridge.has_aeth = true;
                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
                 return;
@@ -164,7 +199,12 @@ control DispatchIngress(
             ig_tm_md.mcast_grp_a = 100; // group id 100 is to all ports
 
             // ACK to ingress port
-            set_ack_ingress(AETH_ACK_CREDIT_INVALID, expected_epsn-1, msn_saved);
+            //set_ack_ingress(AETH_ACK_CREDIT_INVALID, ig_md.expected_epsn-1, ig_md.msn_saved);
+            tmp_mul_256 = ig_md.msn_saved;
+            mul_256();
+            set_aeth_msn();
+            set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
+            set_aeth_psn(ig_md.expected_epsn-1);
             ig_md.bridge.has_aeth = true;
             ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
             // MSN
@@ -334,7 +374,7 @@ control DispatchEgress(
     /***************************************************************************
      * Table - Set RX info based on egress_rid
      **************************************************************************/
-    action get_rank_id(bit<8> rank_id) {
+    action get_rank_id(bit<32> rank_id) {
         eg_md.eg_rank_id = rank_id;
     }
 
