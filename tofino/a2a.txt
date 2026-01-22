@@ -245,450 +245,226 @@ actions {
 }
 actions {
   preamble {
-    id: 32484860
-    name: "A2AIngress.combine_ctrl.queue_head_slot_0.do_init"
-    alias: "queue_head_slot_0.do_init"
+    id: 18209950
+    name: "A2AIngress.combine_ctrl.queue_head_0_do_read"
+    alias: "queue_head_0_do_read"
   }
 }
 actions {
   preamble {
-    id: 24301251
-    name: "A2AIngress.combine_ctrl.queue_head_slot_0.do_read"
-    alias: "queue_head_slot_0.do_read"
+    id: 26692731
+    name: "A2AIngress.combine_ctrl.queue_head_0_do_inc"
+    alias: "queue_head_0_do_inc"
   }
 }
 actions {
   preamble {
-    id: 25636401
-    name: "A2AIngress.combine_ctrl.queue_head_slot_0.do_inc"
-    alias: "queue_head_slot_0.do_inc"
+    id: 29509417
+    name: "A2AIngress.combine_ctrl.queue_head_1_do_read"
+    alias: "queue_head_1_do_read"
   }
 }
 actions {
   preamble {
-    id: 29382973
-    name: "A2AIngress.combine_ctrl.queue_head_slot_0.do_read_add"
-    alias: "queue_head_slot_0.do_read_add"
+    id: 31765127
+    name: "A2AIngress.combine_ctrl.queue_head_1_do_inc"
+    alias: "queue_head_1_do_inc"
   }
 }
 actions {
   preamble {
-    id: 25765531
-    name: "A2AIngress.combine_ctrl.queue_head_slot_1.do_init"
-    alias: "queue_head_slot_1.do_init"
+    id: 28929054
+    name: "A2AIngress.combine_ctrl.queue_head_2_do_read"
+    alias: "queue_head_2_do_read"
   }
 }
 actions {
   preamble {
-    id: 19527645
-    name: "A2AIngress.combine_ctrl.queue_head_slot_1.do_read"
-    alias: "queue_head_slot_1.do_read"
+    id: 27946612
+    name: "A2AIngress.combine_ctrl.queue_head_2_do_inc"
+    alias: "queue_head_2_do_inc"
   }
 }
 actions {
   preamble {
-    id: 22189124
-    name: "A2AIngress.combine_ctrl.queue_head_slot_1.do_inc"
-    alias: "queue_head_slot_1.do_inc"
+    id: 31874532
+    name: "A2AIngress.combine_ctrl.queue_head_3_do_read"
+    alias: "queue_head_3_do_read"
   }
 }
 actions {
   preamble {
-    id: 24833451
-    name: "A2AIngress.combine_ctrl.queue_head_slot_1.do_read_add"
-    alias: "queue_head_slot_1.do_read_add"
+    id: 27631022
+    name: "A2AIngress.combine_ctrl.queue_head_3_do_inc"
+    alias: "queue_head_3_do_inc"
   }
 }
 actions {
   preamble {
-    id: 27295615
-    name: "A2AIngress.combine_ctrl.queue_head_slot_2.do_init"
-    alias: "queue_head_slot_2.do_init"
+    id: 18131844
+    name: "A2AIngress.combine_ctrl.queue_head_4_do_read"
+    alias: "queue_head_4_do_read"
   }
 }
 actions {
   preamble {
-    id: 19040215
-    name: "A2AIngress.combine_ctrl.queue_head_slot_2.do_read"
-    alias: "queue_head_slot_2.do_read"
+    id: 17738726
+    name: "A2AIngress.combine_ctrl.queue_head_4_do_inc"
+    alias: "queue_head_4_do_inc"
   }
 }
 actions {
   preamble {
-    id: 23502905
-    name: "A2AIngress.combine_ctrl.queue_head_slot_2.do_inc"
-    alias: "queue_head_slot_2.do_inc"
+    id: 25905594
+    name: "A2AIngress.combine_ctrl.queue_head_5_do_read"
+    alias: "queue_head_5_do_read"
   }
 }
 actions {
   preamble {
-    id: 20083641
-    name: "A2AIngress.combine_ctrl.queue_head_slot_2.do_read_add"
-    alias: "queue_head_slot_2.do_read_add"
+    id: 24113226
+    name: "A2AIngress.combine_ctrl.queue_head_5_do_inc"
+    alias: "queue_head_5_do_inc"
   }
 }
 actions {
   preamble {
-    id: 26690809
-    name: "A2AIngress.combine_ctrl.queue_head_slot_3.do_init"
-    alias: "queue_head_slot_3.do_init"
+    id: 20500031
+    name: "A2AIngress.combine_ctrl.queue_head_6_do_read"
+    alias: "queue_head_6_do_read"
   }
 }
 actions {
   preamble {
-    id: 29010759
-    name: "A2AIngress.combine_ctrl.queue_head_slot_3.do_read"
-    alias: "queue_head_slot_3.do_read"
+    id: 20227420
+    name: "A2AIngress.combine_ctrl.queue_head_6_do_inc"
+    alias: "queue_head_6_do_inc"
   }
 }
 actions {
   preamble {
-    id: 21991771
-    name: "A2AIngress.combine_ctrl.queue_head_slot_3.do_inc"
-    alias: "queue_head_slot_3.do_inc"
+    id: 25842420
+    name: "A2AIngress.combine_ctrl.queue_head_7_do_read"
+    alias: "queue_head_7_do_read"
   }
 }
 actions {
   preamble {
-    id: 17745526
-    name: "A2AIngress.combine_ctrl.queue_head_slot_3.do_read_add"
-    alias: "queue_head_slot_3.do_read_add"
+    id: 26602380
+    name: "A2AIngress.combine_ctrl.queue_head_7_do_inc"
+    alias: "queue_head_7_do_inc"
   }
 }
 actions {
   preamble {
-    id: 28791721
-    name: "A2AIngress.combine_ctrl.queue_head_slot_4.do_init"
-    alias: "queue_head_slot_4.do_init"
+    id: 17143425
+    name: "A2AIngress.combine_ctrl.queue_tail_0_do_read"
+    alias: "queue_tail_0_do_read"
   }
 }
 actions {
   preamble {
-    id: 26442365
-    name: "A2AIngress.combine_ctrl.queue_head_slot_4.do_read"
-    alias: "queue_head_slot_4.do_read"
+    id: 18700567
+    name: "A2AIngress.combine_ctrl.queue_tail_0_do_read_add"
+    alias: "queue_tail_0_do_read_add"
   }
 }
 actions {
   preamble {
-    id: 21296775
-    name: "A2AIngress.combine_ctrl.queue_head_slot_4.do_inc"
-    alias: "queue_head_slot_4.do_inc"
+    id: 27254609
+    name: "A2AIngress.combine_ctrl.queue_tail_1_do_read"
+    alias: "queue_tail_1_do_read"
   }
 }
 actions {
   preamble {
-    id: 23682617
-    name: "A2AIngress.combine_ctrl.queue_head_slot_4.do_read_add"
-    alias: "queue_head_slot_4.do_read_add"
+    id: 20524020
+    name: "A2AIngress.combine_ctrl.queue_tail_1_do_read_add"
+    alias: "queue_tail_1_do_read_add"
   }
 }
 actions {
   preamble {
-    id: 22801898
-    name: "A2AIngress.combine_ctrl.queue_head_slot_5.do_init"
-    alias: "queue_head_slot_5.do_init"
+    id: 28456541
+    name: "A2AIngress.combine_ctrl.queue_tail_2_do_read"
+    alias: "queue_tail_2_do_read"
   }
 }
 actions {
   preamble {
-    id: 22610406
-    name: "A2AIngress.combine_ctrl.queue_head_slot_5.do_read"
-    alias: "queue_head_slot_5.do_read"
+    id: 27653704
+    name: "A2AIngress.combine_ctrl.queue_tail_2_do_read_add"
+    alias: "queue_tail_2_do_read_add"
   }
 }
 actions {
   preamble {
-    id: 30926826
-    name: "A2AIngress.combine_ctrl.queue_head_slot_5.do_inc"
-    alias: "queue_head_slot_5.do_inc"
+    id: 20361295
+    name: "A2AIngress.combine_ctrl.queue_tail_3_do_read"
+    alias: "queue_tail_3_do_read"
   }
 }
 actions {
   preamble {
-    id: 23458163
-    name: "A2AIngress.combine_ctrl.queue_head_slot_5.do_read_add"
-    alias: "queue_head_slot_5.do_read_add"
+    id: 19049780
+    name: "A2AIngress.combine_ctrl.queue_tail_3_do_read_add"
+    alias: "queue_tail_3_do_read_add"
   }
 }
 actions {
   preamble {
-    id: 21577079
-    name: "A2AIngress.combine_ctrl.queue_head_slot_6.do_init"
-    alias: "queue_head_slot_6.do_init"
+    id: 29073105
+    name: "A2AIngress.combine_ctrl.queue_tail_4_do_read"
+    alias: "queue_tail_4_do_read"
   }
 }
 actions {
   preamble {
-    id: 18378041
-    name: "A2AIngress.combine_ctrl.queue_head_slot_6.do_read"
-    alias: "queue_head_slot_6.do_read"
+    id: 21696111
+    name: "A2AIngress.combine_ctrl.queue_tail_4_do_read_add"
+    alias: "queue_tail_4_do_read_add"
   }
 }
 actions {
   preamble {
-    id: 28806344
-    name: "A2AIngress.combine_ctrl.queue_head_slot_6.do_inc"
-    alias: "queue_head_slot_6.do_inc"
+    id: 29216190
+    name: "A2AIngress.combine_ctrl.queue_tail_5_do_read"
+    alias: "queue_tail_5_do_read"
   }
 }
 actions {
   preamble {
-    id: 16926675
-    name: "A2AIngress.combine_ctrl.queue_head_slot_6.do_read_add"
-    alias: "queue_head_slot_6.do_read_add"
+    id: 28924688
+    name: "A2AIngress.combine_ctrl.queue_tail_5_do_read_add"
+    alias: "queue_tail_5_do_read_add"
   }
 }
 actions {
   preamble {
-    id: 27187255
-    name: "A2AIngress.combine_ctrl.queue_head_slot_7.do_init"
-    alias: "queue_head_slot_7.do_init"
+    id: 17133824
+    name: "A2AIngress.combine_ctrl.queue_tail_6_do_read"
+    alias: "queue_tail_6_do_read"
   }
 }
 actions {
   preamble {
-    id: 31167612
-    name: "A2AIngress.combine_ctrl.queue_head_slot_7.do_read"
-    alias: "queue_head_slot_7.do_read"
+    id: 32684013
+    name: "A2AIngress.combine_ctrl.queue_tail_6_do_read_add"
+    alias: "queue_tail_6_do_read_add"
   }
 }
 actions {
   preamble {
-    id: 33401509
-    name: "A2AIngress.combine_ctrl.queue_head_slot_7.do_inc"
-    alias: "queue_head_slot_7.do_inc"
+    id: 24018810
+    name: "A2AIngress.combine_ctrl.queue_tail_7_do_read"
+    alias: "queue_tail_7_do_read"
   }
 }
 actions {
   preamble {
-    id: 23063166
-    name: "A2AIngress.combine_ctrl.queue_head_slot_7.do_read_add"
-    alias: "queue_head_slot_7.do_read_add"
-  }
-}
-actions {
-  preamble {
-    id: 28508861
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_0.do_init"
-    alias: "queue_tail_slot_0.do_init"
-  }
-}
-actions {
-  preamble {
-    id: 28613741
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_0.do_read"
-    alias: "queue_tail_slot_0.do_read"
-  }
-}
-actions {
-  preamble {
-    id: 21608241
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_0.do_inc"
-    alias: "queue_tail_slot_0.do_inc"
-  }
-}
-actions {
-  preamble {
-    id: 19994943
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_0.do_read_add"
-    alias: "queue_tail_slot_0.do_read_add"
-  }
-}
-actions {
-  preamble {
-    id: 28388181
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_1.do_init"
-    alias: "queue_tail_slot_1.do_init"
-  }
-}
-actions {
-  preamble {
-    id: 31502340
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_1.do_read"
-    alias: "queue_tail_slot_1.do_read"
-  }
-}
-actions {
-  preamble {
-    id: 31126474
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_1.do_inc"
-    alias: "queue_tail_slot_1.do_inc"
-  }
-}
-actions {
-  preamble {
-    id: 28597047
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_1.do_read_add"
-    alias: "queue_tail_slot_1.do_read_add"
-  }
-}
-actions {
-  preamble {
-    id: 24254172
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_2.do_init"
-    alias: "queue_tail_slot_2.do_init"
-  }
-}
-actions {
-  preamble {
-    id: 31676147
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_2.do_read"
-    alias: "queue_tail_slot_2.do_read"
-  }
-}
-actions {
-  preamble {
-    id: 27868974
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_2.do_inc"
-    alias: "queue_tail_slot_2.do_inc"
-  }
-}
-actions {
-  preamble {
-    id: 33526210
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_2.do_read_add"
-    alias: "queue_tail_slot_2.do_read_add"
-  }
-}
-actions {
-  preamble {
-    id: 23130828
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_3.do_init"
-    alias: "queue_tail_slot_3.do_init"
-  }
-}
-actions {
-  preamble {
-    id: 17880180
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_3.do_read"
-    alias: "queue_tail_slot_3.do_read"
-  }
-}
-actions {
-  preamble {
-    id: 29861297
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_3.do_inc"
-    alias: "queue_tail_slot_3.do_inc"
-  }
-}
-actions {
-  preamble {
-    id: 24954365
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_3.do_read_add"
-    alias: "queue_tail_slot_3.do_read_add"
-  }
-}
-actions {
-  preamble {
-    id: 24492628
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_4.do_init"
-    alias: "queue_tail_slot_4.do_init"
-  }
-}
-actions {
-  preamble {
-    id: 31217001
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_4.do_read"
-    alias: "queue_tail_slot_4.do_read"
-  }
-}
-actions {
-  preamble {
-    id: 29186634
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_4.do_inc"
-    alias: "queue_tail_slot_4.do_inc"
-  }
-}
-actions {
-  preamble {
-    id: 26001162
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_4.do_read_add"
-    alias: "queue_tail_slot_4.do_read_add"
-  }
-}
-actions {
-  preamble {
-    id: 26249064
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_5.do_init"
-    alias: "queue_tail_slot_5.do_init"
-  }
-}
-actions {
-  preamble {
-    id: 23359539
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_5.do_read"
-    alias: "queue_tail_slot_5.do_read"
-  }
-}
-actions {
-  preamble {
-    id: 23793270
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_5.do_inc"
-    alias: "queue_tail_slot_5.do_inc"
-  }
-}
-actions {
-  preamble {
-    id: 17919123
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_5.do_read_add"
-    alias: "queue_tail_slot_5.do_read_add"
-  }
-}
-actions {
-  preamble {
-    id: 30305212
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_6.do_init"
-    alias: "queue_tail_slot_6.do_init"
-  }
-}
-actions {
-  preamble {
-    id: 17334799
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_6.do_read"
-    alias: "queue_tail_slot_6.do_read"
-  }
-}
-actions {
-  preamble {
-    id: 20072925
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_6.do_inc"
-    alias: "queue_tail_slot_6.do_inc"
-  }
-}
-actions {
-  preamble {
-    id: 24225876
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_6.do_read_add"
-    alias: "queue_tail_slot_6.do_read_add"
-  }
-}
-actions {
-  preamble {
-    id: 17203592
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_7.do_init"
-    alias: "queue_tail_slot_7.do_init"
-  }
-}
-actions {
-  preamble {
-    id: 22556950
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_7.do_read"
-    alias: "queue_tail_slot_7.do_read"
-  }
-}
-actions {
-  preamble {
-    id: 21906288
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_7.do_inc"
-    alias: "queue_tail_slot_7.do_inc"
-  }
-}
-actions {
-  preamble {
-    id: 30388580
-    name: "A2AIngress.combine_ctrl.queue_tail_slot_7.do_read_add"
-    alias: "queue_tail_slot_7.do_read_add"
+    id: 22887102
+    name: "A2AIngress.combine_ctrl.queue_tail_7_do_read_add"
+    alias: "queue_tail_7_do_read_add"
   }
 }
 actions {
@@ -700,450 +476,177 @@ actions {
 }
 actions {
   preamble {
-    id: 31581556
-    name: "A2AIngress.combine_ctrl.bitmap_slot_0.do_read"
-    alias: "bitmap_slot_0.do_read"
+    id: 21957559
+    name: "A2AIngress.combine_ctrl.bitmap_0_do_read"
+    alias: "bitmap_0_do_read"
   }
 }
 actions {
   preamble {
-    id: 27106993
-    name: "A2AIngress.combine_ctrl.bitmap_slot_0.do_write"
-    alias: "bitmap_slot_0.do_write"
+    id: 31259543
+    name: "A2AIngress.combine_ctrl.bitmap_0_do_write"
+    alias: "bitmap_0_do_write"
   }
 }
 actions {
   preamble {
-    id: 21119458
-    name: "A2AIngress.combine_ctrl.bitmap_slot_0.do_clear_bit"
-    alias: "bitmap_slot_0.do_clear_bit"
+    id: 21785218
+    name: "A2AIngress.combine_ctrl.bitmap_0_do_clear_bit"
+    alias: "bitmap_0_do_clear_bit"
   }
 }
 actions {
   preamble {
-    id: 33083935
-    name: "A2AIngress.combine_ctrl.bitmap_slot_0.do_reset"
-    alias: "bitmap_slot_0.do_reset"
+    id: 21646706
+    name: "A2AIngress.combine_ctrl.bitmap_1_do_read"
+    alias: "bitmap_1_do_read"
   }
 }
 actions {
   preamble {
-    id: 29423558
-    name: "A2AIngress.combine_ctrl.bitmap_slot_1.do_read"
-    alias: "bitmap_slot_1.do_read"
+    id: 18217319
+    name: "A2AIngress.combine_ctrl.bitmap_1_do_clear_bit"
+    alias: "bitmap_1_do_clear_bit"
   }
 }
 actions {
   preamble {
-    id: 18353931
-    name: "A2AIngress.combine_ctrl.bitmap_slot_1.do_write"
-    alias: "bitmap_slot_1.do_write"
+    id: 17728138
+    name: "A2AIngress.combine_ctrl.bitmap_2_do_read"
+    alias: "bitmap_2_do_read"
   }
 }
 actions {
   preamble {
-    id: 21254966
-    name: "A2AIngress.combine_ctrl.bitmap_slot_1.do_clear_bit"
-    alias: "bitmap_slot_1.do_clear_bit"
+    id: 26264372
+    name: "A2AIngress.combine_ctrl.bitmap_2_do_clear_bit"
+    alias: "bitmap_2_do_clear_bit"
   }
 }
 actions {
   preamble {
-    id: 29033412
-    name: "A2AIngress.combine_ctrl.bitmap_slot_1.do_reset"
-    alias: "bitmap_slot_1.do_reset"
+    id: 20884755
+    name: "A2AIngress.combine_ctrl.bitmap_3_do_read"
+    alias: "bitmap_3_do_read"
   }
 }
 actions {
   preamble {
-    id: 26640872
-    name: "A2AIngress.combine_ctrl.bitmap_slot_2.do_read"
-    alias: "bitmap_slot_2.do_read"
+    id: 27022355
+    name: "A2AIngress.combine_ctrl.bitmap_3_do_clear_bit"
+    alias: "bitmap_3_do_clear_bit"
   }
 }
 actions {
   preamble {
-    id: 22994953
-    name: "A2AIngress.combine_ctrl.bitmap_slot_2.do_write"
-    alias: "bitmap_slot_2.do_write"
+    id: 29850960
+    name: "A2AIngress.combine_ctrl.bitmap_4_do_read"
+    alias: "bitmap_4_do_read"
   }
 }
 actions {
   preamble {
-    id: 32892392
-    name: "A2AIngress.combine_ctrl.bitmap_slot_2.do_clear_bit"
-    alias: "bitmap_slot_2.do_clear_bit"
+    id: 30350561
+    name: "A2AIngress.combine_ctrl.bitmap_4_do_clear_bit"
+    alias: "bitmap_4_do_clear_bit"
   }
 }
 actions {
   preamble {
-    id: 23056816
-    name: "A2AIngress.combine_ctrl.bitmap_slot_2.do_reset"
-    alias: "bitmap_slot_2.do_reset"
+    id: 26074853
+    name: "A2AIngress.combine_ctrl.bitmap_5_do_read"
+    alias: "bitmap_5_do_read"
   }
 }
 actions {
   preamble {
-    id: 30111288
-    name: "A2AIngress.combine_ctrl.bitmap_slot_3.do_read"
-    alias: "bitmap_slot_3.do_read"
+    id: 27403032
+    name: "A2AIngress.combine_ctrl.bitmap_5_do_clear_bit"
+    alias: "bitmap_5_do_clear_bit"
   }
 }
 actions {
   preamble {
-    id: 28163425
-    name: "A2AIngress.combine_ctrl.bitmap_slot_3.do_write"
-    alias: "bitmap_slot_3.do_write"
+    id: 28090752
+    name: "A2AIngress.combine_ctrl.bitmap_6_do_read"
+    alias: "bitmap_6_do_read"
   }
 }
 actions {
   preamble {
-    id: 23734789
-    name: "A2AIngress.combine_ctrl.bitmap_slot_3.do_clear_bit"
-    alias: "bitmap_slot_3.do_clear_bit"
+    id: 31197709
+    name: "A2AIngress.combine_ctrl.bitmap_6_do_clear_bit"
+    alias: "bitmap_6_do_clear_bit"
   }
 }
 actions {
   preamble {
-    id: 24447148
-    name: "A2AIngress.combine_ctrl.bitmap_slot_3.do_reset"
-    alias: "bitmap_slot_3.do_reset"
+    id: 19674832
+    name: "A2AIngress.combine_ctrl.bitmap_7_do_read"
+    alias: "bitmap_7_do_read"
   }
 }
 actions {
   preamble {
-    id: 24898611
-    name: "A2AIngress.combine_ctrl.bitmap_slot_4.do_read"
-    alias: "bitmap_slot_4.do_read"
+    id: 25561480
+    name: "A2AIngress.combine_ctrl.bitmap_7_do_clear_bit"
+    alias: "bitmap_7_do_clear_bit"
   }
 }
 actions {
   preamble {
-    id: 21190190
-    name: "A2AIngress.combine_ctrl.bitmap_slot_4.do_write"
-    alias: "bitmap_slot_4.do_write"
+    id: 23448105
+    name: "A2AIngress.combine_ctrl.addr_0_do_read"
+    alias: "addr_0_do_read"
   }
 }
 actions {
   preamble {
-    id: 31900754
-    name: "A2AIngress.combine_ctrl.bitmap_slot_4.do_clear_bit"
-    alias: "bitmap_slot_4.do_clear_bit"
+    id: 27948806
+    name: "A2AIngress.combine_ctrl.addr_1_do_read"
+    alias: "addr_1_do_read"
   }
 }
 actions {
   preamble {
-    id: 18926785
-    name: "A2AIngress.combine_ctrl.bitmap_slot_4.do_reset"
-    alias: "bitmap_slot_4.do_reset"
+    id: 27210136
+    name: "A2AIngress.combine_ctrl.addr_2_do_read"
+    alias: "addr_2_do_read"
   }
 }
 actions {
   preamble {
-    id: 21367303
-    name: "A2AIngress.combine_ctrl.bitmap_slot_5.do_read"
-    alias: "bitmap_slot_5.do_read"
+    id: 27825133
+    name: "A2AIngress.combine_ctrl.addr_3_do_read"
+    alias: "addr_3_do_read"
   }
 }
 actions {
   preamble {
-    id: 21042088
-    name: "A2AIngress.combine_ctrl.bitmap_slot_5.do_write"
-    alias: "bitmap_slot_5.do_write"
+    id: 31565393
+    name: "A2AIngress.combine_ctrl.addr_4_do_read"
+    alias: "addr_4_do_read"
   }
 }
 actions {
   preamble {
-    id: 21994526
-    name: "A2AIngress.combine_ctrl.bitmap_slot_5.do_clear_bit"
-    alias: "bitmap_slot_5.do_clear_bit"
+    id: 30110639
+    name: "A2AIngress.combine_ctrl.addr_5_do_read"
+    alias: "addr_5_do_read"
   }
 }
 actions {
   preamble {
-    id: 27319443
-    name: "A2AIngress.combine_ctrl.bitmap_slot_5.do_reset"
-    alias: "bitmap_slot_5.do_reset"
+    id: 29479995
+    name: "A2AIngress.combine_ctrl.addr_6_do_read"
+    alias: "addr_6_do_read"
   }
 }
 actions {
   preamble {
-    id: 26512970
-    name: "A2AIngress.combine_ctrl.bitmap_slot_6.do_read"
-    alias: "bitmap_slot_6.do_read"
-  }
-}
-actions {
-  preamble {
-    id: 23142727
-    name: "A2AIngress.combine_ctrl.bitmap_slot_6.do_write"
-    alias: "bitmap_slot_6.do_write"
-  }
-}
-actions {
-  preamble {
-    id: 31668340
-    name: "A2AIngress.combine_ctrl.bitmap_slot_6.do_clear_bit"
-    alias: "bitmap_slot_6.do_clear_bit"
-  }
-}
-actions {
-  preamble {
-    id: 23639441
-    name: "A2AIngress.combine_ctrl.bitmap_slot_6.do_reset"
-    alias: "bitmap_slot_6.do_reset"
-  }
-}
-actions {
-  preamble {
-    id: 29376555
-    name: "A2AIngress.combine_ctrl.bitmap_slot_7.do_read"
-    alias: "bitmap_slot_7.do_read"
-  }
-}
-actions {
-  preamble {
-    id: 28021583
-    name: "A2AIngress.combine_ctrl.bitmap_slot_7.do_write"
-    alias: "bitmap_slot_7.do_write"
-  }
-}
-actions {
-  preamble {
-    id: 31948846
-    name: "A2AIngress.combine_ctrl.bitmap_slot_7.do_clear_bit"
-    alias: "bitmap_slot_7.do_clear_bit"
-  }
-}
-actions {
-  preamble {
-    id: 21506982
-    name: "A2AIngress.combine_ctrl.bitmap_slot_7.do_reset"
-    alias: "bitmap_slot_7.do_reset"
-  }
-}
-actions {
-  preamble {
-    id: 28939957
-    name: "A2AIngress.combine_ctrl.addr_slot_0.do_lo_read"
-    alias: "addr_slot_0.do_lo_read"
-  }
-}
-actions {
-  preamble {
-    id: 17635036
-    name: "A2AIngress.combine_ctrl.addr_slot_0.do_hi_read"
-    alias: "addr_slot_0.do_hi_read"
-  }
-}
-actions {
-  preamble {
-    id: 32679945
-    name: "A2AIngress.combine_ctrl.addr_slot_0.do_lo_write"
-    alias: "addr_slot_0.do_lo_write"
-  }
-}
-actions {
-  preamble {
-    id: 30153327
-    name: "A2AIngress.combine_ctrl.addr_slot_0.do_hi_write"
-    alias: "addr_slot_0.do_hi_write"
-  }
-}
-actions {
-  preamble {
-    id: 18844842
-    name: "A2AIngress.combine_ctrl.addr_slot_1.do_lo_read"
-    alias: "addr_slot_1.do_lo_read"
-  }
-}
-actions {
-  preamble {
-    id: 22533665
-    name: "A2AIngress.combine_ctrl.addr_slot_1.do_hi_read"
-    alias: "addr_slot_1.do_hi_read"
-  }
-}
-actions {
-  preamble {
-    id: 17172575
-    name: "A2AIngress.combine_ctrl.addr_slot_1.do_lo_write"
-    alias: "addr_slot_1.do_lo_write"
-  }
-}
-actions {
-  preamble {
-    id: 17536616
-    name: "A2AIngress.combine_ctrl.addr_slot_1.do_hi_write"
-    alias: "addr_slot_1.do_hi_write"
-  }
-}
-actions {
-  preamble {
-    id: 21168675
-    name: "A2AIngress.combine_ctrl.addr_slot_2.do_lo_read"
-    alias: "addr_slot_2.do_lo_read"
-  }
-}
-actions {
-  preamble {
-    id: 22002647
-    name: "A2AIngress.combine_ctrl.addr_slot_2.do_hi_read"
-    alias: "addr_slot_2.do_hi_read"
-  }
-}
-actions {
-  preamble {
-    id: 20457453
-    name: "A2AIngress.combine_ctrl.addr_slot_2.do_lo_write"
-    alias: "addr_slot_2.do_lo_write"
-  }
-}
-actions {
-  preamble {
-    id: 22482044
-    name: "A2AIngress.combine_ctrl.addr_slot_2.do_hi_write"
-    alias: "addr_slot_2.do_hi_write"
-  }
-}
-actions {
-  preamble {
-    id: 22454889
-    name: "A2AIngress.combine_ctrl.addr_slot_3.do_lo_read"
-    alias: "addr_slot_3.do_lo_read"
-  }
-}
-actions {
-  preamble {
-    id: 25141511
-    name: "A2AIngress.combine_ctrl.addr_slot_3.do_hi_read"
-    alias: "addr_slot_3.do_hi_read"
-  }
-}
-actions {
-  preamble {
-    id: 25856422
-    name: "A2AIngress.combine_ctrl.addr_slot_3.do_lo_write"
-    alias: "addr_slot_3.do_lo_write"
-  }
-}
-actions {
-  preamble {
-    id: 21120602
-    name: "A2AIngress.combine_ctrl.addr_slot_3.do_hi_write"
-    alias: "addr_slot_3.do_hi_write"
-  }
-}
-actions {
-  preamble {
-    id: 20994208
-    name: "A2AIngress.combine_ctrl.addr_slot_4.do_lo_read"
-    alias: "addr_slot_4.do_lo_read"
-  }
-}
-actions {
-  preamble {
-    id: 25780673
-    name: "A2AIngress.combine_ctrl.addr_slot_4.do_hi_read"
-    alias: "addr_slot_4.do_hi_read"
-  }
-}
-actions {
-  preamble {
-    id: 33026641
-    name: "A2AIngress.combine_ctrl.addr_slot_4.do_lo_write"
-    alias: "addr_slot_4.do_lo_write"
-  }
-}
-actions {
-  preamble {
-    id: 23989849
-    name: "A2AIngress.combine_ctrl.addr_slot_4.do_hi_write"
-    alias: "addr_slot_4.do_hi_write"
-  }
-}
-actions {
-  preamble {
-    id: 28232655
-    name: "A2AIngress.combine_ctrl.addr_slot_5.do_lo_read"
-    alias: "addr_slot_5.do_lo_read"
-  }
-}
-actions {
-  preamble {
-    id: 26705387
-    name: "A2AIngress.combine_ctrl.addr_slot_5.do_hi_read"
-    alias: "addr_slot_5.do_hi_read"
-  }
-}
-actions {
-  preamble {
-    id: 20860988
-    name: "A2AIngress.combine_ctrl.addr_slot_5.do_lo_write"
-    alias: "addr_slot_5.do_lo_write"
-  }
-}
-actions {
-  preamble {
-    id: 32214378
-    name: "A2AIngress.combine_ctrl.addr_slot_5.do_hi_write"
-    alias: "addr_slot_5.do_hi_write"
-  }
-}
-actions {
-  preamble {
-    id: 19099842
-    name: "A2AIngress.combine_ctrl.addr_slot_6.do_lo_read"
-    alias: "addr_slot_6.do_lo_read"
-  }
-}
-actions {
-  preamble {
-    id: 21141678
-    name: "A2AIngress.combine_ctrl.addr_slot_6.do_hi_read"
-    alias: "addr_slot_6.do_hi_read"
-  }
-}
-actions {
-  preamble {
-    id: 20606714
-    name: "A2AIngress.combine_ctrl.addr_slot_6.do_lo_write"
-    alias: "addr_slot_6.do_lo_write"
-  }
-}
-actions {
-  preamble {
-    id: 17879964
-    name: "A2AIngress.combine_ctrl.addr_slot_6.do_hi_write"
-    alias: "addr_slot_6.do_hi_write"
-  }
-}
-actions {
-  preamble {
-    id: 27091571
-    name: "A2AIngress.combine_ctrl.addr_slot_7.do_lo_read"
-    alias: "addr_slot_7.do_lo_read"
-  }
-}
-actions {
-  preamble {
-    id: 23808095
-    name: "A2AIngress.combine_ctrl.addr_slot_7.do_hi_read"
-    alias: "addr_slot_7.do_hi_read"
-  }
-}
-actions {
-  preamble {
-    id: 19043396
-    name: "A2AIngress.combine_ctrl.addr_slot_7.do_lo_write"
-    alias: "addr_slot_7.do_lo_write"
-  }
-}
-actions {
-  preamble {
-    id: 32042872
-    name: "A2AIngress.combine_ctrl.addr_slot_7.do_hi_write"
-    alias: "addr_slot_7.do_hi_write"
+    id: 20385072
+    name: "A2AIngress.combine_ctrl.addr_7_do_read"
+    alias: "addr_7_do_read"
   }
 }
 actions {
@@ -1209,13 +712,6 @@ actions {
 }
 actions {
   preamble {
-    id: 28719929
-    name: "A2AIngress.combine_ctrl.step3_cal_tx_reg_idx"
-    alias: "step3_cal_tx_reg_idx"
-  }
-}
-actions {
-  preamble {
     id: 18925597
     name: "A2AIngress.combine_ctrl.step1_calc_token_idx_from_tail"
     alias: "step1_calc_token_idx_from_tail"
@@ -1244,9 +740,23 @@ actions {
 }
 actions {
   preamble {
+    id: 22764220
+    name: "A2AIngress.combine_ctrl.calc_slot_id_from_token_idx"
+    alias: "calc_slot_id_from_token_idx"
+  }
+}
+actions {
+  preamble {
     id: 32459647
     name: "A2AIngress.combine_ctrl.calc_slot_index_from_next_token"
     alias: "calc_slot_index_from_next_token"
+  }
+}
+actions {
+  preamble {
+    id: 22472066
+    name: "A2AIngress.combine_ctrl.calc_slot_id_from_next_token_idx"
+    alias: "calc_slot_id_from_next_token_idx"
   }
 }
 actions {
@@ -1293,55 +803,6 @@ actions {
 }
 actions {
   preamble {
-    id: 19932135
-    name: "A2AIngress.combine_ctrl.step3_write_payload_data_1"
-    alias: "step3_write_payload_data_1"
-  }
-}
-actions {
-  preamble {
-    id: 25824923
-    name: "A2AIngress.combine_ctrl.step3_write_payload_data_2"
-    alias: "step3_write_payload_data_2"
-  }
-}
-actions {
-  preamble {
-    id: 21326352
-    name: "A2AIngress.combine_ctrl.step3_write_payload_data_3"
-    alias: "step3_write_payload_data_3"
-  }
-}
-actions {
-  preamble {
-    id: 17585566
-    name: "A2AIngress.combine_ctrl.step3_write_payload_data_4"
-    alias: "step3_write_payload_data_4"
-  }
-}
-actions {
-  preamble {
-    id: 19846629
-    name: "A2AIngress.combine_ctrl.step3_write_payload_data_5"
-    alias: "step3_write_payload_data_5"
-  }
-}
-actions {
-  preamble {
-    id: 32256352
-    name: "A2AIngress.combine_ctrl.step3_write_payload_data_6"
-    alias: "step3_write_payload_data_6"
-  }
-}
-actions {
-  preamble {
-    id: 21568538
-    name: "A2AIngress.combine_ctrl.step3_write_payload_data_7"
-    alias: "step3_write_payload_data_7"
-  }
-}
-actions {
-  preamble {
     id: 28700137
     name: "A2AIngress.combine_ctrl.step1_calc_next_token_idx_from_next_loc"
     alias: "step1_calc_next_token_idx_from_next_loc"
@@ -1352,13 +813,6 @@ actions {
     id: 31418900
     name: "A2AIngress.combine_ctrl.step2_calc_next_token_idx_from_next_loc"
     alias: "step2_calc_next_token_idx_from_next_loc"
-  }
-}
-actions {
-  preamble {
-    id: 27807237
-    name: "A2AIngress.combine_ctrl.step3_calc_next_token_idx_from_next_loc"
-    alias: "step3_calc_next_token_idx_from_next_loc"
   }
 }
 actions {
@@ -1491,9 +945,9 @@ actions {
 }
 actions {
   preamble {
-    id: 24927133
-    name: "A2AIngress.set_bridge_clear_offset"
-    alias: "set_bridge_clear_offset"
+    id: 29407709
+    name: "A2AIngress.set_bridge_agg_op"
+    alias: "set_bridge_agg_op"
   }
 }
 actions {
@@ -1957,9 +1411,9 @@ externs {
   }
   instances {
     preamble {
-      id: 2332659838
-      name: "pipe.A2AIngress.combine_ctrl.queue_head_slot_0.reg_ptr"
-      alias: "queue_head_slot_0.reg_ptr"
+      id: 2345865016
+      name: "pipe.A2AIngress.combine_ctrl.queue_head_0_reg"
+      alias: "queue_head_0_reg"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -1971,15 +1425,15 @@ externs {
           }
         }
         size: 8
-        data_field_name: "A2AIngress.combine_ctrl.queue_head_slot_0.reg_ptr"
+        data_field_name: "A2AIngress.combine_ctrl.queue_head_0_reg"
       }
     }
   }
   instances {
     preamble {
-      id: 2346736391
-      name: "pipe.A2AIngress.combine_ctrl.queue_head_slot_1.reg_ptr"
-      alias: "queue_head_slot_1.reg_ptr"
+      id: 2336203832
+      name: "pipe.A2AIngress.combine_ctrl.queue_head_1_reg"
+      alias: "queue_head_1_reg"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -1991,15 +1445,15 @@ externs {
           }
         }
         size: 8
-        data_field_name: "A2AIngress.combine_ctrl.queue_head_slot_1.reg_ptr"
+        data_field_name: "A2AIngress.combine_ctrl.queue_head_1_reg"
       }
     }
   }
   instances {
     preamble {
-      id: 2333699356
-      name: "pipe.A2AIngress.combine_ctrl.queue_head_slot_2.reg_ptr"
-      alias: "queue_head_slot_2.reg_ptr"
+      id: 2344843695
+      name: "pipe.A2AIngress.combine_ctrl.queue_head_2_reg"
+      alias: "queue_head_2_reg"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2011,15 +1465,15 @@ externs {
           }
         }
         size: 8
-        data_field_name: "A2AIngress.combine_ctrl.queue_head_slot_2.reg_ptr"
+        data_field_name: "A2AIngress.combine_ctrl.queue_head_2_reg"
       }
     }
   }
   instances {
     preamble {
-      id: 2344562491
-      name: "pipe.A2AIngress.combine_ctrl.queue_head_slot_3.reg_ptr"
-      alias: "queue_head_slot_3.reg_ptr"
+      id: 2347404613
+      name: "pipe.A2AIngress.combine_ctrl.queue_head_3_reg"
+      alias: "queue_head_3_reg"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2031,15 +1485,15 @@ externs {
           }
         }
         size: 8
-        data_field_name: "A2AIngress.combine_ctrl.queue_head_slot_3.reg_ptr"
+        data_field_name: "A2AIngress.combine_ctrl.queue_head_3_reg"
       }
     }
   }
   instances {
     preamble {
-      id: 2339491313
-      name: "pipe.A2AIngress.combine_ctrl.queue_head_slot_4.reg_ptr"
-      alias: "queue_head_slot_4.reg_ptr"
+      id: 2338700475
+      name: "pipe.A2AIngress.combine_ctrl.queue_head_4_reg"
+      alias: "queue_head_4_reg"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2051,15 +1505,15 @@ externs {
           }
         }
         size: 8
-        data_field_name: "A2AIngress.combine_ctrl.queue_head_slot_4.reg_ptr"
+        data_field_name: "A2AIngress.combine_ctrl.queue_head_4_reg"
       }
     }
   }
   instances {
     preamble {
-      id: 2340728327
-      name: "pipe.A2AIngress.combine_ctrl.queue_head_slot_5.reg_ptr"
-      alias: "queue_head_slot_5.reg_ptr"
+      id: 2348423523
+      name: "pipe.A2AIngress.combine_ctrl.queue_head_5_reg"
+      alias: "queue_head_5_reg"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2071,15 +1525,15 @@ externs {
           }
         }
         size: 8
-        data_field_name: "A2AIngress.combine_ctrl.queue_head_slot_5.reg_ptr"
+        data_field_name: "A2AIngress.combine_ctrl.queue_head_5_reg"
       }
     }
   }
   instances {
     preamble {
-      id: 2340418051
-      name: "pipe.A2AIngress.combine_ctrl.queue_head_slot_6.reg_ptr"
-      alias: "queue_head_slot_6.reg_ptr"
+      id: 2338685462
+      name: "pipe.A2AIngress.combine_ctrl.queue_head_6_reg"
+      alias: "queue_head_6_reg"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2091,15 +1545,15 @@ externs {
           }
         }
         size: 8
-        data_field_name: "A2AIngress.combine_ctrl.queue_head_slot_6.reg_ptr"
+        data_field_name: "A2AIngress.combine_ctrl.queue_head_6_reg"
       }
     }
   }
   instances {
     preamble {
-      id: 2339564683
-      name: "pipe.A2AIngress.combine_ctrl.queue_head_slot_7.reg_ptr"
-      alias: "queue_head_slot_7.reg_ptr"
+      id: 2344936392
+      name: "pipe.A2AIngress.combine_ctrl.queue_head_7_reg"
+      alias: "queue_head_7_reg"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2111,15 +1565,15 @@ externs {
           }
         }
         size: 8
-        data_field_name: "A2AIngress.combine_ctrl.queue_head_slot_7.reg_ptr"
+        data_field_name: "A2AIngress.combine_ctrl.queue_head_7_reg"
       }
     }
   }
   instances {
     preamble {
-      id: 2342978686
-      name: "pipe.A2AIngress.combine_ctrl.queue_tail_slot_0.reg_ptr"
-      alias: "queue_tail_slot_0.reg_ptr"
+      id: 2342414363
+      name: "pipe.A2AIngress.combine_ctrl.queue_tail_0_reg"
+      alias: "queue_tail_0_reg"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2131,15 +1585,15 @@ externs {
           }
         }
         size: 8
-        data_field_name: "A2AIngress.combine_ctrl.queue_tail_slot_0.reg_ptr"
+        data_field_name: "A2AIngress.combine_ctrl.queue_tail_0_reg"
       }
     }
   }
   instances {
     preamble {
-      id: 2344348612
-      name: "pipe.A2AIngress.combine_ctrl.queue_tail_slot_1.reg_ptr"
-      alias: "queue_tail_slot_1.reg_ptr"
+      id: 2341751589
+      name: "pipe.A2AIngress.combine_ctrl.queue_tail_1_reg"
+      alias: "queue_tail_1_reg"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2151,15 +1605,15 @@ externs {
           }
         }
         size: 8
-        data_field_name: "A2AIngress.combine_ctrl.queue_tail_slot_1.reg_ptr"
+        data_field_name: "A2AIngress.combine_ctrl.queue_tail_1_reg"
       }
     }
   }
   instances {
     preamble {
-      id: 2348646997
-      name: "pipe.A2AIngress.combine_ctrl.queue_tail_slot_2.reg_ptr"
-      alias: "queue_tail_slot_2.reg_ptr"
+      id: 2342737073
+      name: "pipe.A2AIngress.combine_ctrl.queue_tail_2_reg"
+      alias: "queue_tail_2_reg"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2171,15 +1625,15 @@ externs {
           }
         }
         size: 8
-        data_field_name: "A2AIngress.combine_ctrl.queue_tail_slot_2.reg_ptr"
+        data_field_name: "A2AIngress.combine_ctrl.queue_tail_2_reg"
       }
     }
   }
   instances {
     preamble {
-      id: 2344857432
-      name: "pipe.A2AIngress.combine_ctrl.queue_tail_slot_3.reg_ptr"
-      alias: "queue_tail_slot_3.reg_ptr"
+      id: 2344419293
+      name: "pipe.A2AIngress.combine_ctrl.queue_tail_3_reg"
+      alias: "queue_tail_3_reg"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2191,15 +1645,15 @@ externs {
           }
         }
         size: 8
-        data_field_name: "A2AIngress.combine_ctrl.queue_tail_slot_3.reg_ptr"
+        data_field_name: "A2AIngress.combine_ctrl.queue_tail_3_reg"
       }
     }
   }
   instances {
     preamble {
-      id: 2348615949
-      name: "pipe.A2AIngress.combine_ctrl.queue_tail_slot_4.reg_ptr"
-      alias: "queue_tail_slot_4.reg_ptr"
+      id: 2339826625
+      name: "pipe.A2AIngress.combine_ctrl.queue_tail_4_reg"
+      alias: "queue_tail_4_reg"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2211,15 +1665,15 @@ externs {
           }
         }
         size: 8
-        data_field_name: "A2AIngress.combine_ctrl.queue_tail_slot_4.reg_ptr"
+        data_field_name: "A2AIngress.combine_ctrl.queue_tail_4_reg"
       }
     }
   }
   instances {
     preamble {
-      id: 2336820509
-      name: "pipe.A2AIngress.combine_ctrl.queue_tail_slot_5.reg_ptr"
-      alias: "queue_tail_slot_5.reg_ptr"
+      id: 2332565405
+      name: "pipe.A2AIngress.combine_ctrl.queue_tail_5_reg"
+      alias: "queue_tail_5_reg"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2231,15 +1685,15 @@ externs {
           }
         }
         size: 8
-        data_field_name: "A2AIngress.combine_ctrl.queue_tail_slot_5.reg_ptr"
+        data_field_name: "A2AIngress.combine_ctrl.queue_tail_5_reg"
       }
     }
   }
   instances {
     preamble {
-      id: 2347524247
-      name: "pipe.A2AIngress.combine_ctrl.queue_tail_slot_6.reg_ptr"
-      alias: "queue_tail_slot_6.reg_ptr"
+      id: 2339541787
+      name: "pipe.A2AIngress.combine_ctrl.queue_tail_6_reg"
+      alias: "queue_tail_6_reg"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2251,15 +1705,15 @@ externs {
           }
         }
         size: 8
-        data_field_name: "A2AIngress.combine_ctrl.queue_tail_slot_6.reg_ptr"
+        data_field_name: "A2AIngress.combine_ctrl.queue_tail_6_reg"
       }
     }
   }
   instances {
     preamble {
-      id: 2341599522
-      name: "pipe.A2AIngress.combine_ctrl.queue_tail_slot_7.reg_ptr"
-      alias: "queue_tail_slot_7.reg_ptr"
+      id: 2333311345
+      name: "pipe.A2AIngress.combine_ctrl.queue_tail_7_reg"
+      alias: "queue_tail_7_reg"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2271,7 +1725,7 @@ externs {
           }
         }
         size: 8
-        data_field_name: "A2AIngress.combine_ctrl.queue_tail_slot_7.reg_ptr"
+        data_field_name: "A2AIngress.combine_ctrl.queue_tail_7_reg"
       }
     }
   }
@@ -2297,9 +1751,9 @@ externs {
   }
   instances {
     preamble {
-      id: 2339901707
-      name: "pipe.A2AIngress.combine_ctrl.bitmap_slot_0.reg_bitmap"
-      alias: "bitmap_slot_0.reg_bitmap"
+      id: 2347820481
+      name: "pipe.A2AIngress.combine_ctrl.bitmap_0_reg"
+      alias: "bitmap_0_reg"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2311,15 +1765,15 @@ externs {
           }
         }
         size: 512
-        data_field_name: "A2AIngress.combine_ctrl.bitmap_slot_0.reg_bitmap"
+        data_field_name: "A2AIngress.combine_ctrl.bitmap_0_reg"
       }
     }
   }
   instances {
     preamble {
-      id: 2345912854
-      name: "pipe.A2AIngress.combine_ctrl.bitmap_slot_1.reg_bitmap"
-      alias: "bitmap_slot_1.reg_bitmap"
+      id: 2335045347
+      name: "pipe.A2AIngress.combine_ctrl.bitmap_1_reg"
+      alias: "bitmap_1_reg"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2331,15 +1785,15 @@ externs {
           }
         }
         size: 512
-        data_field_name: "A2AIngress.combine_ctrl.bitmap_slot_1.reg_bitmap"
+        data_field_name: "A2AIngress.combine_ctrl.bitmap_1_reg"
       }
     }
   }
   instances {
     preamble {
-      id: 2332235200
-      name: "pipe.A2AIngress.combine_ctrl.bitmap_slot_2.reg_bitmap"
-      alias: "bitmap_slot_2.reg_bitmap"
+      id: 2343162724
+      name: "pipe.A2AIngress.combine_ctrl.bitmap_2_reg"
+      alias: "bitmap_2_reg"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2351,15 +1805,15 @@ externs {
           }
         }
         size: 512
-        data_field_name: "A2AIngress.combine_ctrl.bitmap_slot_2.reg_bitmap"
+        data_field_name: "A2AIngress.combine_ctrl.bitmap_2_reg"
       }
     }
   }
   instances {
     preamble {
-      id: 2339391928
-      name: "pipe.A2AIngress.combine_ctrl.bitmap_slot_3.reg_bitmap"
-      alias: "bitmap_slot_3.reg_bitmap"
+      id: 2338320172
+      name: "pipe.A2AIngress.combine_ctrl.bitmap_3_reg"
+      alias: "bitmap_3_reg"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2371,15 +1825,15 @@ externs {
           }
         }
         size: 512
-        data_field_name: "A2AIngress.combine_ctrl.bitmap_slot_3.reg_bitmap"
+        data_field_name: "A2AIngress.combine_ctrl.bitmap_3_reg"
       }
     }
   }
   instances {
     preamble {
-      id: 2339962650
-      name: "pipe.A2AIngress.combine_ctrl.bitmap_slot_4.reg_bitmap"
-      alias: "bitmap_slot_4.reg_bitmap"
+      id: 2341786316
+      name: "pipe.A2AIngress.combine_ctrl.bitmap_4_reg"
+      alias: "bitmap_4_reg"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2391,15 +1845,15 @@ externs {
           }
         }
         size: 512
-        data_field_name: "A2AIngress.combine_ctrl.bitmap_slot_4.reg_bitmap"
+        data_field_name: "A2AIngress.combine_ctrl.bitmap_4_reg"
       }
     }
   }
   instances {
     preamble {
-      id: 2332737700
-      name: "pipe.A2AIngress.combine_ctrl.bitmap_slot_5.reg_bitmap"
-      alias: "bitmap_slot_5.reg_bitmap"
+      id: 2337962861
+      name: "pipe.A2AIngress.combine_ctrl.bitmap_5_reg"
+      alias: "bitmap_5_reg"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2411,15 +1865,15 @@ externs {
           }
         }
         size: 512
-        data_field_name: "A2AIngress.combine_ctrl.bitmap_slot_5.reg_bitmap"
+        data_field_name: "A2AIngress.combine_ctrl.bitmap_5_reg"
       }
     }
   }
   instances {
     preamble {
-      id: 2333859230
-      name: "pipe.A2AIngress.combine_ctrl.bitmap_slot_6.reg_bitmap"
-      alias: "bitmap_slot_6.reg_bitmap"
+      id: 2343108073
+      name: "pipe.A2AIngress.combine_ctrl.bitmap_6_reg"
+      alias: "bitmap_6_reg"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2431,15 +1885,15 @@ externs {
           }
         }
         size: 512
-        data_field_name: "A2AIngress.combine_ctrl.bitmap_slot_6.reg_bitmap"
+        data_field_name: "A2AIngress.combine_ctrl.bitmap_6_reg"
       }
     }
   }
   instances {
     preamble {
-      id: 2338711649
-      name: "pipe.A2AIngress.combine_ctrl.bitmap_slot_7.reg_bitmap"
-      alias: "bitmap_slot_7.reg_bitmap"
+      id: 2345932382
+      name: "pipe.A2AIngress.combine_ctrl.bitmap_7_reg"
+      alias: "bitmap_7_reg"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2451,15 +1905,15 @@ externs {
           }
         }
         size: 512
-        data_field_name: "A2AIngress.combine_ctrl.bitmap_slot_7.reg_bitmap"
+        data_field_name: "A2AIngress.combine_ctrl.bitmap_7_reg"
       }
     }
   }
   instances {
     preamble {
-      id: 2337893710
-      name: "pipe.A2AIngress.combine_ctrl.addr_slot_0.reg_addr_lo"
-      alias: "combine_ctrl.addr_slot_0.reg_addr_lo"
+      id: 2337722234
+      name: "pipe.A2AIngress.combine_ctrl.addr_0_reg_lo"
+      alias: "addr_0_reg_lo"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2471,15 +1925,15 @@ externs {
           }
         }
         size: 512
-        data_field_name: "A2AIngress.combine_ctrl.addr_slot_0.reg_addr_lo"
+        data_field_name: "A2AIngress.combine_ctrl.addr_0_reg_lo"
       }
     }
   }
   instances {
     preamble {
-      id: 2336614967
-      name: "pipe.A2AIngress.combine_ctrl.addr_slot_0.reg_addr_hi"
-      alias: "combine_ctrl.addr_slot_0.reg_addr_hi"
+      id: 2332186288
+      name: "pipe.A2AIngress.combine_ctrl.addr_0_reg_hi"
+      alias: "addr_0_reg_hi"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2491,15 +1945,15 @@ externs {
           }
         }
         size: 512
-        data_field_name: "A2AIngress.combine_ctrl.addr_slot_0.reg_addr_hi"
+        data_field_name: "A2AIngress.combine_ctrl.addr_0_reg_hi"
       }
     }
   }
   instances {
     preamble {
-      id: 2342027781
-      name: "pipe.A2AIngress.combine_ctrl.addr_slot_1.reg_addr_lo"
-      alias: "combine_ctrl.addr_slot_1.reg_addr_lo"
+      id: 2335339088
+      name: "pipe.A2AIngress.combine_ctrl.addr_1_reg_lo"
+      alias: "addr_1_reg_lo"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2511,15 +1965,15 @@ externs {
           }
         }
         size: 512
-        data_field_name: "A2AIngress.combine_ctrl.addr_slot_1.reg_addr_lo"
+        data_field_name: "A2AIngress.combine_ctrl.addr_1_reg_lo"
       }
     }
   }
   instances {
     preamble {
-      id: 2341170375
-      name: "pipe.A2AIngress.combine_ctrl.addr_slot_1.reg_addr_hi"
-      alias: "combine_ctrl.addr_slot_1.reg_addr_hi"
+      id: 2344618701
+      name: "pipe.A2AIngress.combine_ctrl.addr_1_reg_hi"
+      alias: "addr_1_reg_hi"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2531,15 +1985,15 @@ externs {
           }
         }
         size: 512
-        data_field_name: "A2AIngress.combine_ctrl.addr_slot_1.reg_addr_hi"
+        data_field_name: "A2AIngress.combine_ctrl.addr_1_reg_hi"
       }
     }
   }
   instances {
     preamble {
-      id: 2342358196
-      name: "pipe.A2AIngress.combine_ctrl.addr_slot_2.reg_addr_lo"
-      alias: "combine_ctrl.addr_slot_2.reg_addr_lo"
+      id: 2344893920
+      name: "pipe.A2AIngress.combine_ctrl.addr_2_reg_lo"
+      alias: "addr_2_reg_lo"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2551,15 +2005,15 @@ externs {
           }
         }
         size: 512
-        data_field_name: "A2AIngress.combine_ctrl.addr_slot_2.reg_addr_lo"
+        data_field_name: "A2AIngress.combine_ctrl.addr_2_reg_lo"
       }
     }
   }
   instances {
     preamble {
-      id: 2332187397
-      name: "pipe.A2AIngress.combine_ctrl.addr_slot_2.reg_addr_hi"
-      alias: "combine_ctrl.addr_slot_2.reg_addr_hi"
+      id: 2341712337
+      name: "pipe.A2AIngress.combine_ctrl.addr_2_reg_hi"
+      alias: "addr_2_reg_hi"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2571,15 +2025,15 @@ externs {
           }
         }
         size: 512
-        data_field_name: "A2AIngress.combine_ctrl.addr_slot_2.reg_addr_hi"
+        data_field_name: "A2AIngress.combine_ctrl.addr_2_reg_hi"
       }
     }
   }
   instances {
     preamble {
-      id: 2333489400
-      name: "pipe.A2AIngress.combine_ctrl.addr_slot_3.reg_addr_lo"
-      alias: "combine_ctrl.addr_slot_3.reg_addr_lo"
+      id: 2344977507
+      name: "pipe.A2AIngress.combine_ctrl.addr_3_reg_lo"
+      alias: "addr_3_reg_lo"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2591,15 +2045,15 @@ externs {
           }
         }
         size: 512
-        data_field_name: "A2AIngress.combine_ctrl.addr_slot_3.reg_addr_lo"
+        data_field_name: "A2AIngress.combine_ctrl.addr_3_reg_lo"
       }
     }
   }
   instances {
     preamble {
-      id: 2340875817
-      name: "pipe.A2AIngress.combine_ctrl.addr_slot_3.reg_addr_hi"
-      alias: "combine_ctrl.addr_slot_3.reg_addr_hi"
+      id: 2348757752
+      name: "pipe.A2AIngress.combine_ctrl.addr_3_reg_hi"
+      alias: "addr_3_reg_hi"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2611,15 +2065,15 @@ externs {
           }
         }
         size: 512
-        data_field_name: "A2AIngress.combine_ctrl.addr_slot_3.reg_addr_hi"
+        data_field_name: "A2AIngress.combine_ctrl.addr_3_reg_hi"
       }
     }
   }
   instances {
     preamble {
-      id: 2339870127
-      name: "pipe.A2AIngress.combine_ctrl.addr_slot_4.reg_addr_lo"
-      alias: "combine_ctrl.addr_slot_4.reg_addr_lo"
+      id: 2343784831
+      name: "pipe.A2AIngress.combine_ctrl.addr_4_reg_lo"
+      alias: "addr_4_reg_lo"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2631,15 +2085,15 @@ externs {
           }
         }
         size: 512
-        data_field_name: "A2AIngress.combine_ctrl.addr_slot_4.reg_addr_lo"
+        data_field_name: "A2AIngress.combine_ctrl.addr_4_reg_lo"
       }
     }
   }
   instances {
     preamble {
-      id: 2332320833
-      name: "pipe.A2AIngress.combine_ctrl.addr_slot_4.reg_addr_hi"
-      alias: "combine_ctrl.addr_slot_4.reg_addr_hi"
+      id: 2348150820
+      name: "pipe.A2AIngress.combine_ctrl.addr_4_reg_hi"
+      alias: "addr_4_reg_hi"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2651,15 +2105,15 @@ externs {
           }
         }
         size: 512
-        data_field_name: "A2AIngress.combine_ctrl.addr_slot_4.reg_addr_hi"
+        data_field_name: "A2AIngress.combine_ctrl.addr_4_reg_hi"
       }
     }
   }
   instances {
     preamble {
-      id: 2341996501
-      name: "pipe.A2AIngress.combine_ctrl.addr_slot_5.reg_addr_lo"
-      alias: "combine_ctrl.addr_slot_5.reg_addr_lo"
+      id: 2334105479
+      name: "pipe.A2AIngress.combine_ctrl.addr_5_reg_lo"
+      alias: "addr_5_reg_lo"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2671,15 +2125,15 @@ externs {
           }
         }
         size: 512
-        data_field_name: "A2AIngress.combine_ctrl.addr_slot_5.reg_addr_lo"
+        data_field_name: "A2AIngress.combine_ctrl.addr_5_reg_lo"
       }
     }
   }
   instances {
     preamble {
-      id: 2336512207
-      name: "pipe.A2AIngress.combine_ctrl.addr_slot_5.reg_addr_hi"
-      alias: "combine_ctrl.addr_slot_5.reg_addr_hi"
+      id: 2335132385
+      name: "pipe.A2AIngress.combine_ctrl.addr_5_reg_hi"
+      alias: "addr_5_reg_hi"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2691,15 +2145,15 @@ externs {
           }
         }
         size: 512
-        data_field_name: "A2AIngress.combine_ctrl.addr_slot_5.reg_addr_hi"
+        data_field_name: "A2AIngress.combine_ctrl.addr_5_reg_hi"
       }
     }
   }
   instances {
     preamble {
-      id: 2340896530
-      name: "pipe.A2AIngress.combine_ctrl.addr_slot_6.reg_addr_lo"
-      alias: "combine_ctrl.addr_slot_6.reg_addr_lo"
+      id: 2337334616
+      name: "pipe.A2AIngress.combine_ctrl.addr_6_reg_lo"
+      alias: "addr_6_reg_lo"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2711,15 +2165,15 @@ externs {
           }
         }
         size: 512
-        data_field_name: "A2AIngress.combine_ctrl.addr_slot_6.reg_addr_lo"
+        data_field_name: "A2AIngress.combine_ctrl.addr_6_reg_lo"
       }
     }
   }
   instances {
     preamble {
-      id: 2333195691
-      name: "pipe.A2AIngress.combine_ctrl.addr_slot_6.reg_addr_hi"
-      alias: "combine_ctrl.addr_slot_6.reg_addr_hi"
+      id: 2338733279
+      name: "pipe.A2AIngress.combine_ctrl.addr_6_reg_hi"
+      alias: "addr_6_reg_hi"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2731,15 +2185,15 @@ externs {
           }
         }
         size: 512
-        data_field_name: "A2AIngress.combine_ctrl.addr_slot_6.reg_addr_hi"
+        data_field_name: "A2AIngress.combine_ctrl.addr_6_reg_hi"
       }
     }
   }
   instances {
     preamble {
-      id: 2334503712
-      name: "pipe.A2AIngress.combine_ctrl.addr_slot_7.reg_addr_lo"
-      alias: "combine_ctrl.addr_slot_7.reg_addr_lo"
+      id: 2334796251
+      name: "pipe.A2AIngress.combine_ctrl.addr_7_reg_lo"
+      alias: "addr_7_reg_lo"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2751,15 +2205,15 @@ externs {
           }
         }
         size: 512
-        data_field_name: "A2AIngress.combine_ctrl.addr_slot_7.reg_addr_lo"
+        data_field_name: "A2AIngress.combine_ctrl.addr_7_reg_lo"
       }
     }
   }
   instances {
     preamble {
-      id: 2348267322
-      name: "pipe.A2AIngress.combine_ctrl.addr_slot_7.reg_addr_hi"
-      alias: "combine_ctrl.addr_slot_7.reg_addr_hi"
+      id: 2347028429
+      name: "pipe.A2AIngress.combine_ctrl.addr_7_reg_hi"
+      alias: "addr_7_reg_hi"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2771,7 +2225,7 @@ externs {
           }
         }
         size: 512
-        data_field_name: "A2AIngress.combine_ctrl.addr_slot_7.reg_addr_hi"
+        data_field_name: "A2AIngress.combine_ctrl.addr_7_reg_hi"
       }
     }
   }
@@ -2959,7 +2413,7 @@ externs {
     preamble {
       id: 2332519851
       name: "pipe.A2AEgress.dispatch_egress.addr_slot_0.reg_addr_lo"
-      alias: "dispatch_egress.addr_slot_0.reg_addr_lo"
+      alias: "addr_slot_0.reg_addr_lo"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2979,7 +2433,7 @@ externs {
     preamble {
       id: 2343413331
       name: "pipe.A2AEgress.dispatch_egress.addr_slot_0.reg_addr_hi"
-      alias: "dispatch_egress.addr_slot_0.reg_addr_hi"
+      alias: "addr_slot_0.reg_addr_hi"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -2999,7 +2453,7 @@ externs {
     preamble {
       id: 2348306721
       name: "pipe.A2AEgress.dispatch_egress.addr_slot_1.reg_addr_lo"
-      alias: "dispatch_egress.addr_slot_1.reg_addr_lo"
+      alias: "addr_slot_1.reg_addr_lo"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -3019,7 +2473,7 @@ externs {
     preamble {
       id: 2342439116
       name: "pipe.A2AEgress.dispatch_egress.addr_slot_1.reg_addr_hi"
-      alias: "dispatch_egress.addr_slot_1.reg_addr_hi"
+      alias: "addr_slot_1.reg_addr_hi"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -3039,7 +2493,7 @@ externs {
     preamble {
       id: 2345375315
       name: "pipe.A2AEgress.dispatch_egress.addr_slot_2.reg_addr_lo"
-      alias: "dispatch_egress.addr_slot_2.reg_addr_lo"
+      alias: "addr_slot_2.reg_addr_lo"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -3059,7 +2513,7 @@ externs {
     preamble {
       id: 2345295405
       name: "pipe.A2AEgress.dispatch_egress.addr_slot_2.reg_addr_hi"
-      alias: "dispatch_egress.addr_slot_2.reg_addr_hi"
+      alias: "addr_slot_2.reg_addr_hi"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -3079,7 +2533,7 @@ externs {
     preamble {
       id: 2341432205
       name: "pipe.A2AEgress.dispatch_egress.addr_slot_3.reg_addr_lo"
-      alias: "dispatch_egress.addr_slot_3.reg_addr_lo"
+      alias: "addr_slot_3.reg_addr_lo"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -3099,7 +2553,7 @@ externs {
     preamble {
       id: 2345135316
       name: "pipe.A2AEgress.dispatch_egress.addr_slot_3.reg_addr_hi"
-      alias: "dispatch_egress.addr_slot_3.reg_addr_hi"
+      alias: "addr_slot_3.reg_addr_hi"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -3119,7 +2573,7 @@ externs {
     preamble {
       id: 2336593746
       name: "pipe.A2AEgress.dispatch_egress.addr_slot_4.reg_addr_lo"
-      alias: "dispatch_egress.addr_slot_4.reg_addr_lo"
+      alias: "addr_slot_4.reg_addr_lo"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -3139,7 +2593,7 @@ externs {
     preamble {
       id: 2347447461
       name: "pipe.A2AEgress.dispatch_egress.addr_slot_4.reg_addr_hi"
-      alias: "dispatch_egress.addr_slot_4.reg_addr_hi"
+      alias: "addr_slot_4.reg_addr_hi"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -3159,7 +2613,7 @@ externs {
     preamble {
       id: 2335645836
       name: "pipe.A2AEgress.dispatch_egress.addr_slot_5.reg_addr_lo"
-      alias: "dispatch_egress.addr_slot_5.reg_addr_lo"
+      alias: "addr_slot_5.reg_addr_lo"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -3179,7 +2633,7 @@ externs {
     preamble {
       id: 2342900220
       name: "pipe.A2AEgress.dispatch_egress.addr_slot_5.reg_addr_hi"
-      alias: "dispatch_egress.addr_slot_5.reg_addr_hi"
+      alias: "addr_slot_5.reg_addr_hi"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -3199,7 +2653,7 @@ externs {
     preamble {
       id: 2347655290
       name: "pipe.A2AEgress.dispatch_egress.addr_slot_6.reg_addr_lo"
-      alias: "dispatch_egress.addr_slot_6.reg_addr_lo"
+      alias: "addr_slot_6.reg_addr_lo"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -3219,7 +2673,7 @@ externs {
     preamble {
       id: 2342974991
       name: "pipe.A2AEgress.dispatch_egress.addr_slot_6.reg_addr_hi"
-      alias: "dispatch_egress.addr_slot_6.reg_addr_hi"
+      alias: "addr_slot_6.reg_addr_hi"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -3239,7 +2693,7 @@ externs {
     preamble {
       id: 2341300231
       name: "pipe.A2AEgress.dispatch_egress.addr_slot_7.reg_addr_lo"
-      alias: "dispatch_egress.addr_slot_7.reg_addr_lo"
+      alias: "addr_slot_7.reg_addr_lo"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -3259,7 +2713,7 @@ externs {
     preamble {
       id: 2332689275
       name: "pipe.A2AEgress.dispatch_egress.addr_slot_7.reg_addr_hi"
-      alias: "dispatch_egress.addr_slot_7.reg_addr_hi"
+      alias: "addr_slot_7.reg_addr_hi"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -3366,18 +2820,18 @@ externs {
         }
         fields {
           id: 9
-          name: "hdr.bridge.clear_offset"
-          bitwidth: 32
-        }
-        fields {
-          id: 10
           name: "hdr.bridge.root_rank_id"
           bitwidth: 32
         }
         fields {
-          id: 11
+          id: 10
           name: "hdr.bridge.next_token_addr"
           bitwidth: 64
+        }
+        fields {
+          id: 11
+          name: "hdr.bridge.agg_op"
+          bitwidth: 8
         }
         fields {
           id: 12
@@ -3561,426 +3015,276 @@ externs {
         }
         fields {
           id: 48
-          name: "hdr.payload.data01"
-          bitwidth: 32
-        }
-        fields {
-          id: 49
-          name: "hdr.payload.data02"
-          bitwidth: 32
-        }
-        fields {
-          id: 50
-          name: "hdr.payload.data03"
-          bitwidth: 32
-        }
-        fields {
-          id: 51
-          name: "hdr.payload.data04"
-          bitwidth: 32
-        }
-        fields {
-          id: 52
-          name: "hdr.payload.data05"
-          bitwidth: 32
-        }
-        fields {
-          id: 53
-          name: "hdr.payload.data06"
-          bitwidth: 32
-        }
-        fields {
-          id: 54
-          name: "hdr.payload.data07"
-          bitwidth: 32
-        }
-        fields {
-          id: 55
-          name: "hdr.payload.data08"
-          bitwidth: 32
-        }
-        fields {
-          id: 56
-          name: "hdr.payload.data09"
-          bitwidth: 32
-        }
-        fields {
-          id: 57
-          name: "hdr.payload.data0a"
-          bitwidth: 32
-        }
-        fields {
-          id: 58
-          name: "hdr.payload.data0b"
-          bitwidth: 32
-        }
-        fields {
-          id: 59
-          name: "hdr.payload.data0c"
-          bitwidth: 32
-        }
-        fields {
-          id: 60
-          name: "hdr.payload.data0d"
-          bitwidth: 32
-        }
-        fields {
-          id: 61
-          name: "hdr.payload.data0e"
-          bitwidth: 32
-        }
-        fields {
-          id: 62
-          name: "hdr.payload.data0f"
-          bitwidth: 32
-        }
-        fields {
-          id: 63
-          name: "hdr.payload.data10"
-          bitwidth: 32
-        }
-        fields {
-          id: 64
-          name: "hdr.payload.data11"
-          bitwidth: 32
-        }
-        fields {
-          id: 65
-          name: "hdr.payload.data12"
-          bitwidth: 32
-        }
-        fields {
-          id: 66
-          name: "hdr.payload.data13"
-          bitwidth: 32
-        }
-        fields {
-          id: 67
-          name: "hdr.payload.data14"
-          bitwidth: 32
-        }
-        fields {
-          id: 68
-          name: "hdr.payload.data15"
-          bitwidth: 32
-        }
-        fields {
-          id: 69
-          name: "hdr.payload.data16"
-          bitwidth: 32
-        }
-        fields {
-          id: 70
-          name: "hdr.payload.data17"
-          bitwidth: 32
-        }
-        fields {
-          id: 71
           name: "hdr.icrc.$valid"
           bitwidth: 1
         }
         fields {
-          id: 72
+          id: 49
           name: "hdr.icrc.v0"
           bitwidth: 8
         }
         fields {
-          id: 73
+          id: 50
           name: "hdr.icrc.v1"
           bitwidth: 8
         }
         fields {
-          id: 74
+          id: 51
           name: "hdr.icrc.v2"
           bitwidth: 8
         }
         fields {
-          id: 75
+          id: 52
           name: "hdr.icrc.v3"
           bitwidth: 8
         }
         fields {
-          id: 76
-          name: "ig_md.bitmap_clear_mask"
-          bitwidth: 32
-        }
-        fields {
-          id: 77
+          id: 53
           name: "ig_md.psn"
           bitwidth: 32
         }
         fields {
-          id: 78
+          id: 54
           name: "ig_md.msn"
           bitwidth: 32
         }
         fields {
-          id: 79
+          id: 55
           name: "ig_md.syndrome"
           bitwidth: 32
         }
         fields {
-          id: 80
+          id: 56
           name: "ig_md.channel_class"
           bitwidth: 32
         }
         fields {
-          id: 81
-          name: "ig_md.token_idx"
+          id: 57
+          name: "ig_md.tmp_a"
           bitwidth: 32
         }
         fields {
-          id: 82
-          name: "ig_md.slot_index"
+          id: 58
+          name: "ig_md.tmp_b"
           bitwidth: 32
         }
         fields {
-          id: 83
-          name: "ig_md.expected_epsn"
+          id: 59
+          name: "ig_md.tmp_c"
           bitwidth: 32
         }
         fields {
-          id: 84
-          name: "ig_md.msn_saved"
+          id: 60
+          name: "ig_md.tmp_d"
           bitwidth: 32
         }
         fields {
-          id: 85
-          name: "ig_md.psn_to_check"
+          id: 61
+          name: "ig_md.tmp_e"
           bitwidth: 32
         }
         fields {
-          id: 86
-          name: "ig_md.temp_queue_data"
-          bitwidth: 32
-        }
-        fields {
-          id: 87
-          name: "ig_md.next_loc"
-          bitwidth: 32
-        }
-        fields {
-          id: 88
-          name: "ig_md.queue_ptr_result"
-          bitwidth: 32
-        }
-        fields {
-          id: 89
-          name: "ig_md.bitmap_result"
-          bitwidth: 32
-        }
-        fields {
-          id: 90
-          name: "ig_md.bitmap_write_val"
-          bitwidth: 32
-        }
-        fields {
-          id: 91
-          name: "ig_md.addr_result"
-          bitwidth: 64
-        }
-        fields {
-          id: 92
-          name: "ig_md.addr_write_val"
-          bitwidth: 64
-        }
-        fields {
-          id: 93
+          id: 62
           name: "ig_md.ing_rank_id"
           bitwidth: 32
         }
         fields {
-          id: 94
+          id: 63
           name: "ig_md.conn_phase"
           bitwidth: 2
         }
         fields {
-          id: 95
+          id: 64
           name: "ig_md.conn_semantics"
           bitwidth: 2
         }
         fields {
-          id: 96
+          id: 65
+          name: "ig_md.agg_op"
+          bitwidth: 8
+        }
+        fields {
+          id: 66
           name: "ig_md.channel_id"
           bitwidth: 32
         }
         fields {
-          id: 97
+          id: 67
           name: "ig_md.bitmap"
           bitwidth: 32
         }
         fields {
-          id: 98
+          id: 68
+          name: "ig_md.tx_reg_idx"
+          bitwidth: 32
+        }
+        fields {
+          id: 69
           name: "ig_md.tx_loc_val"
           bitwidth: 32
         }
         fields {
-          id: 99
+          id: 70
           name: "ig_md.tx_offset_val"
           bitwidth: 32
         }
         fields {
-          id: 100
-          name: "ig_md.clear_offset"
-          bitwidth: 32
-        }
-        fields {
-          id: 101
+          id: 71
           name: "ig_md.root_rank_id"
           bitwidth: 32
         }
         fields {
-          id: 102
+          id: 72
           name: "ig_md.next_token_addr"
           bitwidth: 64
         }
         fields {
-          id: 103
+          id: 73
           name: "ig_intr_md.resubmit_flag"
           bitwidth: 1
         }
         fields {
-          id: 104
+          id: 74
           name: "ig_intr_md._pad1"
           bitwidth: 1
         }
         fields {
-          id: 105
+          id: 75
           name: "ig_intr_md.packet_version"
           bitwidth: 2
         }
         fields {
-          id: 106
+          id: 76
           name: "ig_intr_md._pad2"
           bitwidth: 3
         }
         fields {
-          id: 107
+          id: 77
           name: "ig_intr_md.ingress_port"
           bitwidth: 9
         }
         fields {
-          id: 108
+          id: 78
           name: "ig_intr_md.ingress_mac_tstamp"
           bitwidth: 48
         }
         fields {
-          id: 109
+          id: 79
           name: "ig_prsr_md.global_tstamp"
           bitwidth: 48
         }
         fields {
-          id: 110
+          id: 80
           name: "ig_prsr_md.global_ver"
           bitwidth: 32
         }
         fields {
-          id: 111
+          id: 81
           name: "ig_prsr_md.parser_err"
           bitwidth: 16
         }
         fields {
-          id: 112
+          id: 82
           name: "ig_dprsr_md.drop_ctl"
           bitwidth: 3
         }
         fields {
-          id: 113
+          id: 83
           name: "ig_dprsr_md.digest_type"
           bitwidth: 3
         }
         fields {
-          id: 114
+          id: 84
           name: "ig_dprsr_md.resubmit_type"
           bitwidth: 3
         }
         fields {
-          id: 115
+          id: 85
           name: "ig_dprsr_md.mirror_type"
           bitwidth: 3
         }
         fields {
-          id: 116
+          id: 86
           name: "ig_tm_md.ucast_egress_port"
           bitwidth: 9
         }
         fields {
-          id: 117
+          id: 87
           name: "ig_tm_md.bypass_egress"
           bitwidth: 1
         }
         fields {
-          id: 118
+          id: 88
           name: "ig_tm_md.deflect_on_drop"
           bitwidth: 1
         }
         fields {
-          id: 119
+          id: 89
           name: "ig_tm_md.ingress_cos"
           bitwidth: 3
         }
         fields {
-          id: 120
+          id: 90
           name: "ig_tm_md.qid"
           bitwidth: 5
         }
         fields {
-          id: 121
+          id: 91
           name: "ig_tm_md.icos_for_copy_to_cpu"
           bitwidth: 3
         }
         fields {
-          id: 122
+          id: 92
           name: "ig_tm_md.copy_to_cpu"
           bitwidth: 1
         }
         fields {
-          id: 123
+          id: 93
           name: "ig_tm_md.packet_color"
           bitwidth: 2
         }
         fields {
-          id: 124
+          id: 94
           name: "ig_tm_md.disable_ucast_cutthru"
           bitwidth: 1
         }
         fields {
-          id: 125
+          id: 95
           name: "ig_tm_md.enable_mcast_cutthru"
           bitwidth: 1
         }
         fields {
-          id: 126
+          id: 96
           name: "ig_tm_md.mcast_grp_a"
           bitwidth: 16
         }
         fields {
-          id: 127
+          id: 97
           name: "ig_tm_md.mcast_grp_b"
           bitwidth: 16
         }
         fields {
-          id: 128
+          id: 98
           name: "ig_tm_md.level1_mcast_hash"
           bitwidth: 13
         }
         fields {
-          id: 129
+          id: 99
           name: "ig_tm_md.level2_mcast_hash"
           bitwidth: 13
         }
         fields {
-          id: 130
+          id: 100
           name: "ig_tm_md.level1_exclusion_id"
           bitwidth: 16
         }
         fields {
-          id: 131
+          id: 101
           name: "ig_tm_md.level2_exclusion_id"
           bitwidth: 9
         }
         fields {
-          id: 132
+          id: 102
           name: "ig_tm_md.rid"
           bitwidth: 16
         }
@@ -4039,18 +3343,18 @@ externs {
         }
         fields {
           id: 9
-          name: "hdr.bridge.clear_offset"
-          bitwidth: 32
-        }
-        fields {
-          id: 10
           name: "hdr.bridge.root_rank_id"
           bitwidth: 32
         }
         fields {
-          id: 11
+          id: 10
           name: "hdr.bridge.next_token_addr"
           bitwidth: 64
+        }
+        fields {
+          id: 11
+          name: "hdr.bridge.agg_op"
+          bitwidth: 8
         }
         fields {
           id: 12
@@ -4234,321 +3538,206 @@ externs {
         }
         fields {
           id: 48
-          name: "hdr.payload.data01"
-          bitwidth: 32
-        }
-        fields {
-          id: 49
-          name: "hdr.payload.data02"
-          bitwidth: 32
-        }
-        fields {
-          id: 50
-          name: "hdr.payload.data03"
-          bitwidth: 32
-        }
-        fields {
-          id: 51
-          name: "hdr.payload.data04"
-          bitwidth: 32
-        }
-        fields {
-          id: 52
-          name: "hdr.payload.data05"
-          bitwidth: 32
-        }
-        fields {
-          id: 53
-          name: "hdr.payload.data06"
-          bitwidth: 32
-        }
-        fields {
-          id: 54
-          name: "hdr.payload.data07"
-          bitwidth: 32
-        }
-        fields {
-          id: 55
-          name: "hdr.payload.data08"
-          bitwidth: 32
-        }
-        fields {
-          id: 56
-          name: "hdr.payload.data09"
-          bitwidth: 32
-        }
-        fields {
-          id: 57
-          name: "hdr.payload.data0a"
-          bitwidth: 32
-        }
-        fields {
-          id: 58
-          name: "hdr.payload.data0b"
-          bitwidth: 32
-        }
-        fields {
-          id: 59
-          name: "hdr.payload.data0c"
-          bitwidth: 32
-        }
-        fields {
-          id: 60
-          name: "hdr.payload.data0d"
-          bitwidth: 32
-        }
-        fields {
-          id: 61
-          name: "hdr.payload.data0e"
-          bitwidth: 32
-        }
-        fields {
-          id: 62
-          name: "hdr.payload.data0f"
-          bitwidth: 32
-        }
-        fields {
-          id: 63
-          name: "hdr.payload.data10"
-          bitwidth: 32
-        }
-        fields {
-          id: 64
-          name: "hdr.payload.data11"
-          bitwidth: 32
-        }
-        fields {
-          id: 65
-          name: "hdr.payload.data12"
-          bitwidth: 32
-        }
-        fields {
-          id: 66
-          name: "hdr.payload.data13"
-          bitwidth: 32
-        }
-        fields {
-          id: 67
-          name: "hdr.payload.data14"
-          bitwidth: 32
-        }
-        fields {
-          id: 68
-          name: "hdr.payload.data15"
-          bitwidth: 32
-        }
-        fields {
-          id: 69
-          name: "hdr.payload.data16"
-          bitwidth: 32
-        }
-        fields {
-          id: 70
-          name: "hdr.payload.data17"
-          bitwidth: 32
-        }
-        fields {
-          id: 71
           name: "hdr.icrc.$valid"
           bitwidth: 1
         }
         fields {
-          id: 72
+          id: 49
           name: "hdr.icrc.v0"
           bitwidth: 8
         }
         fields {
-          id: 73
+          id: 50
           name: "hdr.icrc.v1"
           bitwidth: 8
         }
         fields {
-          id: 74
+          id: 51
           name: "hdr.icrc.v2"
           bitwidth: 8
         }
         fields {
-          id: 75
+          id: 52
           name: "hdr.icrc.v3"
           bitwidth: 8
         }
         fields {
-          id: 133
+          id: 103
           name: "eg_md.psn"
           bitwidth: 32
         }
         fields {
-          id: 134
+          id: 104
           name: "eg_md.eg_rank_id"
           bitwidth: 32
         }
         fields {
-          id: 135
+          id: 105
           name: "eg_intr_md._pad0"
           bitwidth: 7
         }
         fields {
-          id: 136
+          id: 106
           name: "eg_intr_md.egress_port"
           bitwidth: 9
         }
         fields {
-          id: 137
+          id: 107
           name: "eg_intr_md._pad1"
           bitwidth: 5
         }
         fields {
-          id: 138
+          id: 108
           name: "eg_intr_md.enq_qdepth"
           bitwidth: 19
         }
         fields {
-          id: 139
+          id: 109
           name: "eg_intr_md._pad2"
           bitwidth: 6
         }
         fields {
-          id: 140
+          id: 110
           name: "eg_intr_md.enq_congest_stat"
           bitwidth: 2
         }
         fields {
-          id: 141
+          id: 111
           name: "eg_intr_md._pad3"
           bitwidth: 14
         }
         fields {
-          id: 142
+          id: 112
           name: "eg_intr_md.enq_tstamp"
           bitwidth: 18
         }
         fields {
-          id: 143
+          id: 113
           name: "eg_intr_md._pad4"
           bitwidth: 5
         }
         fields {
-          id: 144
+          id: 114
           name: "eg_intr_md.deq_qdepth"
           bitwidth: 19
         }
         fields {
-          id: 145
+          id: 115
           name: "eg_intr_md._pad5"
           bitwidth: 6
         }
         fields {
-          id: 146
+          id: 116
           name: "eg_intr_md.deq_congest_stat"
           bitwidth: 2
         }
         fields {
-          id: 147
+          id: 117
           name: "eg_intr_md.app_pool_congest_stat"
           bitwidth: 8
         }
         fields {
-          id: 148
+          id: 118
           name: "eg_intr_md._pad6"
           bitwidth: 14
         }
         fields {
-          id: 149
+          id: 119
           name: "eg_intr_md.deq_timedelta"
           bitwidth: 18
         }
         fields {
-          id: 150
+          id: 120
           name: "eg_intr_md.egress_rid"
           bitwidth: 16
         }
         fields {
-          id: 151
+          id: 121
           name: "eg_intr_md._pad7"
           bitwidth: 7
         }
         fields {
-          id: 152
+          id: 122
           name: "eg_intr_md.egress_rid_first"
           bitwidth: 1
         }
         fields {
-          id: 153
+          id: 123
           name: "eg_intr_md._pad8"
           bitwidth: 3
         }
         fields {
-          id: 154
+          id: 124
           name: "eg_intr_md.egress_qid"
           bitwidth: 5
         }
         fields {
-          id: 155
+          id: 125
           name: "eg_intr_md._pad9"
           bitwidth: 5
         }
         fields {
-          id: 156
+          id: 126
           name: "eg_intr_md.egress_cos"
           bitwidth: 3
         }
         fields {
-          id: 157
+          id: 127
           name: "eg_intr_md._pad10"
           bitwidth: 7
         }
         fields {
-          id: 158
+          id: 128
           name: "eg_intr_md.deflection_flag"
           bitwidth: 1
         }
         fields {
-          id: 159
+          id: 129
           name: "eg_intr_md.pkt_length"
           bitwidth: 16
         }
         fields {
-          id: 160
+          id: 130
           name: "eg_prsr_md.global_tstamp"
           bitwidth: 48
         }
         fields {
-          id: 161
+          id: 131
           name: "eg_prsr_md.global_ver"
           bitwidth: 32
         }
         fields {
-          id: 162
+          id: 132
           name: "eg_prsr_md.parser_err"
           bitwidth: 16
         }
         fields {
-          id: 163
+          id: 133
           name: "eg_dprsr_md.drop_ctl"
           bitwidth: 3
         }
         fields {
-          id: 164
+          id: 134
           name: "eg_dprsr_md.mirror_type"
           bitwidth: 3
         }
         fields {
-          id: 165
+          id: 135
           name: "eg_dprsr_md.coalesce_flush"
           bitwidth: 1
         }
         fields {
-          id: 166
+          id: 136
           name: "eg_dprsr_md.coalesce_length"
           bitwidth: 7
         }
         fields {
-          id: 167
+          id: 137
           name: "eg_oport_md.capture_tstamp_on_tx"
           bitwidth: 1
         }
         fields {
-          id: 168
+          id: 138
           name: "eg_oport_md.update_delay_on_tx"
           bitwidth: 1
         }

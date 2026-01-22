@@ -83,8 +83,8 @@ control A2AIngress(
         hdr.bridge.tx_offset_val = ig_md.tx_offset_val;
     }
 
-    action set_bridge_clear_offset() {
-        hdr.bridge.clear_offset = ig_md.clear_offset;
+    action set_bridge_agg_op() {
+        hdr.bridge.agg_op = ig_md.agg_op;
     }
 
     action set_bridge_is_loopback() {
@@ -146,7 +146,7 @@ control A2AIngress(
         set_bridge_bitmap();
         set_bridge_tx_loc_val();
         set_bridge_tx_offset_val();
-        set_bridge_clear_offset();
+        set_bridge_agg_op();
         set_bridge_is_loopback();
         set_bridge_root_rank_id_hi();
         set_bridge_root_rank_id_lo();

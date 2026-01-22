@@ -5,7 +5,7 @@ R:\l
 \lW:\l
  eg_md.psn\l
  "];
-cond_187 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.bridge.conn_phase == 1\l\l
+cond_189 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.bridge.conn_phase == 1\l\l
  "];
 dispatch_egress_dispatch_rank_info [ shape=record, style="filled", fillcolor=cornsilk, label="dispatch_egress_dispatch_rank_info\l\l
 M:\l
@@ -14,9 +14,9 @@ M:\l
 \lW:\l
  eg_md.eg_rank_id\l
  "];
-cond_209 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.bridge.conn_phase == 2\l\l
+cond_211 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.bridge.conn_phase == 2\l\l
  "];
-cond_188 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.bridge.conn_semantics == 0\l\l
+cond_190 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.bridge.conn_semantics == 0\l\l
  "];
 tbl_dispatch_egress_set_ack_egress [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_egress_set_ack_egress\l\l
 R:\l
@@ -40,9 +40,9 @@ R:\l
  hdr.eth.src_addr\l
  hdr.eth.dst_addr\l
  "];
-cond_189 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.bridge.conn_semantics == 1\l\l
+cond_191 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.bridge.conn_semantics == 1\l\l
  "];
-cond_190 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_intr_md.egress_rid == 0 && hdr.bridge.ing_rank_id == eg_md.eg_rank_id\l\l
+cond_192 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_intr_md.egress_rid == 0 && hdr.bridge.ing_rank_id == eg_md.eg_rank_id\l\l
  "];
 tbl_dispatch_egress_set_ack_egress_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_egress_set_ack_egress_0\l\l
 R:\l
@@ -66,7 +66,7 @@ R:\l
  hdr.eth.src_addr\l
  hdr.eth.dst_addr\l
  "];
-cond_191 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.bridge.bitmap >> eg_md.eg_rank_id & 1 == 1\l\l
+cond_193 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.bridge.bitmap >> eg_md.eg_rank_id & 1 == 1\l\l
  "];
 dispatch_egress_dispatch_rx_info [ shape=record, style="filled", fillcolor=cornsilk, label="dispatch_egress_dispatch_rx_info\l\l
 M:\l
@@ -78,213 +78,207 @@ M:\l
  hdr.bth.dst_qp\l
  hdr.reth.rkey\l
  "];
-tbl_dispatch_control567 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control567\l\l
+tbl_dispatch_control565 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control565\l\l
 W:\l
  eg_intr_md_for_dprsr.drop_ctl\l
  "];
-cond_192 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 0\l\l
+cond_194 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 0\l\l
  "];
-tbl_dispatch_control267 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control267\l\l
+tbl_dispatch_control265 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control265\l\l
 W:\l
  dispatch_egress_result_psn\l
  "];
-cond_193 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 1\l\l
+cond_195 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 1\l\l
  "];
-tbl_dispatch_control528 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control528\l\l
+tbl_dispatch_control526 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control526\l\l
 R:\l
  dispatch_egress_result_psn\l
 \lW:\l
  hdr.bth.psn\l
  "];
-tbl_dispatch_control267_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control267_0\l\l
+tbl_dispatch_control265_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control265_0\l\l
 W:\l
  dispatch_egress_result_psn\l
  "];
-cond_194 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 2\l\l
+cond_196 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 2\l\l
  "];
-tbl_dispatch_control267_1 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control267_1\l\l
+tbl_dispatch_control265_1 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control265_1\l\l
 W:\l
  dispatch_egress_result_psn\l
  "];
-cond_195 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 3\l\l
+cond_197 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 3\l\l
  "];
-tbl_dispatch_control267_2 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control267_2\l\l
+tbl_dispatch_control265_2 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control265_2\l\l
 W:\l
  dispatch_egress_result_psn\l
  "];
-cond_196 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 4\l\l
+cond_198 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 4\l\l
  "];
-tbl_dispatch_control267_3 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control267_3\l\l
+tbl_dispatch_control265_3 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control265_3\l\l
 W:\l
  dispatch_egress_result_psn\l
  "];
-cond_197 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 5\l\l
+cond_199 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 5\l\l
  "];
-tbl_dispatch_control267_4 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control267_4\l\l
+tbl_dispatch_control265_4 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control265_4\l\l
 W:\l
  dispatch_egress_result_psn\l
  "];
-cond_198 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 6\l\l
+cond_200 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 6\l\l
  "];
-tbl_dispatch_control267_5 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control267_5\l\l
+tbl_dispatch_control265_5 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control265_5\l\l
 W:\l
  dispatch_egress_result_psn\l
  "];
-cond_199 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 7\l\l
+cond_201 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 7\l\l
  "];
-tbl_dispatch_control267_6 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control267_6\l\l
+tbl_dispatch_control265_6 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control265_6\l\l
 W:\l
  dispatch_egress_result_psn\l
  "];
-cond_200 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.reth.$valid == 1 && (hdr.bth.opcode == 6 || hdr.bth.opcode == 10)\l\l
+cond_202 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.reth.$valid == 1 && (hdr.bth.opcode == 6 || hdr.bth.opcode == 10)\l\l
  "];
-cond_201 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 0\l\l
+cond_203 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 0\l\l
  "];
-tbl_dispatch_control564 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control564\l\l
+tbl_dispatch_control562 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control562\l\l
 W:\l
  hdr.aeth.$valid\l
  "];
-tbl_dispatch_control326 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control326\l\l
+tbl_dispatch_control324 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control324\l\l
 W:\l
  dispatch_egress_addr_slot_0_add_val\l
  "];
-cond_202 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 1\l\l
+cond_204 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 1\l\l
  "];
-tbl_dispatch_control327 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control327\l\l
+tbl_dispatch_control325 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control325\l\l
 R:\l
  dispatch_egress_addr_slot_0_add_val\l
 \lW:\l
  dispatch_egress_result_addr\l
  "];
-tbl_dispatch_control328 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control328\l\l
+tbl_dispatch_control326 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control326\l\l
 W:\l
  dispatch_egress_result_addr\l
  "];
-tbl_dispatch_control561 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control561\l\l
+tbl_dispatch_control559 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control559\l\l
 R:\l
  dispatch_egress_result_addr\l
 \lW:\l
  hdr.reth.addr\l
  "];
-tbl_dispatch_control326_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control326_0\l\l
+tbl_dispatch_control324_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control324_0\l\l
 W:\l
  dispatch_egress_addr_slot_1_add_val\l
  "];
-cond_203 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 2\l\l
+cond_205 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 2\l\l
  "];
-tbl_dispatch_control327_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control327_0\l\l
+tbl_dispatch_control325_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control325_0\l\l
 R:\l
  dispatch_egress_addr_slot_1_add_val\l
 \lW:\l
  dispatch_egress_result_addr\l
  "];
-tbl_dispatch_control328_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control328_0\l\l
+tbl_dispatch_control326_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control326_0\l\l
 W:\l
+ dispatch_egress_result_addr\l
+ "];
+tbl_dispatch_control324_1 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control324_1\l\l
+W:\l
+ dispatch_egress_addr_slot_2_add_val\l
+ "];
+cond_206 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 3\l\l
+ "];
+tbl_dispatch_control325_1 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control325_1\l\l
+R:\l
+ dispatch_egress_addr_slot_2_add_val\l
+\lW:\l
  dispatch_egress_result_addr\l
  "];
 tbl_dispatch_control326_1 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control326_1\l\l
 W:\l
- dispatch_egress_addr_slot_2_add_val\l
- "];
-cond_204 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 3\l\l
- "];
-tbl_dispatch_control327_1 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control327_1\l\l
-R:\l
- dispatch_egress_addr_slot_2_add_val\l
-\lW:\l
  dispatch_egress_result_addr\l
  "];
-tbl_dispatch_control328_1 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control328_1\l\l
+tbl_dispatch_control324_2 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control324_2\l\l
 W:\l
+ dispatch_egress_addr_slot_3_add_val\l
+ "];
+cond_207 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 4\l\l
+ "];
+tbl_dispatch_control325_2 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control325_2\l\l
+R:\l
+ dispatch_egress_addr_slot_3_add_val\l
+\lW:\l
  dispatch_egress_result_addr\l
  "];
 tbl_dispatch_control326_2 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control326_2\l\l
 W:\l
- dispatch_egress_addr_slot_3_add_val\l
- "];
-cond_205 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 4\l\l
- "];
-tbl_dispatch_control327_2 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control327_2\l\l
-R:\l
- dispatch_egress_addr_slot_3_add_val\l
-\lW:\l
  dispatch_egress_result_addr\l
  "];
-tbl_dispatch_control328_2 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control328_2\l\l
+tbl_dispatch_control324_3 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control324_3\l\l
 W:\l
+ dispatch_egress_addr_slot_4_add_val\l
+ "];
+cond_208 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 5\l\l
+ "];
+tbl_dispatch_control325_3 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control325_3\l\l
+R:\l
+ dispatch_egress_addr_slot_4_add_val\l
+\lW:\l
  dispatch_egress_result_addr\l
  "];
 tbl_dispatch_control326_3 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control326_3\l\l
 W:\l
- dispatch_egress_addr_slot_4_add_val\l
- "];
-cond_206 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 5\l\l
- "];
-tbl_dispatch_control327_3 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control327_3\l\l
-R:\l
- dispatch_egress_addr_slot_4_add_val\l
-\lW:\l
  dispatch_egress_result_addr\l
  "];
-tbl_dispatch_control328_3 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control328_3\l\l
+tbl_dispatch_control324_4 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control324_4\l\l
 W:\l
+ dispatch_egress_addr_slot_5_add_val\l
+ "];
+cond_209 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 6\l\l
+ "];
+tbl_dispatch_control325_4 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control325_4\l\l
+R:\l
+ dispatch_egress_addr_slot_5_add_val\l
+\lW:\l
  dispatch_egress_result_addr\l
  "];
 tbl_dispatch_control326_4 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control326_4\l\l
 W:\l
- dispatch_egress_addr_slot_5_add_val\l
- "];
-cond_207 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 6\l\l
- "];
-tbl_dispatch_control327_4 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control327_4\l\l
-R:\l
- dispatch_egress_addr_slot_5_add_val\l
-\lW:\l
  dispatch_egress_result_addr\l
  "];
-tbl_dispatch_control328_4 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control328_4\l\l
+tbl_dispatch_control324_5 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control324_5\l\l
 W:\l
+ dispatch_egress_addr_slot_6_add_val\l
+ "];
+cond_210 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 7\l\l
+ "];
+tbl_dispatch_control325_5 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control325_5\l\l
+R:\l
+ dispatch_egress_addr_slot_6_add_val\l
+\lW:\l
  dispatch_egress_result_addr\l
  "];
 tbl_dispatch_control326_5 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control326_5\l\l
 W:\l
- dispatch_egress_addr_slot_6_add_val\l
- "];
-cond_208 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_md.eg_rank_id == 7\l\l
- "];
-tbl_dispatch_control327_5 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control327_5\l\l
-R:\l
- dispatch_egress_addr_slot_6_add_val\l
-\lW:\l
  dispatch_egress_result_addr\l
  "];
-tbl_dispatch_control328_5 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control328_5\l\l
+tbl_dispatch_control324_6 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control324_6\l\l
 W:\l
+ dispatch_egress_addr_slot_7_add_val\l
+ "];
+tbl_dispatch_control325_6 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control325_6\l\l
+R:\l
+ dispatch_egress_addr_slot_7_add_val\l
+\lW:\l
  dispatch_egress_result_addr\l
  "];
 tbl_dispatch_control326_6 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control326_6\l\l
 W:\l
- dispatch_egress_addr_slot_7_add_val\l
- "];
-tbl_dispatch_control327_6 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control327_6\l\l
-R:\l
- dispatch_egress_addr_slot_7_add_val\l
-\lW:\l
  dispatch_egress_result_addr\l
  "];
-tbl_dispatch_control328_6 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control328_6\l\l
-W:\l
- dispatch_egress_result_addr\l
+cond_212 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_intr_md.egress_port == 192\l\l
  "];
-tbl_combine_control1616 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control1616\l\l
-R:\l
- hdr.bridge.channel_id\l
-\lW:\l
- combine_egress_channel_id\l
- "];
-cond_210 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_intr_md.egress_port == 192\l\l
- "];
-tbl_combine_control1623 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control1623\l\l
+tbl_combine_control757 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control757\l\l
 R:\l
  hdr.bridge.next_token_addr\l
 \lW:\l
@@ -294,11 +288,11 @@ R:\l
  hdr.reth.len\l
  hdr.payload.$valid\l
  "];
-cond_212 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_intr_md.egress_port != 192 && hdr.bridge.is_loopback\l\l
+cond_214 [ shape=record, style="filled", fillcolor=cornsilk, label="eg_intr_md.egress_port != 192 && hdr.bridge.is_loopback\l\l
  "];
-cond_211 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.bridge.is_loopback\l\l
+cond_213 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.bridge.is_loopback\l\l
  "];
-tbl_combine_control1635 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control1635\l\l
+tbl_combine_control762 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control762\l\l
 R:\l
  hdr.bridge.tx_loc_val\l
 \lW:\l
@@ -320,7 +314,7 @@ W:\l
  hdr.ipv4.total_len\l
  hdr.udp.checksum\l
  "];
-tbl_combine_control1646 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control1646\l\l
+tbl_combine_control765 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control765\l\l
 W:\l
  hdr.aeth.$valid\l
  "];
@@ -330,23 +324,23 @@ R:\l
 \lW:\l
  combine_egress_pkt_offset\l
  "];
-cond_215 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.bridge.conn_semantics == 1 && eg_intr_md.egress_port != 192\l\l
+cond_217 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.bridge.conn_semantics == 1 && eg_intr_md.egress_port != 192\l\l
  "];
 tbl_combine_egress_step1_calc_buffer_idx_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_egress_step1_calc_buffer_idx_0\l\l
 R:\l
- combine_egress_channel_id\l
+ hdr.bridge.channel_id\l
 \lW:\l
  combine_egress_channel_mul\l
  "];
-cond_217 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.bridge.conn_semantics == 0\l\l
+cond_219 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.bridge.conn_semantics == 0\l\l
  "];
-tbl_combine_control1751 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control1751\l\l
+tbl_combine_control834 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control834\l\l
 W:\l
  hdr.udp.length\l
  hdr.ipv4.total_len\l
  hdr.udp.checksum\l
  "];
-cond_218 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.bridge.has_aeth\l\l
+cond_220 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.bridge.has_aeth\l\l
  "];
 tbl_combine_egress_swap_l2_l3_l4_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_egress_swap_l2_l3_l4_0\l\l
 R:\l
@@ -364,7 +358,7 @@ R:\l
  hdr.udp.src_port\l
  hdr.udp.dst_port\l
  "];
-tbl_combine_control1755 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control1755\l\l
+tbl_combine_control838 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control838\l\l
 W:\l
  hdr.reth.$valid\l
  hdr.payload.$valid\l
@@ -392,7 +386,7 @@ W:\l
  hdr.ipv4.total_len\l
  hdr.udp.checksum\l
  "];
-tbl_combine_control1767 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control1767\l\l
+tbl_combine_control847 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control847\l\l
 W:\l
  hdr.reth.$valid\l
  hdr.payload.$valid\l
@@ -400,7 +394,7 @@ W:\l
  "];
 tbl_combine_egress_step2_calc_buffer_idx_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_egress_step2_calc_buffer_idx_0\l\l
 R:\l
- combine_egress_channel_id\l
+ hdr.bridge.channel_id\l
 \lW:\l
  combine_egress_channel_mul_0\l
  "];
@@ -450,13 +444,13 @@ R:\l
 \lW:\l
  combine_egress_buffer_idx\l
  "];
-tbl_combine_control1723 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control1723\l\l
+tbl_combine_control819 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control819\l\l
 R:\l
  hdr.payload.data00\l
 \lW:\l
  combine_egress_agg_val\l
  "];
-cond_216 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.bridge.clear_offset <= hdr.bridge.tx_offset_val\l\l
+cond_218 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.bridge.agg_op == 0\l\l
  "];
 tbl_combine_egress_do_store [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_egress_do_store\l\l
 R:\l
@@ -488,7 +482,7 @@ W:\l
  hdr.ipv4.total_len\l
  hdr.udp.checksum\l
  "];
-tbl_combine_control1738 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control1738\l\l
+tbl_combine_control826 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control826\l\l
 W:\l
  hdr.aeth.$valid\l
  hdr.bth.opcode\l
@@ -510,13 +504,13 @@ R:\l
  "];
 tbl_combine_egress_step1_calc_buffer_idx [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_egress_step1_calc_buffer_idx\l\l
 R:\l
- combine_egress_channel_id\l
+ hdr.bridge.channel_id\l
 \lW:\l
  combine_egress_channel_mul\l
  "];
 tbl_combine_egress_step2_calc_buffer_idx [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_egress_step2_calc_buffer_idx\l\l
 R:\l
- combine_egress_channel_id\l
+ hdr.bridge.channel_id\l
 \lW:\l
  combine_egress_channel_mul_0\l
  "];
@@ -572,22 +566,22 @@ R:\l
 \lW:\l
  combine_egress_tmp_agg_result\l
  "];
-tbl_combine_control1675 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control1675\l\l
+tbl_combine_control787 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control787\l\l
 R:\l
  combine_egress_tmp_agg_result\l
 \lW:\l
  hdr.payload.$valid\l
  hdr.payload.data00\l
  "];
-cond_213 [ shape=record, style="filled", fillcolor=cornsilk, label="combine_egress_pkt_offset == 0\l\l
+cond_215 [ shape=record, style="filled", fillcolor=cornsilk, label="combine_egress_pkt_offset == 0\l\l
  "];
-tbl_combine_control1681 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control1681\l\l
+tbl_combine_control791 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control791\l\l
 W:\l
  hdr.bth.opcode\l
  hdr.reth.$valid\l
  hdr.reth.len\l
  "];
-cond_214 [ shape=record, style="filled", fillcolor=cornsilk, label="combine_egress_pkt_offset == 6\l\l
+cond_216 [ shape=record, style="filled", fillcolor=cornsilk, label="combine_egress_pkt_offset == 6\l\l
  "];
 tbl_combine_egress_set_write_first_len_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_egress_set_write_first_len_0\l\l
 W:\l
@@ -595,16 +589,16 @@ W:\l
  hdr.ipv4.total_len\l
  hdr.udp.checksum\l
  "];
-tbl_combine_control1699 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control1699\l\l
+tbl_combine_control804 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control804\l\l
 W:\l
  hdr.aeth.$valid\l
  "];
-tbl_combine_control1688 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control1688\l\l
+tbl_combine_control796 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control796\l\l
 W:\l
  hdr.bth.opcode\l
  hdr.reth.$valid\l
  "];
-tbl_combine_control1693 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control1693\l\l
+tbl_combine_control800 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control800\l\l
 W:\l
  hdr.bth.opcode\l
  hdr.reth.$valid\l
@@ -622,117 +616,116 @@ W:\l
  hdr.udp.checksum\l
  "];
     PARSER -> tbl_a2a_egress_control28
-    tbl_a2a_egress_control28 -> cond_187
-    cond_187 -> dispatch_egress_dispatch_rank_info
-    cond_187 -> cond_209
-    dispatch_egress_dispatch_rank_info -> cond_188
-    cond_188 -> tbl_dispatch_egress_set_ack_egress
-    cond_188 -> cond_189
-    tbl_dispatch_egress_set_ack_egress -> DEPARSER
-    cond_189 -> cond_190
-    cond_189 -> DEPARSER
-    cond_190 -> tbl_dispatch_egress_set_ack_egress_0
+    tbl_a2a_egress_control28 -> cond_189
+    cond_189 -> dispatch_egress_dispatch_rank_info
+    cond_189 -> cond_211
+    dispatch_egress_dispatch_rank_info -> cond_190
+    cond_190 -> tbl_dispatch_egress_set_ack_egress
     cond_190 -> cond_191
-    tbl_dispatch_egress_set_ack_egress_0 -> DEPARSER
-    cond_191 -> dispatch_egress_dispatch_rx_info
-    cond_191 -> tbl_dispatch_control567
-    dispatch_egress_dispatch_rx_info -> cond_192
-    cond_192 -> tbl_dispatch_control267
+    tbl_dispatch_egress_set_ack_egress -> DEPARSER
+    cond_191 -> cond_192
+    cond_191 -> DEPARSER
+    cond_192 -> tbl_dispatch_egress_set_ack_egress_0
     cond_192 -> cond_193
-    tbl_dispatch_control267 -> tbl_dispatch_control528
-    cond_193 -> tbl_dispatch_control267_0
-    cond_193 -> cond_194
-    tbl_dispatch_control267_0 -> tbl_dispatch_control528
-    cond_194 -> tbl_dispatch_control267_1
+    tbl_dispatch_egress_set_ack_egress_0 -> DEPARSER
+    cond_193 -> dispatch_egress_dispatch_rx_info
+    cond_193 -> tbl_dispatch_control565
+    dispatch_egress_dispatch_rx_info -> cond_194
+    cond_194 -> tbl_dispatch_control265
     cond_194 -> cond_195
-    tbl_dispatch_control267_1 -> tbl_dispatch_control528
-    cond_195 -> tbl_dispatch_control267_2
+    tbl_dispatch_control265 -> tbl_dispatch_control526
+    cond_195 -> tbl_dispatch_control265_0
     cond_195 -> cond_196
-    tbl_dispatch_control267_2 -> tbl_dispatch_control528
-    cond_196 -> tbl_dispatch_control267_3
+    tbl_dispatch_control265_0 -> tbl_dispatch_control526
+    cond_196 -> tbl_dispatch_control265_1
     cond_196 -> cond_197
-    tbl_dispatch_control267_3 -> tbl_dispatch_control528
-    cond_197 -> tbl_dispatch_control267_4
+    tbl_dispatch_control265_1 -> tbl_dispatch_control526
+    cond_197 -> tbl_dispatch_control265_2
     cond_197 -> cond_198
-    tbl_dispatch_control267_4 -> tbl_dispatch_control528
-    cond_198 -> tbl_dispatch_control267_5
+    tbl_dispatch_control265_2 -> tbl_dispatch_control526
+    cond_198 -> tbl_dispatch_control265_3
     cond_198 -> cond_199
-    tbl_dispatch_control267_5 -> tbl_dispatch_control528
-    cond_199 -> tbl_dispatch_control267_6
-    cond_199 -> tbl_dispatch_control528
-    tbl_dispatch_control267_6 -> tbl_dispatch_control528
-    tbl_dispatch_control528 -> cond_200
+    tbl_dispatch_control265_3 -> tbl_dispatch_control526
+    cond_199 -> tbl_dispatch_control265_4
+    cond_199 -> cond_200
+    tbl_dispatch_control265_4 -> tbl_dispatch_control526
+    cond_200 -> tbl_dispatch_control265_5
     cond_200 -> cond_201
-    cond_200 -> tbl_dispatch_control564
-    cond_201 -> tbl_dispatch_control326
-    cond_201 -> cond_202
-    tbl_dispatch_control326 -> tbl_dispatch_control327
-    tbl_dispatch_control327 -> tbl_dispatch_control328
-    tbl_dispatch_control328 -> tbl_dispatch_control561
-    cond_202 -> tbl_dispatch_control326_0
+    tbl_dispatch_control265_5 -> tbl_dispatch_control526
+    cond_201 -> tbl_dispatch_control265_6
+    cond_201 -> tbl_dispatch_control526
+    tbl_dispatch_control265_6 -> tbl_dispatch_control526
+    tbl_dispatch_control526 -> cond_202
     cond_202 -> cond_203
-    tbl_dispatch_control326_0 -> tbl_dispatch_control327_0
-    tbl_dispatch_control327_0 -> tbl_dispatch_control328_0
-    tbl_dispatch_control328_0 -> tbl_dispatch_control561
-    cond_203 -> tbl_dispatch_control326_1
+    cond_202 -> tbl_dispatch_control562
+    cond_203 -> tbl_dispatch_control324
     cond_203 -> cond_204
-    tbl_dispatch_control326_1 -> tbl_dispatch_control327_1
-    tbl_dispatch_control327_1 -> tbl_dispatch_control328_1
-    tbl_dispatch_control328_1 -> tbl_dispatch_control561
-    cond_204 -> tbl_dispatch_control326_2
+    tbl_dispatch_control324 -> tbl_dispatch_control325
+    tbl_dispatch_control325 -> tbl_dispatch_control326
+    tbl_dispatch_control326 -> tbl_dispatch_control559
+    cond_204 -> tbl_dispatch_control324_0
     cond_204 -> cond_205
-    tbl_dispatch_control326_2 -> tbl_dispatch_control327_2
-    tbl_dispatch_control327_2 -> tbl_dispatch_control328_2
-    tbl_dispatch_control328_2 -> tbl_dispatch_control561
-    cond_205 -> tbl_dispatch_control326_3
+    tbl_dispatch_control324_0 -> tbl_dispatch_control325_0
+    tbl_dispatch_control325_0 -> tbl_dispatch_control326_0
+    tbl_dispatch_control326_0 -> tbl_dispatch_control559
+    cond_205 -> tbl_dispatch_control324_1
     cond_205 -> cond_206
-    tbl_dispatch_control326_3 -> tbl_dispatch_control327_3
-    tbl_dispatch_control327_3 -> tbl_dispatch_control328_3
-    tbl_dispatch_control328_3 -> tbl_dispatch_control561
-    cond_206 -> tbl_dispatch_control326_4
+    tbl_dispatch_control324_1 -> tbl_dispatch_control325_1
+    tbl_dispatch_control325_1 -> tbl_dispatch_control326_1
+    tbl_dispatch_control326_1 -> tbl_dispatch_control559
+    cond_206 -> tbl_dispatch_control324_2
     cond_206 -> cond_207
-    tbl_dispatch_control326_4 -> tbl_dispatch_control327_4
-    tbl_dispatch_control327_4 -> tbl_dispatch_control328_4
-    tbl_dispatch_control328_4 -> tbl_dispatch_control561
-    cond_207 -> tbl_dispatch_control326_5
+    tbl_dispatch_control324_2 -> tbl_dispatch_control325_2
+    tbl_dispatch_control325_2 -> tbl_dispatch_control326_2
+    tbl_dispatch_control326_2 -> tbl_dispatch_control559
+    cond_207 -> tbl_dispatch_control324_3
     cond_207 -> cond_208
-    tbl_dispatch_control326_5 -> tbl_dispatch_control327_5
-    tbl_dispatch_control327_5 -> tbl_dispatch_control328_5
-    tbl_dispatch_control328_5 -> tbl_dispatch_control561
-    cond_208 -> tbl_dispatch_control326_6
-    cond_208 -> tbl_dispatch_control561
-    tbl_dispatch_control326_6 -> tbl_dispatch_control327_6
-    tbl_dispatch_control327_6 -> tbl_dispatch_control328_6
-    tbl_dispatch_control328_6 -> tbl_dispatch_control561
-    tbl_dispatch_control561 -> tbl_dispatch_control564
-    tbl_dispatch_control564 -> DEPARSER
-    tbl_dispatch_control567 -> DEPARSER
-    cond_209 -> tbl_combine_control1616
-    cond_209 -> DEPARSER
-    tbl_combine_control1616 -> cond_210
-    cond_210 -> tbl_combine_control1623
-    cond_210 -> cond_212
-    tbl_combine_control1623 -> cond_211
-    cond_211 -> tbl_combine_control1635
-    cond_211 -> combine_egress_tbl_rx_info
-    tbl_combine_control1635 -> combine_egress_tbl_rx_info
+    tbl_dispatch_control324_3 -> tbl_dispatch_control325_3
+    tbl_dispatch_control325_3 -> tbl_dispatch_control326_3
+    tbl_dispatch_control326_3 -> tbl_dispatch_control559
+    cond_208 -> tbl_dispatch_control324_4
+    cond_208 -> cond_209
+    tbl_dispatch_control324_4 -> tbl_dispatch_control325_4
+    tbl_dispatch_control325_4 -> tbl_dispatch_control326_4
+    tbl_dispatch_control326_4 -> tbl_dispatch_control559
+    cond_209 -> tbl_dispatch_control324_5
+    cond_209 -> cond_210
+    tbl_dispatch_control324_5 -> tbl_dispatch_control325_5
+    tbl_dispatch_control325_5 -> tbl_dispatch_control326_5
+    tbl_dispatch_control326_5 -> tbl_dispatch_control559
+    cond_210 -> tbl_dispatch_control324_6
+    cond_210 -> tbl_dispatch_control559
+    tbl_dispatch_control324_6 -> tbl_dispatch_control325_6
+    tbl_dispatch_control325_6 -> tbl_dispatch_control326_6
+    tbl_dispatch_control326_6 -> tbl_dispatch_control559
+    tbl_dispatch_control559 -> tbl_dispatch_control562
+    tbl_dispatch_control562 -> DEPARSER
+    tbl_dispatch_control565 -> DEPARSER
+    cond_211 -> cond_212
+    cond_211 -> DEPARSER
+    cond_212 -> tbl_combine_control757
+    cond_212 -> cond_214
+    tbl_combine_control757 -> cond_213
+    cond_213 -> tbl_combine_control762
+    cond_213 -> combine_egress_tbl_rx_info
+    tbl_combine_control762 -> combine_egress_tbl_rx_info
     combine_egress_tbl_rx_info -> tbl_combine_egress_set_write_first_len
-    tbl_combine_egress_set_write_first_len -> tbl_combine_control1646
-    tbl_combine_control1646 -> DEPARSER
-    cond_212 -> tbl_combine_egress_step1_prep_offset
-    cond_212 -> cond_215
-    cond_215 -> tbl_combine_egress_step1_calc_buffer_idx_0
-    cond_215 -> cond_217
-    cond_217 -> tbl_combine_control1751
-    cond_217 -> cond_218
-    tbl_combine_control1751 -> tbl_combine_egress_swap_l2_l3_l4_0
-    tbl_combine_egress_swap_l2_l3_l4_0 -> tbl_combine_control1755
-    tbl_combine_control1755 -> DEPARSER
-    cond_218 -> tbl_combine_egress_swap_l2_l3_l4_1
-    cond_218 -> DEPARSER
+    tbl_combine_egress_set_write_first_len -> tbl_combine_control765
+    tbl_combine_control765 -> DEPARSER
+    cond_214 -> tbl_combine_egress_step1_prep_offset
+    cond_214 -> cond_217
+    cond_217 -> tbl_combine_egress_step1_calc_buffer_idx_0
+    cond_217 -> cond_219
+    cond_219 -> tbl_combine_control834
+    cond_219 -> cond_220
+    tbl_combine_control834 -> tbl_combine_egress_swap_l2_l3_l4_0
+    tbl_combine_egress_swap_l2_l3_l4_0 -> tbl_combine_control838
+    tbl_combine_control838 -> DEPARSER
+    cond_220 -> tbl_combine_egress_swap_l2_l3_l4_1
+    cond_220 -> DEPARSER
     tbl_combine_egress_swap_l2_l3_l4_1 -> tbl_combine_egress_set_ack_len_0
-    tbl_combine_egress_set_ack_len_0 -> tbl_combine_control1767
-    tbl_combine_control1767 -> DEPARSER
+    tbl_combine_egress_set_ack_len_0 -> tbl_combine_control847
+    tbl_combine_control847 -> DEPARSER
     tbl_combine_egress_step1_calc_buffer_idx_0 -> tbl_combine_egress_step2_calc_buffer_idx_0
     tbl_combine_egress_step2_calc_buffer_idx_0 -> tbl_combine_egress_step3_calc_buffer_idx_0
     tbl_combine_egress_step3_calc_buffer_idx_0 -> tbl_combine_egress_step4a_set_loc_from_tx_loc_0
@@ -741,15 +734,15 @@ W:\l
     tbl_combine_egress_step5_calc_loc_mul_0 -> tbl_combine_egress_step6_calc_buffer_idx_0
     tbl_combine_egress_step6_calc_buffer_idx_0 -> tbl_combine_egress_step7a_set_offset_from_eg
     tbl_combine_egress_step7a_set_offset_from_eg -> tbl_combine_egress_step7b_add_offset_0
-    tbl_combine_egress_step7b_add_offset_0 -> tbl_combine_control1723
-    tbl_combine_control1723 -> cond_216
-    cond_216 -> tbl_combine_egress_do_store
-    cond_216 -> tbl_combine_egress_do_aggregate
+    tbl_combine_egress_step7b_add_offset_0 -> tbl_combine_control819
+    tbl_combine_control819 -> cond_218
+    cond_218 -> tbl_combine_egress_do_store
+    cond_218 -> tbl_combine_egress_do_aggregate
     tbl_combine_egress_do_store -> tbl_combine_egress_swap_l2_l3_l4
     tbl_combine_egress_do_aggregate -> tbl_combine_egress_swap_l2_l3_l4
     tbl_combine_egress_swap_l2_l3_l4 -> tbl_combine_egress_set_ack_len
-    tbl_combine_egress_set_ack_len -> tbl_combine_control1738
-    tbl_combine_control1738 -> DEPARSER
+    tbl_combine_egress_set_ack_len -> tbl_combine_control826
+    tbl_combine_control826 -> DEPARSER
     tbl_combine_egress_step1_prep_offset -> tbl_combine_egress_step2_calc_psn_add
     tbl_combine_egress_step2_calc_psn_add -> tbl_combine_egress_step3_write_bth_psn
     tbl_combine_egress_step3_write_bth_psn -> tbl_combine_egress_step1_calc_buffer_idx
@@ -762,17 +755,17 @@ W:\l
     tbl_combine_egress_step6_calc_buffer_idx -> tbl_combine_egress_step7a_set_offset_from_rid
     tbl_combine_egress_step7a_set_offset_from_rid -> tbl_combine_egress_step7b_add_offset
     tbl_combine_egress_step7b_add_offset -> tbl_combine_egress_do_read_agg
-    tbl_combine_egress_do_read_agg -> tbl_combine_control1675
-    tbl_combine_control1675 -> cond_213
-    cond_213 -> tbl_combine_control1681
-    cond_213 -> cond_214
-    tbl_combine_control1681 -> tbl_combine_egress_set_write_first_len_0
-    tbl_combine_egress_set_write_first_len_0 -> tbl_combine_control1699
-    cond_214 -> tbl_combine_control1688
-    cond_214 -> tbl_combine_control1693
-    tbl_combine_control1688 -> tbl_combine_egress_set_write_middle_len
-    tbl_combine_egress_set_write_middle_len -> tbl_combine_control1699
-    tbl_combine_control1693 -> tbl_combine_egress_set_write_middle_len_0
-    tbl_combine_egress_set_write_middle_len_0 -> tbl_combine_control1699
-    tbl_combine_control1699 -> DEPARSER
+    tbl_combine_egress_do_read_agg -> tbl_combine_control787
+    tbl_combine_control787 -> cond_215
+    cond_215 -> tbl_combine_control791
+    cond_215 -> cond_216
+    tbl_combine_control791 -> tbl_combine_egress_set_write_first_len_0
+    tbl_combine_egress_set_write_first_len_0 -> tbl_combine_control804
+    cond_216 -> tbl_combine_control796
+    cond_216 -> tbl_combine_control800
+    tbl_combine_control796 -> tbl_combine_egress_set_write_middle_len
+    tbl_combine_egress_set_write_middle_len -> tbl_combine_control804
+    tbl_combine_control800 -> tbl_combine_egress_set_write_middle_len_0
+    tbl_combine_egress_set_write_middle_len_0 -> tbl_combine_control804
+    tbl_combine_control804 -> DEPARSER
 }

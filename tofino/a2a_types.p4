@@ -38,6 +38,10 @@ typedef bit<32> bitmap_tofino_t;
 typedef bit<64> addr_tofino_t; 
 typedef bit<32> addr_half_t ;
 
+enum bit<8> AGG_OP {
+    STORE = 0,
+    AGGREGATE = 1
+}
 
 
 enum bit<2> CONN_PHASE {
@@ -56,29 +60,29 @@ enum bit<2> CONN_SEMANTICS {
 // partial payload size which can be processed by tofino stages while remaining payload is in the real packet payload
 header payload_h {
     bit<32> data00;
-    bit<32> data01;
-    bit<32> data02;
-    bit<32> data03;
-    bit<32> data04;
-    bit<32> data05;
-    bit<32> data06;
-    bit<32> data07;
-    bit<32> data08;
-    bit<32> data09;
-    bit<32> data0a;
-    bit<32> data0b;
-    bit<32> data0c;
-    bit<32> data0d;
-    bit<32> data0e;
-    bit<32> data0f;
-    bit<32> data10;
-    bit<32> data11;
-    bit<32> data12;
-    bit<32> data13;
-    bit<32> data14;
-    bit<32> data15;
-    bit<32> data16;
-    bit<32> data17;
+    // bit<32> data01;
+    // bit<32> data02;
+    // bit<32> data03;
+    // bit<32> data04;
+    // bit<32> data05;
+    // bit<32> data06;
+    // bit<32> data07;
+    // bit<32> data08;
+    // bit<32> data09;
+    // bit<32> data0a;
+    // bit<32> data0b;
+    // bit<32> data0c;
+    // bit<32> data0d;
+    // bit<32> data0e;
+    // bit<32> data0f;
+    // bit<32> data10;
+    // bit<32> data11;
+    // bit<32> data12;
+    // bit<32> data13;
+    // bit<32> data14;
+    // bit<32> data15;
+    // bit<32> data16;
+    // bit<32> data17;
 }
 
 header payload_word_h {
@@ -100,11 +104,12 @@ header bridge_h {
     // combine only, 5bytes
     bit<32> tx_loc_val;
     bit<32> tx_offset_val;
-    bit<32> clear_offset;
+
     bool is_loopback;
     bit<32> root_rank_id;
     // 8
     bit<64> next_token_addr;
+    bit<8> agg_op;
 }
 
 struct a2a_headers_t {
@@ -123,66 +128,39 @@ struct a2a_headers_t {
 
 struct a2a_ingress_metadata_t {
     bool is_roce;
-    bitmap_tofino_t bitmap_clear_mask;
-    //@pa_container_size("ingress", "ig_md.psn", 32)
-    //@pa_no_overlay("ingress", "ig_md.psn")
     bit<32> psn;
     bit<32> msn;
     bit<32> syndrome;
     bit<32> channel_class;
-    bit<32> token_idx;
-    bit<32> slot_index;
 
-
-    bit<32> expected_epsn;
-
-    bit<32> msn_saved;
-    bit<32> psn_to_check;
-
-    bit<32> temp_queue_data;
-
-    bit<32> next_loc; 
-
-    // QueuePointerSlot shared variable - stores result from queue pointer operations
-    bit<32> queue_ptr_result;
-    
-    // BitmapSlot shared variables
-    bitmap_tofino_t bitmap_result;      // stores result from bitmap operations
-    bitmap_tofino_t bitmap_write_val;   // value to write in OP_WRITE operation
-    // Note: bitmap_clear_mask already exists in your original code
-    
-    // AddrSlot shared variables  
-    addr_tofino_t addr_result;          // stores result from addr operations
-    addr_tofino_t addr_write_val;       // value to write in OP_WRITE operation
-
+    bit<32> tmp_a;
+    bit<32> tmp_b;
+    bit<32> tmp_c;
+    bit<32> tmp_d;
+    bit<32> tmp_e;
     // bridge
     bit<32> ing_rank_id;
 
     bool has_reth;
-
     bool has_aeth;
-
     bool has_payload;
-
     CONN_PHASE  conn_phase;  
-
     CONN_SEMANTICS conn_semantics;
+    bool is_loopback;
+    bit<8> agg_op;
 
     bit<32>  channel_id;
 
     bitmap_tofino_t    bitmap;
+    bit<32> tx_reg_idx;
 
     bit<32> tx_loc_val;
-
     bit<32> tx_offset_val;
-
-    bit<32> clear_offset;
-
-    bool is_loopback;
 
     bit<32> root_rank_id;
 
     bit<64> next_token_addr;
+
 }
 
 struct a2a_egress_metadata_t {
@@ -197,7 +175,6 @@ struct bitmap_t {
     bit<32> lo;
     bit<32> hi;
 }
-
 
 
 enum bit<2> DISPATCH_REG_OP {

@@ -1,292 +1,28 @@
 /*******************************************************************************
  * Combine Control for AllToAll Communication - In-Network Aggregation
- * 
- * Aggregate the first 4 bytes of each packet
- * 
- * Connection types:
- * - CONN_CONTROL: query queue pointer (READ)
- * - CONN_BITMAP: rx writes bitmap (WRITE)
- * - CONN_TX: tx writes token for aggregation (WRITE)
- * - CONN_RX: rx reads aggregation result (READ)
- * 
- * Data structures:
- * - tx_epsn[j]: expected PSN from j-th tx
- * - tx_msn[j]: MSN of j-th tx
- * - tx_loc[j]: queue position of current token for j-th tx
- * - tx_packet_offset[j]: packet offset within current token for j-th tx
- * - rx_bitmap_epsn: ePSN for bitmap connection
- * - rx_token_epsn: ePSN for token connection
- * - rx_token_msn: MSN for token connection
- * - bitmap_buffer[loc]: remaining tx bitmap to aggregate
- * - agg_count[loc][packet]: number of tx aggregated
- * - queue_head, queue_tail, queue_incomplete: queue pointers
+ * Using macros instead of sub-controls to avoid variable duplication
  ******************************************************************************/
+
+#include "combine_macros.p4"
 
 #define NUM_COMBINE_CHANNELS_PER_RX 8
-#define COMBINE_QUEUE_LENGTH 64        // number of tokens in the queue 
-#define TOKEN_SIZE 7168                // 7K bytes
-#define PAYLOAD_LEN 1024               // 1K per packet
-#define TOKEN_PACKETS (TOKEN_SIZE / PAYLOAD_LEN) // 7
-#define N_AGG_SLOTS 32                 // number of aggregation slots (128 bytes / 4)
-#define BYTES_PER_SLOT 4               // each slot 4 bytes, bit<32>
-#define BITMAP_PER_PACKET 8            // number of bitmaps per bitmap write packet
+#define COMBINE_QUEUE_LENGTH 64
+#define TOKEN_SIZE 7168
+#define PAYLOAD_LEN 1024
+#define TOKEN_PACKETS (TOKEN_SIZE / PAYLOAD_LEN)
+#define N_AGG_SLOTS 32
+#define BYTES_PER_SLOT 4
+#define BITMAP_PER_PACKET 8
 
-// Index calculations
-#define COMBINE_CHANNELS_TOTAL (EP_SIZE * NUM_COMBINE_CHANNELS_PER_RX)                    // 64
-#define PACKET_NUM_PER_CHANNEL_BUFFER (COMBINE_QUEUE_LENGTH * TOKEN_PACKETS)    // each entry corresponds to an offset position, 448
-#define COMBINE_BUFFER_ENTRIES (COMBINE_CHANNELS_TOTAL * PACKET_NUM_PER_CHANNEL_BUFFER)   // 28672, entry->packet
-#define COMBINE_TX_ENTRIES (COMBINE_CHANNELS_TOTAL * EP_SIZE)                      // 512
-#define COMBINE_BITMAP_ENTRIES (COMBINE_CHANNELS_TOTAL * COMBINE_QUEUE_LENGTH)     // 4096
-
-/*******************************************************************************
- * Metadata extensions for sub-control shared variables
- * Add these fields to a2a_ingress_metadata_t in your header file:
- * 
- *   // QueuePointerSlot shared variables
- *   bit<32> queue_ptr_result;
- *   
- *   // BitmapSlot shared variables
- *   bitmap_tofino_t bitmap_result;
- *   bitmap_tofino_t bitmap_write_val;
- *   // bitmap_clear_mask already exists
- *   
- *   // AddrSlot shared variables
- *   addr_tofino_t addr_result;
- *   addr_tofino_t addr_write_val;
- ******************************************************************************/
-
-/*******************************************************************************
- * Queue Pointer Slot - manage queue pointer for each connection
- * channel_id = channel_class * EP_SIZE + _rank_id
- * 
- * Uses ig_md.queue_ptr_result for output
- * Uses ig_md.channel_class as index
- ******************************************************************************/
-
-control QueuePointerSlot(
-    in COMBINE_QUEUE_POINTER_REG_OP operation,
-    inout a2a_ingress_metadata_t ig_md) 
-{
-
-    Register<bit<32>, bit<32>>(NUM_COMBINE_CHANNELS_PER_RX) reg_ptr;
-
-    RegisterAction<bit<32>, bit<32>, void>(reg_ptr) ra_init = {
-        void apply(inout bit<32> value) {
-            value = 0;
-        }
-    };
-
-    RegisterAction<bit<32>, bit<32>, bit<32>>(reg_ptr) ra_read = {
-        void apply(inout bit<32> value, out bit<32> res) {
-            res = value;
-        }
-    };
-
-    RegisterAction<bit<32>, bit<32>, void>(reg_ptr) ra_inc = {
-        void apply(inout bit<32> value) {
-            if (value == COMBINE_QUEUE_LENGTH - 1) {
-                value = 0;
-            } else {
-                value = value + 1;
-            }
-        }
-    };
-
-    RegisterAction<bit<32>, bit<32>, bit<32>>(reg_ptr) ra_read_add = {
-        void apply(inout bit<32> value, out bit<32> res) {
-            res = value;
-            if (value >= COMBINE_QUEUE_LENGTH - 8) {
-                value = value + 8 - COMBINE_QUEUE_LENGTH;
-            } else {
-                value = value + 8;
-            }
-        }
-    };
-
-    // Wrapped actions - write to ig_md.queue_ptr_result
-    action do_init() {
-        ra_init.execute(ig_md.channel_class);
-    }
-
-    action do_read() {
-        ig_md.queue_ptr_result = ra_read.execute(ig_md.channel_class);
-    }
-
-    action do_inc() {
-        ra_inc.execute(ig_md.channel_class);
-    }
-
-    action do_read_add() {
-        ig_md.queue_ptr_result = ra_read_add.execute(ig_md.channel_class);
-    }
-
-    apply {
-        if (operation == COMBINE_QUEUE_POINTER_REG_OP.OP_INIT) {
-            do_init();
-        } else if (operation == COMBINE_QUEUE_POINTER_REG_OP.OP_READ) {
-            do_read();
-        } else if (operation == COMBINE_QUEUE_POINTER_REG_OP.OP_INC) {
-            do_inc();
-        } else if (operation == COMBINE_QUEUE_POINTER_REG_OP.OP_READ_ADD) {
-            do_read_add();
-        }
-    }
-}
-
-/*******************************************************************************
- * BitmapSlot - Bitmap buffer management for a single RX
- *
- * Each slot manages the bitmaps for all queue positions of one RX
- * 
- * Uses ig_md.bitmap_result for output
- * Uses ig_md.bitmap_write_val for write value
- * Uses ig_md.bitmap_clear_mask for clear mask
- * Uses ig_md.slot_index as index
- ******************************************************************************/
-control BitmapSlot(
-        in COMBINE_BITMAP_REG_OP operation,
-        inout a2a_ingress_metadata_t ig_md)
-{
-    Register<bitmap_tofino_t, bit<32>>(COMBINE_BITMAP_ENTRIES >> 3) reg_bitmap;
-
-    RegisterAction<bitmap_tofino_t, bit<32>, bitmap_tofino_t>(reg_bitmap) ra_read = {
-        void apply(inout bitmap_tofino_t value, out bitmap_tofino_t res) {
-            res = value;
-        }
-    };
-
-    RegisterAction<bitmap_tofino_t, bit<32>, void>(reg_bitmap) ra_write = {
-        void apply(inout bitmap_tofino_t value) {
-            value = ig_md.bitmap_write_val;
-        }
-    };
-
-    RegisterAction<bitmap_tofino_t, bit<32>, bitmap_tofino_t>(reg_bitmap) ra_clear_bit = {
-        void apply(inout bitmap_tofino_t value, out bitmap_tofino_t res) {
-            value = value ^ ig_md.bitmap_clear_mask;
-            res = value;
-        }
-    };
-
-    RegisterAction<bitmap_tofino_t, bit<32>, void>(reg_bitmap) ra_reset = {
-        void apply(inout bitmap_tofino_t value) {
-            value = 0;
-        }
-    };
-
-    // Wrapped actions - write to ig_md.bitmap_result
-    action do_read() {
-        ig_md.bitmap_result = ra_read.execute(ig_md.slot_index);
-    }
-
-    action do_write() {
-        ra_write.execute(ig_md.slot_index);
-    }
-
-    action do_clear_bit() {
-        ig_md.bitmap_result = ra_clear_bit.execute(ig_md.slot_index);
-    }
-
-    action do_reset() {
-        ra_reset.execute(ig_md.slot_index);
-    }
-
-    apply {
-        if (operation == COMBINE_BITMAP_REG_OP.OP_READ) {
-            do_read();
-        } else if (operation == COMBINE_BITMAP_REG_OP.OP_WRITE) {
-            do_write();
-        } else if (operation == COMBINE_BITMAP_REG_OP.OP_CLEAR_BIT) {
-            do_clear_bit();
-        } else if (operation == COMBINE_BITMAP_REG_OP.OP_RESET) {
-            do_reset();
-        }
-    }
-}
+#define COMBINE_CHANNELS_TOTAL (EP_SIZE * NUM_COMBINE_CHANNELS_PER_RX)
+#define PACKET_NUM_PER_CHANNEL_BUFFER (COMBINE_QUEUE_LENGTH * TOKEN_PACKETS)
+#define COMBINE_BUFFER_ENTRIES (COMBINE_CHANNELS_TOTAL * PACKET_NUM_PER_CHANNEL_BUFFER)
+#define COMBINE_TX_ENTRIES (COMBINE_CHANNELS_TOTAL * EP_SIZE)
+#define COMBINE_BITMAP_ENTRIES (COMBINE_CHANNELS_TOTAL * COMBINE_QUEUE_LENGTH)
 
 
 /*******************************************************************************
- * AddrSlot - 1/8 of the Addr Buffer
- *
- * Adjacent tokens are distributed across 8 slots
- * ig_md.token_idx = channel_id * COMBINE_QUEUE_LENGTH + loc
- * slot_id = ig_md.token_idx % 8 = ig_md.token_idx[2:0]
- * ig_md.slot_index = ig_md.token_idx / 8 = ig_md.token_idx >> 3
- * 
- * Uses ig_md.addr_result for output
- * Uses ig_md.addr_write_val for write value
- * Uses ig_md.slot_index as index
- ******************************************************************************/
-control AddrSlot(
-    in COMBINE_ADDR_REG_OP operation,
-    inout a2a_ingress_metadata_t ig_md)
-{
-
-    // each slot stores COMBINE_BITMAP_ENTRIES / 8 addrs
-    Register<addr_half_t, bit<32>>(COMBINE_BITMAP_ENTRIES >> 3) reg_addr_lo;
-
-    // read
-    RegisterAction<addr_half_t, bit<32>, addr_half_t>(reg_addr_lo) ra_lo_read = {
-        void apply(inout addr_half_t value, out addr_half_t res) {
-            res = value;
-        }
-    };
-
-    // write
-    RegisterAction<addr_half_t, bit<32>, void>(reg_addr_lo) ra_lo_write = {
-        void apply(inout addr_half_t value) {
-            value = ig_md.addr_write_val[31:0];
-        }
-    };
-
-    // each slot stores COMBINE_BITMAP_ENTRIES / 8 addrs
-    Register<addr_half_t, bit<32>>(COMBINE_BITMAP_ENTRIES >> 3) reg_addr_hi;
-
-    // read
-    RegisterAction<addr_half_t, bit<32>, addr_half_t>(reg_addr_hi) ra_hi_read = {
-        void apply(inout addr_half_t value, out addr_half_t res) {
-            res = value;
-        }
-    };
-
-    // write
-    RegisterAction<addr_half_t, bit<32>, void>(reg_addr_hi) ra_hi_write = {
-        void apply(inout addr_half_t value) {
-            value = ig_md.addr_write_val[63:32];
-        }
-    };
-
-    // Wrapped actions - write to ig_md.addr_result
-    action do_lo_read() {
-        ig_md.addr_result[31:0] = ra_lo_read.execute(ig_md.slot_index);
-    }
-
-    action do_hi_read() {
-        ig_md.addr_result[63:32] = ra_hi_read.execute(ig_md.slot_index);
-    }
-
-    action do_lo_write() {
-        ra_lo_write.execute(ig_md.slot_index);
-    }
-
-    action do_hi_write() {
-        ra_hi_write.execute(ig_md.slot_index);
-    }
-
-    apply {
-        if (operation == COMBINE_ADDR_REG_OP.OP_READ) {
-            do_lo_read();
-            do_hi_read();
-        } else if (operation == COMBINE_ADDR_REG_OP.OP_WRITE) {
-            do_lo_write();
-            do_hi_write();
-        }
-    }
-}
-
-
-/*******************************************************************************
- * CombineIngress - main control logic
+ * CombineIngress - main control logic with inline registers
  ******************************************************************************/
 control CombineIngress(
     inout a2a_headers_t hdr,
@@ -297,42 +33,28 @@ control CombineIngress(
 {
 
     /***************************************************************************
-     * Variables
-     ***************************************************************************/
-     
-    // Temporary variables for register action results
-    bit<32> tmp_result_32;
-    bit<32> tmp_result_8;
-
-    /***************************************************************************
      * TX State Registers
-     * Index: channel_id * EP_SIZE + ing_rank_id
      ***************************************************************************/
     Register<bit<32>, bit<32>>(COMBINE_TX_ENTRIES, 0) reg_tx_epsn;
     Register<bit<32>, bit<32>>(COMBINE_TX_ENTRIES) reg_tx_msn;
     Register<bit<32>, bit<32>>(COMBINE_TX_ENTRIES) reg_tx_loc;
     Register<bit<32>, bit<32>>(COMBINE_TX_ENTRIES) reg_tx_packet_offset;
 
-
     RegisterAction<bit<32>, bit<32>, bit<32>>(reg_tx_epsn) ra_read_cond_inc_tx_epsn = {
         void apply(inout bit<32> value, out bit<32> result) {
             result = value;
-            if( ig_md.psn_to_check == value) {
+            if(ig_md.psn == value) {
                 value = value + 1;
             }
         }
     };
 
     RegisterAction<bit<32>, bit<32>, void>(reg_tx_epsn) ra_init_tx_epsn = {
-        void apply(inout bit<32> value) {
-            value = 0;
-        }
+        void apply(inout bit<32> value) { value = 0; }
     };
 
     RegisterAction<bit<32>, bit<32>, bit<32>>(reg_tx_msn) ra_read_tx_msn = {
-        void apply(inout bit<32> value, out bit<32> result) {
-            result = value;
-        }
+        void apply(inout bit<32> value, out bit<32> result) { result = value; }
     };
 
     RegisterAction<bit<32>, bit<32>, bit<32>>(reg_tx_msn) ra_read_inc_tx_msn = {
@@ -343,21 +65,15 @@ control CombineIngress(
     };
 
     RegisterAction<bit<32>, bit<32>, void>(reg_tx_msn) ra_init_tx_msn = {
-        void apply(inout bit<32> value) {
-            value = 0;
-        }
+        void apply(inout bit<32> value) { value = 0; }
     };
 
     RegisterAction<bit<32>, bit<32>, bit<32>>(reg_tx_loc) ra_read_tx_loc = {
-        void apply(inout bit<32> value, out bit<32> result) {
-            result = value;
-        }
+        void apply(inout bit<32> value, out bit<32> result) { result = value; }
     };
 
     RegisterAction<bit<32>, bit<32>, void>(reg_tx_loc) ra_write_tx_loc = {
-        void apply(inout bit<32> value) {
-            value = ig_md.tx_loc_val;
-        }
+        void apply(inout bit<32> value) { value = ig_md.tx_loc_val; }
     };
 
     RegisterAction<bit<32>, bit<32>, bit<32>>(reg_tx_packet_offset) ra_read_inc_tx_offset = {
@@ -368,87 +84,45 @@ control CombineIngress(
     };
 
     RegisterAction<bit<32>, bit<32>, void>(reg_tx_packet_offset) ra_reset_tx_offset = {
-            void apply(inout bit<32> value) {
-            value = 1;  // reset to 1 (current packet is 0, next is 1)
-        }
+        void apply(inout bit<32> value) { value = 1; }
     };
 
-    // Wrapped actions for TX state registers - write to tmp variables
-    action do_read_cond_inc_tx_epsn(bit<32> idx) {
-        tmp_result_32 = ra_read_cond_inc_tx_epsn.execute(idx);
-    }
-
-    action do_init_tx_epsn(bit<32> idx) {
-        ra_init_tx_epsn.execute(idx);
-    }
-
-    action do_read_tx_msn(bit<32> idx) {
-        tmp_result_32 = ra_read_tx_msn.execute(idx);
-    }
-
-    action do_read_inc_tx_msn(bit<32> idx) {
-        tmp_result_32 = ra_read_inc_tx_msn.execute(idx);
-    }
-
-    action do_init_tx_msn(bit<32> idx) {
-        ra_init_tx_msn.execute(idx);
-    }
-
-    action do_read_tx_loc(bit<32> idx) {
-        tmp_result_8 = ra_read_tx_loc.execute(idx);
-    }
-
-    action do_write_tx_loc(bit<32> idx) {
-        ra_write_tx_loc.execute(idx);
-    }
-
-    action do_read_inc_tx_offset(bit<32> idx) {
-        tmp_result_8 = ra_read_inc_tx_offset.execute(idx);
-    }
-
-    action do_reset_tx_offset(bit<32> idx) {
-        ra_reset_tx_offset.execute(idx);
-    }
+    action do_read_cond_inc_tx_epsn(bit<32> idx) { ig_md.tmp_a = ra_read_cond_inc_tx_epsn.execute(idx); }
+    action do_init_tx_epsn(bit<32> idx) { ra_init_tx_epsn.execute(idx); }
+    action do_read_tx_msn(bit<32> idx) { ig_md.tmp_b = ra_read_tx_msn.execute(idx); }
+    action do_read_inc_tx_msn(bit<32> idx) { ig_md.tmp_b = ra_read_inc_tx_msn.execute(idx); }
+    action do_init_tx_msn(bit<32> idx) { ra_init_tx_msn.execute(idx); }
+    action do_read_tx_loc(bit<32> idx) { ig_md.tx_loc_val = ra_read_tx_loc.execute(idx); }
+    action do_write_tx_loc(bit<32> idx) { ra_write_tx_loc.execute(idx); }
+    action do_read_inc_tx_offset(bit<32> idx) { ig_md.tx_offset_val = ra_read_inc_tx_offset.execute(idx); }
+    action do_reset_tx_offset(bit<32> idx) { ra_reset_tx_offset.execute(idx); }
 
     /***************************************************************************
      * RX State Registers
-     * Index: channel_id
      ***************************************************************************/
     Register<bit<32>, bit<32>>(COMBINE_CHANNELS_TOTAL, 0) reg_rx_bitmap_epsn;
     Register<bit<32>, bit<32>>(COMBINE_CHANNELS_TOTAL, 0) reg_rx_token_epsn;
     Register<bit<32>, bit<32>>(COMBINE_CHANNELS_TOTAL, 0) reg_rx_token_msn;
 
     RegisterAction<bit<32>, bit<32>, bit<32>>(reg_rx_bitmap_epsn) ra_read_rx_bitmap_epsn = {
-        void apply(inout bit<32> value, out bit<32> result) {
-            result = value;
-        }
+        void apply(inout bit<32> value, out bit<32> result) { result = value; }
     };
 
     RegisterAction<bit<32>, bit<32>, bit<32>>(reg_rx_bitmap_epsn) ra_read_cond_inc_rx_bitmap_epsn = {
         void apply(inout bit<32> value, out bit<32> result) {
             result = value;
-            if (ig_md.psn_to_check == value) {
-                // PSN matches: increment value
-                value = value + 1;
-            }
+            if (ig_md.psn == value) { value = value + 1; }
         }
     };
 
     RegisterAction<bit<32>, bit<32>, void>(reg_rx_bitmap_epsn) ra_init_rx_bitmap_epsn = {
-        void apply(inout bit<32> value) {
-            value = 0;
-        }
+        void apply(inout bit<32> value) { value = 0; }
     };
 
-
-    // Read current epsn (do not update)
     RegisterAction<bit<32>, bit<32>, bit<32>>(reg_rx_token_epsn) ra_read_rx_token_epsn = {
-        void apply(inout bit<32> value, out bit<32> result) {
-            result = value;
-        }
+        void apply(inout bit<32> value, out bit<32> result) { result = value; }
     };
 
-    // Read and add TOKEN_PACKETS
     RegisterAction<bit<32>, bit<32>, bit<32>>(reg_rx_token_epsn) ra_read_add_rx_token_epsn = {
         void apply(inout bit<32> value, out bit<32> result) {
             result = value;
@@ -457,9 +131,7 @@ control CombineIngress(
     };
 
     RegisterAction<bit<32>, bit<32>, void>(reg_rx_token_epsn) ra_init_rx_token_epsn = {
-        void apply(inout bit<32> value) {
-            value = 0;
-        }
+        void apply(inout bit<32> value) { value = 0; }
     };
 
     RegisterAction<bit<32>, bit<32>, bit<32>>(reg_rx_token_msn) ra_read_inc_rx_token_msn = {
@@ -469,239 +141,146 @@ control CombineIngress(
         }
     };
 
-    // Wrapped actions for RX state registers
-    action do_read_rx_bitmap_epsn(bit<32> idx) {
-        tmp_result_32 = ra_read_rx_bitmap_epsn.execute(idx);
-    }
-
-    action do_read_cond_inc_rx_bitmap_epsn(bit<32> idx) {
-        tmp_result_32 = ra_read_cond_inc_rx_bitmap_epsn.execute(idx);
-    }
-
-    action do_init_rx_bitmap_epsn(bit<32> idx) {
-        ra_init_rx_bitmap_epsn.execute(idx);
-    }
-
-    action do_read_rx_token_epsn(bit<32> idx) {
-        tmp_result_32 = ra_read_rx_token_epsn.execute(idx);
-    }
-
-    action do_read_add_rx_token_epsn(bit<32> idx) {
-        tmp_result_32 = ra_read_add_rx_token_epsn.execute(idx);
-    }
-
-    action do_init_rx_token_epsn(bit<32> idx) {
-        ra_init_rx_token_epsn.execute(idx);
-    }
-
-    action do_read_inc_rx_token_msn(bit<32> idx) {
-        tmp_result_32 = ra_read_inc_rx_token_msn.execute(idx);
-    }
+    action do_read_rx_bitmap_epsn(bit<32> idx) { ig_md.tmp_a = ra_read_rx_bitmap_epsn.execute(idx); }
+    action do_read_cond_inc_rx_bitmap_epsn(bit<32> idx) { ig_md.tmp_a = ra_read_cond_inc_rx_bitmap_epsn.execute(idx); }
+    action do_init_rx_bitmap_epsn(bit<32> idx) { ra_init_rx_bitmap_epsn.execute(idx); }
+    action do_read_rx_token_epsn(bit<32> idx) { ig_md.tmp_a = ra_read_rx_token_epsn.execute(idx); }
+    action do_read_add_rx_token_epsn(bit<32> idx) { ig_md.tmp_a = ra_read_add_rx_token_epsn.execute(idx); }
+    action do_init_rx_token_epsn(bit<32> idx) { ra_init_rx_token_epsn.execute(idx); }
+    action do_read_inc_rx_token_msn(bit<32> idx) { ig_md.tmp_a = ra_read_inc_rx_token_msn.execute(idx); }
 
     /***************************************************************************
-     * Queue State Registers
-     * Index: rank_id choose which slot and channel_class is the index 
-     * Queue Pointer Slots (EP_SIZE = 8)
-    * Each RX has its own queue_head and queue_tail
+     * Queue Pointer Slots - using macros
      ***************************************************************************/
-    
-    // Queue Head Slots
-    QueuePointerSlot() queue_head_slot_0;
-    QueuePointerSlot() queue_head_slot_1;
-    QueuePointerSlot() queue_head_slot_2;
-    QueuePointerSlot() queue_head_slot_3;
-    QueuePointerSlot() queue_head_slot_4;
-    QueuePointerSlot() queue_head_slot_5;
-    QueuePointerSlot() queue_head_slot_6;
-    QueuePointerSlot() queue_head_slot_7;
+    // Queue Head Slots (8 instances)
+    QUEUE_PTR_SLOT_DECLARE(queue_head_0)
+    QUEUE_PTR_SLOT_DECLARE(queue_head_1)
+    QUEUE_PTR_SLOT_DECLARE(queue_head_2)
+    QUEUE_PTR_SLOT_DECLARE(queue_head_3)
+    QUEUE_PTR_SLOT_DECLARE(queue_head_4)
+    QUEUE_PTR_SLOT_DECLARE(queue_head_5)
+    QUEUE_PTR_SLOT_DECLARE(queue_head_6)
+    QUEUE_PTR_SLOT_DECLARE(queue_head_7)
 
-    // Queue Tail Slots
-    QueuePointerSlot() queue_tail_slot_0;
-    QueuePointerSlot() queue_tail_slot_1;
-    QueuePointerSlot() queue_tail_slot_2;
-    QueuePointerSlot() queue_tail_slot_3;
-    QueuePointerSlot() queue_tail_slot_4;
-    QueuePointerSlot() queue_tail_slot_5;
-    QueuePointerSlot() queue_tail_slot_6;
-    QueuePointerSlot() queue_tail_slot_7;
+    // Queue Tail Slots (8 instances)
+    QUEUE_PTR_SLOT_DECLARE(queue_tail_0)
+    QUEUE_PTR_SLOT_DECLARE(queue_tail_1)
+    QUEUE_PTR_SLOT_DECLARE(queue_tail_2)
+    QUEUE_PTR_SLOT_DECLARE(queue_tail_3)
+    QUEUE_PTR_SLOT_DECLARE(queue_tail_4)
+    QUEUE_PTR_SLOT_DECLARE(queue_tail_5)
+    QUEUE_PTR_SLOT_DECLARE(queue_tail_6)
+    QUEUE_PTR_SLOT_DECLARE(queue_tail_7)
 
     /***************************************************************************
-     * Queue Incomplete Registers
-     * Index: channel channel_id
-     * Ignore the packet loss, queue queue_head and incomplete pointer are the same 
+     * Queue Incomplete Register
      ***************************************************************************/
-     
     Register<bit<32>, bit<32>>(COMBINE_CHANNELS_TOTAL) reg_queue_incomplete;
 
     RegisterAction<bit<32>, bit<32>, bit<32>>(reg_queue_incomplete) ra_read_queue_incomplete = {
-        void apply(inout bit<32> value, out bit<32> result) {
-            result = value;
-        }
+        void apply(inout bit<32> value, out bit<32> result) { result = value; }
     };
 
     RegisterAction<bit<32>, bit<32>, bit<32>>(reg_queue_incomplete) ra_read_cond_inc_queue_incomplete = {
         void apply(inout bit<32> value, out bit<32> result) {
             result = value;
             if(value == ig_md.tx_loc_val) {
-                if (value >= COMBINE_QUEUE_LENGTH - 1) {
-                    value = 0;
-                } else {
-                    value = value + 1;
-                }
+                if (value >= COMBINE_QUEUE_LENGTH - 1) { value = 0; }
+                else { value = value + 1; }
             }
         }
     };
 
     RegisterAction<bit<32>, bit<32>, void>(reg_queue_incomplete) ra_init_queue_incomplete = {
-        void apply(inout bit<32> value) {
-            value = 0;
-        }
+        void apply(inout bit<32> value) { value = 0; }
     };
 
-    // Wrapped actions for queue incomplete
-    action do_read_queue_incomplete(bit<32> idx) {
-        tmp_result_8 = ra_read_queue_incomplete.execute(idx);
-    }
-
-    action do_read_cond_inc_queue_incomplete(bit<32> idx) {
-        tmp_result_8 = ra_read_cond_inc_queue_incomplete.execute(idx);
-    }
-
-    action do_init_queue_incomplete(bit<32> idx) {
-        ra_init_queue_incomplete.execute(idx);
-    }
+    action do_read_cond_inc_queue_incomplete(bit<32> idx) { ig_md.tmp_a = ra_read_cond_inc_queue_incomplete.execute(idx); }
+    action do_init_queue_incomplete(bit<32> idx) { ra_init_queue_incomplete.execute(idx); }
 
     /***************************************************************************
-     * Buffer Token State Registers
-    * One element per token
-    * Index: channel_id * COMBINE_QUEUE_LENGTH + loc  // in bitmap, loc = queue_tail (before inc)
-    * Bitmap Slots - each packet corresponds to BITMAP_PER_PACKET (8) bitmap slots for distributed writes
-    * Addr Slots - each packet corresponds to 8 addr slots for distributed writes
+     * Bitmap Slots - using macros (8 instances)
      ***************************************************************************/
+    BITMAP_SLOT_DECLARE(bitmap_0)
+    BITMAP_SLOT_DECLARE(bitmap_1)
+    BITMAP_SLOT_DECLARE(bitmap_2)
+    BITMAP_SLOT_DECLARE(bitmap_3)
+    BITMAP_SLOT_DECLARE(bitmap_4)
+    BITMAP_SLOT_DECLARE(bitmap_5)
+    BITMAP_SLOT_DECLARE(bitmap_6)
+    BITMAP_SLOT_DECLARE(bitmap_7)
 
-    BitmapSlot() bitmap_slot_0;
-    BitmapSlot() bitmap_slot_1;
-    BitmapSlot() bitmap_slot_2;
-    BitmapSlot() bitmap_slot_3;
-    BitmapSlot() bitmap_slot_4;
-    BitmapSlot() bitmap_slot_5;
-    BitmapSlot() bitmap_slot_6;
-    BitmapSlot() bitmap_slot_7;
+    /***************************************************************************
+     * Addr Slots - using macros (8 instances)
+     ***************************************************************************/
+    ADDR_SLOT_DECLARE(addr_0)
+    ADDR_SLOT_DECLARE(addr_1)
+    ADDR_SLOT_DECLARE(addr_2)
+    ADDR_SLOT_DECLARE(addr_3)
+    ADDR_SLOT_DECLARE(addr_4)
+    ADDR_SLOT_DECLARE(addr_5)
+    ADDR_SLOT_DECLARE(addr_6)
+    ADDR_SLOT_DECLARE(addr_7)
 
-    AddrSlot() addr_slot_0;
-    AddrSlot() addr_slot_1;
-    AddrSlot() addr_slot_2;
-    AddrSlot() addr_slot_3;
-    AddrSlot() addr_slot_4;
-    AddrSlot() addr_slot_5;
-    AddrSlot() addr_slot_6;
-    AddrSlot() addr_slot_7;
-
+    /***************************************************************************
+     * Clear Buffer Register
+     ***************************************************************************/
     Register<bit<32>, bit<32>>(COMBINE_BITMAP_ENTRIES) reg_clear_buffer;
-    
 
-    // Before calling, set ig_md.tx_offset_val; a Register can only be read once, so write it this way
     RegisterAction<bit<32>, bit<32>, bit<32>>(reg_clear_buffer) ra_read_set_clear = {
         void apply(inout bit<32> value, out bit<32> result) {
             result = value;
-            if(value <= ig_md.tx_offset_val){ // ideally should be ==
-                value = value + 1;
-            }
+            if(value <= ig_md.tx_offset_val) { value = value + 1; }
         }
     };
 
     RegisterAction<bit<32>, bit<32>, void>(reg_clear_buffer) ra_reset_clear = {
-        void apply(inout bit<32> value) {
-            value = 0;
-        }
+        void apply(inout bit<32> value) { value = 0; }
     };
 
-    // Wrapped actions for clear buffer
-    action do_read_set_clear(bit<32> idx) {
-        tmp_result_8 = ra_read_set_clear.execute(idx);
-    }
-
-    action do_reset_clear(bit<32> idx) {
-        ra_reset_clear.execute(idx);
-    }
-
-    /***************************************************************************
-     * Variables
-     ***************************************************************************/
-    bit<32> channel_id;
-    bit<32> queue_head;
-    bit<32> queue_tail;
-    bit<32> queue_incomplete;
-    bit<32> tx_reg_idx;
-    bit<32> buffer_idx;
-    
-    bit<32> slot_id;
-
-    //bit<32> token_idx;
+    action do_read_set_clear() { ig_md.tmp_a = ra_read_set_clear.execute(ig_md.tmp_b); } // token_idx
+    action do_reset_clear(bit<32> idx) { ra_reset_clear.execute(idx); }
 
     /***************************************************************************
      * Utility Actions
      ***************************************************************************/
-    bit<32> tmp_mul_256;
 
-    action mul_256(){
-        tmp_mul_256 = tmp_mul_256 * 256;
-    }
+    action mul_256() { ig_md.msn = ig_md.msn * 256; }
 
     action set_aeth_msn() {
         ig_md.has_aeth = true;
         hdr.aeth.setValid();
-        hdr.aeth.msn = tmp_mul_256 * 256;
+        hdr.aeth.msn = ig_md.msn;
     }
 
-    action set_aeth_syndrome(bit<32> syndrome) {
-        hdr.aeth.msn = hdr.aeth.msn + syndrome;
-    }
-
-    action set_aeth_psn(bit<32> psn) {
-        hdr.bth.psn = psn; // If there's an ack header (e.g., RDMA_OP_ACK or Read response), PSN is determined by the ack, set here
-
-    }
+    action set_aeth_syndrome(bit<32> syndrome) { ig_md.msn = ig_md.msn + syndrome; }
+    action set_aeth_psn(bit<32> psn) { hdr.bth.psn = psn; }
 
     action swap_l2_l3_l4() {
         bit<48> tmp_mac = hdr.eth.src_addr;
         hdr.eth.src_addr = hdr.eth.dst_addr;
         hdr.eth.dst_addr = tmp_mac;
-        
         bit<32> tmp_ip = hdr.ipv4.src_addr;
         hdr.ipv4.src_addr = hdr.ipv4.dst_addr;
         hdr.ipv4.dst_addr = tmp_ip;
-        
         bit<16> tmp_port = hdr.udp.src_port;
         hdr.udp.src_port = hdr.udp.dst_port;
         hdr.udp.dst_port = tmp_port;
     }
 
     action set_ack_len() {
-        // ACK packet: UDP(8) + BTH(12) + AETH(4) + ICRC(4) = 28
         hdr.udp.length = 28;
         hdr.ipv4.total_len = 48;
         hdr.udp.checksum = 0;
     }
 
-    /*
-     * ig_md.bitmap_clear_mask
-     */
-
-    action set_bitmap_clear_mask(bitmap_tofino_t m) {
-        ig_md.bitmap_clear_mask = m;
-    }
+    action set_bitmap_clear_mask(bitmap_tofino_t m) { ig_md.tmp_c = m; }
 
     table tbl_rank_to_clear_mask {
-        key = {
-            ig_md.ing_rank_id : exact;
-        }
-        actions = {
-            set_bitmap_clear_mask;
-        }
+        key = { ig_md.ing_rank_id : exact; }
+        actions = { set_bitmap_clear_mask; }
         size = 8;
         default_action = set_bitmap_clear_mask((bitmap_tofino_t)0);
-
         const entries = {
             0 : set_bitmap_clear_mask((bitmap_tofino_t)8w0x01);
             1 : set_bitmap_clear_mask((bitmap_tofino_t)8w0x02);
@@ -715,249 +294,94 @@ control CombineIngress(
     }
 
     /***************************************************************************
-    * Index Calculation Actions - 拆分复杂计算
-    ***************************************************************************/
+     * Index Calculation Actions
+     ***************************************************************************/
+    action step1_cal_tx_reg_idx() { ig_md.tx_reg_idx = ig_md.ing_rank_id; }
+    action step2_cal_tx_reg_idx() { ig_md.tx_reg_idx = ig_md.tx_reg_idx + ig_md.channel_class; }
 
-    /**
-     * 0. devide the calculations into multiple steps    
-     */
-    action step1_cal_tx_reg_idx() {
-        tx_reg_idx =(bit<32>)ig_md.ing_rank_id; // no use for loop port
-    }
+    action step1_calc_token_idx_from_tail() { ig_md.tmp_a = ig_md.channel_id * 64; }
+    action step2_calc_token_idx_from_tail() { ig_md.tmp_b = ig_md.tmp_c; }
+    action step3_calc_token_idx_from_tail() { ig_md.tmp_b = ig_md.tmp_b + ig_md.tmp_a; } // tmp_b as token_idx
     
-    bit<32> channel_mul_8;
+    action calc_slot_index_from_token_idx() { ig_md.tmp_b = ig_md.tmp_b >> 3; } // tmp_b as slot_index
+    action calc_slot_id_from_token_idx() { ig_md.tmp_a = ig_md.tmp_b << 3;} // tmp_a as slot_id
 
-    action step2_cal_tx_reg_idx() {
-        channel_mul_8 = channel_id << 3;  // channel_id * 8
-    }
-    
-    action step3_cal_tx_reg_idx() {
-        tx_reg_idx = tx_reg_idx + channel_mul_8;
-    }
-
-    // ============================================================
-    // 1. ig_md.token_idx = channel_id * COMBINE_QUEUE_LENGTH + (bit<32>)queue_tail
-    //    COMBINE_QUEUE_LENGTH = 64 = << 6
-    // ============================================================
-    bit<32> channel_mul_64;
-
-    action step1_calc_token_idx_from_tail() {
-        channel_mul_64 = channel_id << 6;  // channel_id * 64
-    }
-
-    action step2_calc_token_idx_from_tail() {
-        ig_md.token_idx = (bit<32>)queue_tail;
-    }
-
-    action step3_calc_token_idx_from_tail() {
-        ig_md.token_idx = ig_md.token_idx + channel_mul_64;
-    }
-
-    // 使用方式:
-    // step1_calc_token_idx_from_tail();
-    // step2_calc_token_idx_from_tail();
-    // step3_calc_token_idx_from_tail();
+    action calc_slot_index_from_next_token() { ig_md.tmp_b = ig_md.tmp_b >> 3; }
+    action calc_slot_id_from_next_token_idx() { ig_md.tmp_a = ig_md.tmp_b << 3;} // tmp_a as slot_id
 
 
-    // ============================================================
-    // 2. ig_md.slot_index = ig_md.token_idx >> 3
-    //    这个比较简单，可能单独一个action就行
-    // ============================================================
-    action calc_slot_index_from_token_idx() {
-        ig_md.slot_index = ig_md.token_idx >> 3;
-    }
+    action step1_calc_token_idx_from_tx_loc() { ig_md.tmp_a = ig_md.channel_id * 64; }
+    action step2_calc_token_idx_from_tx_loc() { ig_md.tmp_b = ig_md.tx_loc_val; }
+    action step3_calc_token_idx_from_tx_loc() { ig_md.tmp_b = ig_md.tmp_b + ig_md.tmp_a; }
 
-
-    // ============================================================
-    // 3. ig_md.slot_index = next_token_idx >> 3
-    //    注意：这里是 slot_index 不是 token_idx
-    // ============================================================
-    bit<32> next_token_idx;  // 需要在外部声明
-
-    action calc_slot_index_from_next_token() {
-        ig_md.slot_index = next_token_idx >> 3;
-    }
-
-
-    // ============================================================
-    // 4. ig_md.token_idx = channel_id * 64 + (bit<32>)ig_md.tx_loc_val
-    // ============================================================
-    action step1_calc_token_idx_from_tx_loc() {
-        channel_mul_64 = channel_id << 6;  // channel_id * 64
-    }
-
-    action step2_calc_token_idx_from_tx_loc() {
-        ig_md.token_idx = (bit<32>)ig_md.tx_loc_val;
-    }
-
-    action step3_calc_token_idx_from_tx_loc() {
-        ig_md.token_idx = ig_md.token_idx + channel_mul_64;
-    }
-
-    
     bit<32> temp_head_shifted;
+    action step1_calc_shift_head() { ig_md.tmp_a = ig_md.tmp_a << 16; }
+    action step2_calc_combine_tail() { ig_md.tmp_a = ig_md.tmp_a | ig_md.tmp_c; }
+    action step3_write_payload_data_0() { hdr.payload.data00 = ig_md.tmp_a; }
+    // action step3_write_payload_data_1() { hdr.payload.data01 = ig_md.tmp_a; }
+    // action step3_write_payload_data_2() { hdr.payload.data02 = ig_md.tmp_a; }
+    // action step3_write_payload_data_3() { hdr.payload.data03 = ig_md.tmp_a; }
+    // action step3_write_payload_data_4() { hdr.payload.data04 = ig_md.tmp_a; }
+    // action step3_write_payload_data_5() { hdr.payload.data05 = ig_md.tmp_a; }
+    // action step3_write_payload_data_6() { hdr.payload.data06 = ig_md.tmp_a; }
+    // action step3_write_payload_data_7() { hdr.payload.data07 = ig_md.tmp_a; }
 
+    action step1_calc_next_token_idx_from_next_loc() { ig_md.tmp_a = ig_md.channel_id << 6; }
+    action step2_calc_next_token_idx_from_next_loc() { ig_md.tmp_b = ig_md.tmp_a + ig_md.tmp_b; }
 
-    action step1_calc_shift_head() {
-        temp_head_shifted = queue_head << 16;
-    }
+    action step_write_addr_lo() { ig_md.next_token_addr[31:0] = ig_md.tmp_d; }
+    action step_write_addr_hi() { ig_md.next_token_addr[63:32] = ig_md.tmp_e; }
 
-    action step2_calc_combine_tail() {
-        ig_md.temp_queue_data = temp_head_shifted | queue_tail;
-    }
-
-    action step3_write_payload_data_0() {
-        hdr.payload.data00 = ig_md.temp_queue_data;
-    }
-
-    action step3_write_payload_data_1() {
-        hdr.payload.data01 = ig_md.temp_queue_data;
-    }
-
-    action step3_write_payload_data_2() {
-        hdr.payload.data02 = ig_md.temp_queue_data;
-    }
-
-    action step3_write_payload_data_3() {
-        hdr.payload.data03 = ig_md.temp_queue_data;
-    }
-
-    action step3_write_payload_data_4() {
-        hdr.payload.data04 = ig_md.temp_queue_data;
-    }
-
-    action step3_write_payload_data_5() {
-        hdr.payload.data05 = ig_md.temp_queue_data;
-    }
-
-    action step3_write_payload_data_6() {
-        hdr.payload.data06 = ig_md.temp_queue_data;
-    }
-
-    action step3_write_payload_data_7() {
-        hdr.payload.data07 = ig_md.temp_queue_data;
-    }
-
-
-    action step1_calc_next_token_idx_from_next_loc() {
-        channel_mul_64 = channel_id << 6;  // channel_id * 64
-    }
-
-    action step2_calc_next_token_idx_from_next_loc() {
-        next_token_idx = ig_md.next_loc;
-    }
-
-    action step3_calc_next_token_idx_from_next_loc() {
-        next_token_idx = next_token_idx + channel_mul_64;
-    }
-
-    action step_write_addr_lo() {
-        ig_md.next_token_addr[31:0] = ig_md.addr_result[31:0];
-    }
-
-    action step_write_addr_hi() {
-        ig_md.next_token_addr[63:32] = ig_md.addr_result[63:32];
-    }
     /***************************************************************************
      * Apply
      ***************************************************************************/
     apply {
-        channel_id = ig_md.channel_id;
-        // ig_md.channel_class is already set, no need to reassign
-        //tx_reg_idx =(bit<32>)ig_md.ing_rank_id; // no use for loop port
+
         step1_cal_tx_reg_idx();
         step2_cal_tx_reg_idx();
-        step3_cal_tx_reg_idx();
-        //bit<32> channel_multiply_8 = channel_id << 3 ;
-        //bit<32> tx_reg_idx_tmp = tx_reg_idx + channel_multiply_8;
-        //tx_reg_idx = tx_reg_idx_tmp;
-
-        
 
         // ================================================================
         // CONN_CONTROL: query queue pointer (READ)
         // ================================================================
         if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_CONTROL) {
             if (hdr.bth.opcode == RDMA_OP_READ_REQ) {
-                // Construct READ_RESPONSE_ONLY
-                queue_head_slot_0.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ, ig_md);
-                queue_head = ig_md.queue_ptr_result;
-                queue_tail_slot_0.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ, ig_md);
-                queue_tail = ig_md.queue_ptr_result;
-                step1_calc_shift_head();
-                step2_calc_combine_tail();
-                step3_write_payload_data_0();
-                //hdr.payload.data00 = (queue_head << 16) | queue_tail;
+                QUEUE_PTR_READ(queue_head_0); ig_md.tmp_a = ig_md.tmp_c; // queue_head ig_md.tmp_a
+                QUEUE_PTR_READ(queue_tail_0); 
+                step1_calc_shift_head(); step2_calc_combine_tail(); step3_write_payload_data_0();
 
-                queue_head_slot_1.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ, ig_md);
-                queue_head = ig_md.queue_ptr_result;
-                queue_tail_slot_1.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ, ig_md);
-                queue_tail = ig_md.queue_ptr_result;
-                //hdr.payload.data01 = (queue_head << 16) | queue_tail;
-                step1_calc_shift_head();
-                step2_calc_combine_tail();
-                step3_write_payload_data_1();
+                QUEUE_PTR_READ(queue_head_1); ig_md.tmp_a = ig_md.tmp_c;
+                QUEUE_PTR_READ(queue_tail_1); 
+                //step1_calc_shift_head(); step2_calc_combine_tail(); step3_write_payload_data_1();
 
-                queue_head_slot_2.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ, ig_md);
-                queue_head = ig_md.queue_ptr_result;
-                queue_tail_slot_2.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ, ig_md);
-                queue_tail = ig_md.queue_ptr_result;
-                //hdr.payload.data02 = (queue_head << 16) | queue_tail;
-                step1_calc_shift_head();
-                step2_calc_combine_tail();
-                step3_write_payload_data_2();
+                QUEUE_PTR_READ(queue_head_2); ig_md.tmp_a = ig_md.tmp_c;
+                QUEUE_PTR_READ(queue_tail_2); 
+                //step1_calc_shift_head(); step2_calc_combine_tail(); step3_write_payload_data_2();
 
-                queue_head_slot_3.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ, ig_md);
-                queue_head = ig_md.queue_ptr_result;
-                queue_tail_slot_3.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ, ig_md);
-                queue_tail = ig_md.queue_ptr_result;
-                //hdr.payload.data03 = (queue_head << 16) | queue_tail;
-                step1_calc_shift_head();
-                step2_calc_combine_tail();
-                step3_write_payload_data_3();
+                QUEUE_PTR_READ(queue_head_3); ig_md.tmp_a = ig_md.tmp_c;
+                QUEUE_PTR_READ(queue_tail_3); 
+                //step1_calc_shift_head(); step2_calc_combine_tail(); step3_write_payload_data_3();
 
-                queue_head_slot_4.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ, ig_md);
-                queue_head = ig_md.queue_ptr_result;
-                queue_tail_slot_4.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ, ig_md);
-                queue_tail = ig_md.queue_ptr_result;
-                //hdr.payload.data04 = (queue_head << 16) | queue_tail;
-                step1_calc_shift_head();
-                step2_calc_combine_tail();
-                step3_write_payload_data_4();
+                QUEUE_PTR_READ(queue_head_4); ig_md.tmp_a = ig_md.tmp_c;
+                QUEUE_PTR_READ(queue_tail_4); 
+                //step1_calc_shift_head(); step2_calc_combine_tail(); step3_write_payload_data_4();
 
-                queue_head_slot_5.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ, ig_md);
-                queue_head = ig_md.queue_ptr_result;
-                queue_tail_slot_5.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ, ig_md);
-                queue_tail = ig_md.queue_ptr_result;
-                //hdr.payload.data05 = (queue_head << 16) | queue_tail;
-                step1_calc_shift_head();
-                step2_calc_combine_tail();
-                step3_write_payload_data_5();
+                QUEUE_PTR_READ(queue_head_5); ig_md.tmp_a = ig_md.tmp_c;
+                QUEUE_PTR_READ(queue_tail_5); 
+                //step1_calc_shift_head(); step2_calc_combine_tail(); step3_write_payload_data_5();
 
-                queue_head_slot_6.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ, ig_md);
-                queue_head = ig_md.queue_ptr_result;
-                queue_tail_slot_6.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ, ig_md);
-                queue_tail = ig_md.queue_ptr_result;
-                //hdr.payload.data06 = (queue_head << 16) | queue_tail;
-                step1_calc_shift_head();
-                step2_calc_combine_tail();
-                step3_write_payload_data_6();
+                QUEUE_PTR_READ(queue_head_6); ig_md.tmp_a = ig_md.tmp_c;
+                QUEUE_PTR_READ(queue_tail_6); 
+                //step1_calc_shift_head(); step2_calc_combine_tail(); step3_write_payload_data_6();
 
-                queue_head_slot_7.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ, ig_md);
-                queue_head = ig_md.queue_ptr_result;
-                queue_tail_slot_7.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ, ig_md);
-                queue_tail = ig_md.queue_ptr_result;
-                //hdr.payload.data07 = (queue_head << 16) | queue_tail;
-                step1_calc_shift_head();
-                step2_calc_combine_tail();
-                step3_write_payload_data_7();
+                QUEUE_PTR_READ(queue_head_7); ig_md.tmp_a = ig_md.tmp_c;
+                QUEUE_PTR_READ(queue_tail_7); 
+                //step1_calc_shift_head(); step2_calc_combine_tail(); step3_write_payload_data_7();
 
-                tmp_mul_256 = ig_md.psn + 32w1;
+                ig_md.msn = ig_md.psn + 32w1;
                 mul_256();
-                set_aeth_msn();
                 set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
+                set_aeth_msn();
                 set_aeth_psn(ig_md.psn);
-
                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
             }
             return;
@@ -971,114 +395,79 @@ control CombineIngress(
                 ig_dprsr_md.drop_ctl = 1;
                 return;
             }
-            ig_md.psn_to_check = ig_md.psn;
-            do_read_cond_inc_rx_bitmap_epsn(channel_id);
-            bit<32> expected_psn = tmp_result_32;
+
+            do_read_cond_inc_rx_bitmap_epsn(ig_md.channel_id);
+            // bit<32> expected_psn = ig_md.tmp_a;
             
-            if (ig_md.psn == expected_psn) {
-                // PSN matches, write bitmap
-                // Select corresponding slot by rx_id to read and update queue_tail
-                if (ig_md.ing_rank_id == 0) {
-                    queue_tail_slot_0.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ_ADD, ig_md);
-                    queue_tail = ig_md.queue_ptr_result;
-                } else if (ig_md.ing_rank_id == 1) {
-                    queue_tail_slot_1.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ_ADD, ig_md);
-                    queue_tail = ig_md.queue_ptr_result;
-                } else if (ig_md.ing_rank_id == 2) {
-                    queue_tail_slot_2.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ_ADD, ig_md);
-                    queue_tail = ig_md.queue_ptr_result;
-                } else if (ig_md.ing_rank_id == 3) {
-                    queue_tail_slot_3.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ_ADD, ig_md);
-                    queue_tail = ig_md.queue_ptr_result;
-                } else if (ig_md.ing_rank_id == 4) {
-                    queue_tail_slot_4.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ_ADD, ig_md);
-                    queue_tail = ig_md.queue_ptr_result;
-                } else if (ig_md.ing_rank_id == 5) {
-                    queue_tail_slot_5.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ_ADD, ig_md);
-                    queue_tail = ig_md.queue_ptr_result;
-                } else if (ig_md.ing_rank_id == 6) {
-                    queue_tail_slot_6.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ_ADD, ig_md);
-                    queue_tail = ig_md.queue_ptr_result;
-                } else if (ig_md.ing_rank_id == 7) {
-                    queue_tail_slot_7.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ_ADD, ig_md);
-                    queue_tail = ig_md.queue_ptr_result;
-                }
-                
-                // Write bitmap and addr
+            if (ig_md.psn == ig_md.tmp_a) {
+                if (ig_md.ing_rank_id == 0) { QUEUE_PTR_READ_ADD(queue_tail_0);  }
+                else if (ig_md.ing_rank_id == 1) { QUEUE_PTR_READ_ADD(queue_tail_1);  }
+                else if (ig_md.ing_rank_id == 2) { QUEUE_PTR_READ_ADD(queue_tail_2);  }
+                else if (ig_md.ing_rank_id == 3) { QUEUE_PTR_READ_ADD(queue_tail_3);  }
+                else if (ig_md.ing_rank_id == 4) { QUEUE_PTR_READ_ADD(queue_tail_4);  }
+                else if (ig_md.ing_rank_id == 5) { QUEUE_PTR_READ_ADD(queue_tail_5);  }
+                else if (ig_md.ing_rank_id == 6) { QUEUE_PTR_READ_ADD(queue_tail_6);  }
+                else if (ig_md.ing_rank_id == 7) { QUEUE_PTR_READ_ADD(queue_tail_7);  } // ig_md.queue_tail = ig_md.tmp_c;
 
                 step1_calc_token_idx_from_tail();
                 step2_calc_token_idx_from_tail();
                 step3_calc_token_idx_from_tail();
-                calc_slot_index_from_token_idx();      // ig_md.token_idx / 8
-                
-                ig_md.bitmap_write_val = hdr.payload.data00;
-                bitmap_slot_0.apply(COMBINE_BITMAP_REG_OP.OP_WRITE, ig_md);
-                ig_md.bitmap_write_val = hdr.payload.data01;
-                bitmap_slot_1.apply(COMBINE_BITMAP_REG_OP.OP_WRITE, ig_md);
-                ig_md.bitmap_write_val = hdr.payload.data02;
-                bitmap_slot_2.apply(COMBINE_BITMAP_REG_OP.OP_WRITE, ig_md);
-                ig_md.bitmap_write_val = hdr.payload.data03;
-                bitmap_slot_3.apply(COMBINE_BITMAP_REG_OP.OP_WRITE, ig_md);
-                ig_md.bitmap_write_val = hdr.payload.data04;
-                bitmap_slot_4.apply(COMBINE_BITMAP_REG_OP.OP_WRITE, ig_md);
-                ig_md.bitmap_write_val = hdr.payload.data05;
-                bitmap_slot_5.apply(COMBINE_BITMAP_REG_OP.OP_WRITE, ig_md);
-                ig_md.bitmap_write_val = hdr.payload.data06;
-                bitmap_slot_6.apply(COMBINE_BITMAP_REG_OP.OP_WRITE, ig_md);
-                ig_md.bitmap_write_val = hdr.payload.data07;
-                bitmap_slot_7.apply(COMBINE_BITMAP_REG_OP.OP_WRITE, ig_md);
-                
-                ig_md.addr_write_val[31:0] = hdr.payload.data08;
-                ig_md.addr_write_val[63:32] = hdr.payload.data09;
-                addr_slot_0.apply(COMBINE_ADDR_REG_OP.OP_WRITE, ig_md);
-                ig_md.addr_write_val[31:0] = hdr.payload.data0a;
-                ig_md.addr_write_val[63:32] = hdr.payload.data0b;
-                addr_slot_1.apply(COMBINE_ADDR_REG_OP.OP_WRITE, ig_md);
-                ig_md.addr_write_val[31:0] = hdr.payload.data0c;
-                ig_md.addr_write_val[63:32] = hdr.payload.data0d;
-                addr_slot_2.apply(COMBINE_ADDR_REG_OP.OP_WRITE, ig_md);
-                ig_md.addr_write_val[31:0] = hdr.payload.data0e;
-                ig_md.addr_write_val[63:32] = hdr.payload.data0f;
-                addr_slot_3.apply(COMBINE_ADDR_REG_OP.OP_WRITE, ig_md);
-                ig_md.addr_write_val[31:0] = hdr.payload.data10;
-                ig_md.addr_write_val[63:32] = hdr.payload.data11;
-                addr_slot_4.apply(COMBINE_ADDR_REG_OP.OP_WRITE, ig_md);
-                ig_md.addr_write_val[31:0] = hdr.payload.data12;
-                ig_md.addr_write_val[63:32] = hdr.payload.data13;
-                addr_slot_5.apply(COMBINE_ADDR_REG_OP.OP_WRITE, ig_md);
-                ig_md.addr_write_val[31:0] = hdr.payload.data14;
-                ig_md.addr_write_val[63:32] = hdr.payload.data15;
-                addr_slot_6.apply(COMBINE_ADDR_REG_OP.OP_WRITE, ig_md);
-                ig_md.addr_write_val[31:0] = hdr.payload.data16;
-                ig_md.addr_write_val[63:32] = hdr.payload.data17;
-                addr_slot_7.apply(COMBINE_ADDR_REG_OP.OP_WRITE, ig_md);
+                calc_slot_index_from_token_idx(); // tmp_b slot_index
 
-                // return ACK
-                tmp_mul_256 = ig_md.psn + 32w1;
+                ig_md.tmp_c = hdr.payload.data00; BITMAP_WRITE(bitmap_0); //tmp_c as write value
+                // ig_md.bitmap_write_val = hdr.payload.data01; BITMAP_WRITE(bitmap_1);
+                // ig_md.bitmap_write_val = hdr.payload.data02; BITMAP_WRITE(bitmap_2);
+                // ig_md.bitmap_write_val = hdr.payload.data03; BITMAP_WRITE(bitmap_3);
+                // ig_md.bitmap_write_val = hdr.payload.data04; BITMAP_WRITE(bitmap_4);
+                // ig_md.bitmap_write_val = hdr.payload.data05; BITMAP_WRITE(bitmap_5);
+                // ig_md.bitmap_write_val = hdr.payload.data06; BITMAP_WRITE(bitmap_6);
+                // ig_md.bitmap_write_val = hdr.payload.data07; BITMAP_WRITE(bitmap_7);
+
+                // ig_md.addr_write_val[31:0] = hdr.payload.data08;
+                // ig_md.addr_write_val[63:32] = hdr.payload.data09;
+                // ADDR_WRITE(addr_0);
+                // ig_md.addr_write_val[31:0] = hdr.payload.data0a;
+                // ig_md.addr_write_val[63:32] = hdr.payload.data0b;
+                // ADDR_WRITE(addr_1);
+                // ig_md.addr_write_val[31:0] = hdr.payload.data0c;
+                // ig_md.addr_write_val[63:32] = hdr.payload.data0d;
+                // ADDR_WRITE(addr_2);
+                // ig_md.addr_write_val[31:0] = hdr.payload.data0e;
+                // ig_md.addr_write_val[63:32] = hdr.payload.data0f;
+                // ADDR_WRITE(addr_3);
+                // ig_md.addr_write_val[31:0] = hdr.payload.data10;
+                // ig_md.addr_write_val[63:32] = hdr.payload.data11;
+                // ADDR_WRITE(addr_4);
+                // ig_md.addr_write_val[31:0] = hdr.payload.data12;
+                // ig_md.addr_write_val[63:32] = hdr.payload.data13;
+                // ADDR_WRITE(addr_5);
+                // ig_md.addr_write_val[31:0] = hdr.payload.data14;
+                // ig_md.addr_write_val[63:32] = hdr.payload.data15;
+                // ADDR_WRITE(addr_6);
+                // ig_md.addr_write_val[31:0] = hdr.payload.data16;
+                // ig_md.addr_write_val[63:32] = hdr.payload.data17;
+                // ADDR_WRITE(addr_7);
+
+                ig_md.msn = ig_md.psn + 32w1;
                 mul_256();
-                set_aeth_msn();
                 set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
+                set_aeth_msn();
                 set_aeth_psn(ig_md.psn);
                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
                 
-            } else if (ig_md.psn < expected_psn) {
-                // duplicate packet
-                //set_aeth_ingress(AETH_ACK_CREDIT_INVALID, expected_psn - 1, expected_psn);
-                tmp_mul_256 = expected_psn;
+            } else if (ig_md.psn < ig_md.tmp_a) {
+                ig_md.msn = ig_md.tmp_a;
                 mul_256();
-                set_aeth_msn();
                 set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
-                set_aeth_psn(expected_psn - 1);
-                ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
-                
-            } else {
-                // packet loss, return NAK
-                //set_aeth_ingress(AETH_NAK_SEQ_ERR, (expected_psn - 1), expected_psn);
-                tmp_mul_256 = expected_psn;
-                mul_256();
                 set_aeth_msn();
-                set_aeth_syndrome(AETH_NAK_SEQ_ERR);
-                set_aeth_psn(expected_psn - 1);
+                set_aeth_psn(ig_md.tmp_a - 1);
+                ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
+            } else {
+                ig_md.msn = ig_md.tmp_a;
+                mul_256();
+                set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
+                set_aeth_msn();
+                set_aeth_psn(ig_md.tmp_a - 1);
                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
             }
             return;
@@ -1086,8 +475,6 @@ control CombineIngress(
 
         // ================================================================
         // CONN_TX: tx writes token (WRITE) - aggregation
-        // Bitmap storage must be in ingress to determine if token aggregation is complete and then broadcast
-        // Token buffer must be in egress because broadcast needs to read packets at different offsets
         // ================================================================
         if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_TX && ig_intr_md.ingress_port != LOOPBACK_PORT) {
             if (hdr.bth.opcode != RDMA_OP_WRITE_FIRST && 
@@ -1098,305 +485,171 @@ control CombineIngress(
                 return;
             }
 
-            ig_md.psn_to_check = ig_md.psn;
-            do_read_cond_inc_tx_epsn(tx_reg_idx);
-            bit<32> expected_psn = tmp_result_32;
-            do_read_tx_msn(tx_reg_idx);
-            bit<32> current_msn = tmp_result_32;
-            
-            if (ig_md.psn == expected_psn) {
-                // PSN matches
-                // Get loc and packet_offset
-                if (hdr.bth.opcode == RDMA_OP_WRITE_FIRST || 
-                    hdr.bth.opcode == RDMA_OP_WRITE_ONLY) {
-                    // Get loc from reth.addr
+            //ig_md.psn_to_read = ig_md.psn; 
+            do_read_cond_inc_tx_epsn(ig_md.tx_reg_idx); //bit<32> expected_psn = ig_md.tmp_a;
+            do_read_tx_msn(ig_md.tx_reg_idx); //bit<32> current_msn = ig_md.tmp_b;
+            // 计算token的loc和packet在token的offset
+            if (ig_md.psn == ig_md.tmp_a) {
+                if (hdr.bth.opcode == RDMA_OP_WRITE_FIRST || hdr.bth.opcode == RDMA_OP_WRITE_ONLY) {
                     ig_md.tx_loc_val = hdr.reth.addr[63:32];
                     ig_md.tx_offset_val = 0;
-                    do_write_tx_loc(tx_reg_idx);
-                    do_reset_tx_offset(tx_reg_idx);
+                    do_write_tx_loc(ig_md.tx_reg_idx);
+                    do_reset_tx_offset(ig_md.tx_reg_idx);
                 } else {
-                    // Get from registers
-                    do_read_tx_loc(tx_reg_idx);
-                    ig_md.tx_loc_val = tmp_result_8;
-                    do_read_inc_tx_offset(tx_reg_idx);
-                    ig_md.tx_offset_val = tmp_result_8;
+                    do_read_tx_loc(ig_md.tx_reg_idx);
+                    do_read_inc_tx_offset(ig_md.tx_reg_idx);
                 }
                 
-                //ig_md.token_idx = channel_id * COMBINE_QUEUE_LENGTH + (bit<32>)ig_md.tx_loc_val;
+                ig_md.msn = ig_md.tmp_b;
+
                 step1_calc_token_idx_from_tx_loc();
                 step2_calc_token_idx_from_tx_loc();
-                step3_calc_token_idx_from_tx_loc();
-                slot_id = ig_md.token_idx;
-                // Check whether this is the first tx to arrive
-                do_read_set_clear(ig_md.token_idx);
-                ig_md.clear_offset = tmp_result_8;
+                step3_calc_token_idx_from_tx_loc(); // ig_md.tmp_b token_idx
+                do_read_set_clear(); // ig_md.tmp_a
+                // ig_md.clear_offset = ig_md.tmp_a;
+                if(ig_md.tmp_a <= ig_md.tx_offset_val){
+                    ig_md.agg_op = AGG_OP.STORE;
+                }
+                else{
+                    ig_md.agg_op = AGG_OP.AGGREGATE;
+                }
                 
-                // If WRITE_LAST/ONLY: clear tx bit in bitmap and update MSN
-                if (hdr.bth.opcode == RDMA_OP_WRITE_ONLY || 
-                    hdr.bth.opcode == RDMA_OP_WRITE_LAST) {
+                if (hdr.bth.opcode == RDMA_OP_WRITE_ONLY || hdr.bth.opcode == RDMA_OP_WRITE_LAST) {
+                    calc_slot_index_from_token_idx(); // ig_md.tmp_b slot_index 
+                    calc_slot_id_from_token_idx(); // ig_md.tmp_a slot_id
+                    tbl_rank_to_clear_mask.apply(); // ig_md.tmp_c clear_mask
                     
-                    calc_slot_index_from_token_idx();     // ig_md.token_idx / 8
-                    //ig_md.slot_index = (bit<32>)ig_md.channel_id + 1;      // ig_md.token_idx / 8
-                    //ig_md.bitmap_clear_mask = (bitmap_tofino_t)1 << ig_md.ing_rank_id;
-                    tbl_rank_to_clear_mask.apply();
-                    //bitmap_tofino_t bitmap_after_clear = ra_clear_bit_bitmap.execute(ig_md.token_idx);
-                    if (slot_id == 0) {
-                        bitmap_slot_0.apply(COMBINE_BITMAP_REG_OP.OP_CLEAR_BIT, ig_md);
-                        addr_slot_0.apply(COMBINE_ADDR_REG_OP.OP_READ, ig_md);
-                    } else if (slot_id == 1) {
-                        bitmap_slot_1.apply(COMBINE_BITMAP_REG_OP.OP_CLEAR_BIT, ig_md);
-                        addr_slot_1.apply(COMBINE_ADDR_REG_OP.OP_READ, ig_md);
-                    } else if (slot_id == 2) {
-                        bitmap_slot_2.apply(COMBINE_BITMAP_REG_OP.OP_CLEAR_BIT, ig_md);
-                        addr_slot_2.apply(COMBINE_ADDR_REG_OP.OP_READ, ig_md);
-                    } else if (slot_id == 3) {
-                        bitmap_slot_3.apply(COMBINE_BITMAP_REG_OP.OP_CLEAR_BIT, ig_md);
-                        addr_slot_3.apply(COMBINE_ADDR_REG_OP.OP_READ, ig_md);
-                    } else if (slot_id == 4) {
-                        bitmap_slot_4.apply(COMBINE_BITMAP_REG_OP.OP_CLEAR_BIT, ig_md);
-                        addr_slot_4.apply(COMBINE_ADDR_REG_OP.OP_READ, ig_md);
-                    } else if (slot_id == 5) {
-                        bitmap_slot_5.apply(COMBINE_BITMAP_REG_OP.OP_CLEAR_BIT, ig_md);
-                        addr_slot_5.apply(COMBINE_ADDR_REG_OP.OP_READ, ig_md);
-                    } else if (slot_id == 6) {
-                        bitmap_slot_6.apply(COMBINE_BITMAP_REG_OP.OP_CLEAR_BIT, ig_md);
-                        addr_slot_6.apply(COMBINE_ADDR_REG_OP.OP_READ, ig_md);
-                    } else {  // slot_id == 7
-                        bitmap_slot_7.apply(COMBINE_BITMAP_REG_OP.OP_CLEAR_BIT, ig_md);
-                        addr_slot_7.apply(COMBINE_ADDR_REG_OP.OP_READ, ig_md);
-                    }
+                    if (ig_md.tmp_a == 0)      { BITMAP_CLEAR_BIT(bitmap_0); ADDR_READ(addr_0); } // ig_md.tmp_c bitmap_result ig_md.tmp_d, ig_md.tmp_e
+                    else if (ig_md.tmp_a == 1) { BITMAP_CLEAR_BIT(bitmap_1); ADDR_READ(addr_1); }
+                    else if (ig_md.tmp_a == 2) { BITMAP_CLEAR_BIT(bitmap_2); ADDR_READ(addr_2); }
+                    else if (ig_md.tmp_a == 3) { BITMAP_CLEAR_BIT(bitmap_3); ADDR_READ(addr_3); }
+                    else if (ig_md.tmp_a == 4) { BITMAP_CLEAR_BIT(bitmap_4); ADDR_READ(addr_4); }
+                    else if (ig_md.tmp_a == 5) { BITMAP_CLEAR_BIT(bitmap_5); ADDR_READ(addr_5); }
+                    else if (ig_md.tmp_a == 6) { BITMAP_CLEAR_BIT(bitmap_6); ADDR_READ(addr_6); }
+                    else                   { BITMAP_CLEAR_BIT(bitmap_7); ADDR_READ(addr_7); }
 
-                    do_read_inc_tx_msn(tx_reg_idx);
-                    current_msn = tmp_result_32;
-                    if (ig_md.bitmap_result == 0) {
-                        do_read_cond_inc_queue_incomplete(channel_id);
-                        queue_incomplete = tmp_result_8;
-                        if( queue_incomplete == ig_md.tx_loc_val) {
-                            // Update queue_head to match queue_incomplete
-                            if (ig_md.ing_rank_id == 0) {
-                                queue_head_slot_0.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_INC, ig_md);
-                            } else if (ig_md.ing_rank_id == 1) {
-                                queue_head_slot_1.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_INC, ig_md);
-                            } else if (ig_md.ing_rank_id == 2) {
-                                queue_head_slot_2.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_INC, ig_md);
-                            } else if (ig_md.ing_rank_id == 3) {
-                                queue_head_slot_3.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_INC, ig_md);
-                            } else if (ig_md.ing_rank_id == 4) {
-                                queue_head_slot_4.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_INC, ig_md);
-                            } else if (ig_md.ing_rank_id == 5) {
-                                queue_head_slot_5.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_INC, ig_md);
-                            } else if (ig_md.ing_rank_id == 6) {
-                                queue_head_slot_6.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_INC, ig_md);
-                            } else if (ig_md.ing_rank_id == 7) {
-                                queue_head_slot_7.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_INC, ig_md);
-                            }
+                    do_read_inc_tx_msn(ig_md.tx_reg_idx);
+                    
+                    if (ig_md.tmp_c == 0) { // token全部聚合完成
+                        do_read_cond_inc_queue_incomplete(ig_md.channel_id);
+                        // queue_incomplete = ig_md.tmp_a;
+                        if (ig_md.tmp_a == ig_md.tx_loc_val) { // 下一个要发的就是我们当前处理的token
+                            if (ig_md.ing_rank_id == 0)      { QUEUE_PTR_INC(queue_head_0); }
+                            else if (ig_md.ing_rank_id == 1) { QUEUE_PTR_INC(queue_head_1); }
+                            else if (ig_md.ing_rank_id == 2) { QUEUE_PTR_INC(queue_head_2); }
+                            else if (ig_md.ing_rank_id == 3) { QUEUE_PTR_INC(queue_head_3); }
+                            else if (ig_md.ing_rank_id == 4) { QUEUE_PTR_INC(queue_head_4); }
+                            else if (ig_md.ing_rank_id == 5) { QUEUE_PTR_INC(queue_head_5); }
+                            else if (ig_md.ing_rank_id == 6) { QUEUE_PTR_INC(queue_head_6); }
+                            else if (ig_md.ing_rank_id == 7) { QUEUE_PTR_INC(queue_head_7); }
                             
-                            ig_tm_md.mcast_grp_b = 200; // loopback group
-                            
-                            // Convert packet to WRITE_FIRST; length and other fields are not set.
-                            // On the first loop startup the incoming packet may have no RETH and may not fit.
-                            //ig_md.next_token_addr = ig_md.addr_result;
-                            //ig_md.next_token_addr[31:0] = ig_md.addr_result[31:0];
-                            //ig_md.next_token_addr[63:32] = ig_md.addr_result[63:32];
+                            ig_tm_md.mcast_grp_b = 200;
                             step_write_addr_lo();
                             step_write_addr_hi();
-
                         }
                     }
                 }
 
-                // return ACK
-                //set_aeth_ingress(AETH_ACK_CREDIT_INVALID, expected_psn, current_msn);
-                tmp_mul_256 = current_msn;
                 mul_256();
-                set_aeth_msn();
                 set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
-                set_aeth_psn(expected_psn);
+                set_aeth_msn();
+                set_aeth_psn(ig_md.psn);
                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
                 
-            } else if (ig_md.psn < expected_psn) {
-                // duplicate packet
-                //set_aeth_ingress(AETH_ACK_CREDIT_INVALID, (expected_psn - 1), current_msn);
-                tmp_mul_256 = current_msn;
+            } else if (ig_md.psn < ig_md.tmp_a) {
+                ig_md.msn = ig_md.tmp_b;
                 mul_256();
-                set_aeth_msn();
                 set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
-                set_aeth_psn(expected_psn - 1);
+                set_aeth_msn();
+                set_aeth_psn(ig_md.tmp_a - 1);
                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
-                
             } else {
-                // packet loss
-                //set_aeth_ingress(AETH_NAK_SEQ_ERR, (expected_psn - 1), current_msn);
-                tmp_mul_256 = current_msn;
+                ig_md.msn = ig_md.tmp_b;
                 mul_256();
-                set_aeth_msn();
                 set_aeth_syndrome(AETH_NAK_SEQ_ERR);
-                set_aeth_psn(expected_psn - 1);
+                set_aeth_msn();
+                set_aeth_psn(ig_md.tmp_a - 1);
                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
             }
             return;
         }
 
         // ================================================================
-        // loopback port; LOOPBACK_PORT not defined yet
-        // This packet is guaranteed to be a WRITE_FIRST
-        // reth
-        //  data00: during ingress it's the token's bcast loc; during egress it's the next token's bcast loc
-        // addr for this token remains unchanged during reception; during egress the loopback port will be set to the next token address stored in bridge during ingress
-        // Fields of this packet are mostly set by the previous egress, except PSN, opcode, and payload which vary per packet.
+        // Loopback port processing
         // ================================================================
-        if (ig_intr_md.ingress_port == LOOPBACK_PORT && 
-            hdr.bth.opcode == RDMA_OP_WRITE_FIRST) {
-            
-            // Get current loc from payload
-            //bit<32> current_loc = hdr.payload.data00;
-            ig_md.tx_loc_val = hdr.payload.data00;
+        if (ig_intr_md.ingress_port == LOOPBACK_PORT && hdr.bth.opcode == RDMA_OP_WRITE_FIRST) {
+            bit<32> tmp_next_loc = hdr.payload.data00;
+            ig_md.tx_loc_val = tmp_next_loc; // ingress先把payload表示的的下一个token（对上一个而言）的loc读进来，作为本token的loc
+
             ig_md.is_loopback = true;
             
-            // Set multicast to rx (TOKEN_PACKETS packets)
-            bit<32> group = 100 + ig_md.root_rank_id;
-            ig_tm_md.mcast_grp_a = (bit<16>)group;
+            ig_tm_md.mcast_grp_a = (bit<16>)ig_md.root_rank_id;
             
-            do_read_add_rx_token_epsn(channel_id);
-            hdr.bth.psn = tmp_result_32;
+            do_read_add_rx_token_epsn(ig_md.channel_id); // tmp_a epsn
+            ig_md.psn = ig_md.tmp_a;
 
-            // Compute next loc (circular queue)
-            if (hdr.payload.data00 >= COMBINE_QUEUE_LENGTH - 1) {
-                ig_md.next_loc = 0;
-            } else {
-                ig_md.next_loc = hdr.payload.data00 + 1;
-            }
+            if (tmp_next_loc >= COMBINE_QUEUE_LENGTH - 1) { tmp_next_loc = 0; } // next_loc
+            else { tmp_next_loc = tmp_next_loc + 1; } //本质是+1，防绕回
             
-            // Read queue_tail to check if tail is reached
-            if (ig_md.root_rank_id == 0) {
-                queue_tail_slot_0.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ, ig_md);
-                queue_tail = ig_md.queue_ptr_result;
-            } else if (ig_md.root_rank_id == 1) {
-                queue_tail_slot_1.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ, ig_md);
-                queue_tail = ig_md.queue_ptr_result;
-            } else if (ig_md.root_rank_id == 2) {
-                queue_tail_slot_2.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ, ig_md);
-                queue_tail = ig_md.queue_ptr_result;
-            } else if (ig_md.root_rank_id == 3) {
-                queue_tail_slot_3.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ, ig_md);
-                queue_tail = ig_md.queue_ptr_result;
-            } else if (ig_md.root_rank_id == 4) {
-                queue_tail_slot_4.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ, ig_md);
-                queue_tail = ig_md.queue_ptr_result;
-            } else if (ig_md.root_rank_id == 5) {
-                queue_tail_slot_5.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ, ig_md);
-                queue_tail = ig_md.queue_ptr_result;
-            } else if (ig_md.root_rank_id == 6) {
-                queue_tail_slot_6.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ, ig_md);
-                queue_tail = ig_md.queue_ptr_result;
-            } else if (ig_md.root_rank_id == 7) {
-                queue_tail_slot_7.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_READ, ig_md);
-                queue_tail = ig_md.queue_ptr_result;
-            }
+            ig_md.tmp_b = tmp_next_loc; // tmp_b next_loc
             
-            // If ig_md.next_loc == queue_tail, all tokens are processed; stop loopback
-            if (ig_md.next_loc != queue_tail) {
-                // Check if bitmap of next loc is zero
-                //next_token_idx = channel_id * COMBINE_QUEUE_LENGTH + ig_md.next_loc;
+            if (ig_md.root_rank_id == 0)      { QUEUE_PTR_READ(queue_tail_0);  }
+            else if (ig_md.root_rank_id == 1) { QUEUE_PTR_READ(queue_tail_1);  }
+            else if (ig_md.root_rank_id == 2) { QUEUE_PTR_READ(queue_tail_2);  }
+            else if (ig_md.root_rank_id == 3) { QUEUE_PTR_READ(queue_tail_3);  }
+            else if (ig_md.root_rank_id == 4) { QUEUE_PTR_READ(queue_tail_4);  }
+            else if (ig_md.root_rank_id == 5) { QUEUE_PTR_READ(queue_tail_5);  }
+            else if (ig_md.root_rank_id == 6) { QUEUE_PTR_READ(queue_tail_6);  }
+            else if (ig_md.root_rank_id == 7) { QUEUE_PTR_READ(queue_tail_7);  } // ig_md.queue_tail = ig_md.tmp_c;
+            
+            if (ig_md.tmp_b != ig_md.tmp_c) { // 下一个token的loc不是tail
                 step1_calc_next_token_idx_from_next_loc();
-                step2_calc_next_token_idx_from_next_loc();
-                step3_calc_next_token_idx_from_next_loc();
+                step2_calc_next_token_idx_from_next_loc(); // tmp_b next_token_idx
+                calc_slot_index_from_next_token(); // tmp_b slot_index
+                calc_slot_id_from_next_token_idx(); // tmp_a next_slot_id
 
-                bit<32> next_slot_id = next_token_idx;
-                calc_slot_index_from_next_token();
+                if (ig_md.tmp_a == 0)      { BITMAP_READ(bitmap_0); ADDR_READ(addr_0); } // next_bitmap_result as ig_md.bitmap_result as ig_md.tmp_c 
+                else if (ig_md.tmp_a == 1) { BITMAP_READ(bitmap_1);  ADDR_READ(addr_1); }
+                else if (ig_md.tmp_a == 2) { BITMAP_READ(bitmap_2);  ADDR_READ(addr_2); }
+                else if (ig_md.tmp_a == 3) { BITMAP_READ(bitmap_3);  ADDR_READ(addr_3); }
+                else if (ig_md.tmp_a == 4) { BITMAP_READ(bitmap_4);  ADDR_READ(addr_4); }
+                else if (ig_md.tmp_a == 5) { BITMAP_READ(bitmap_5);  ADDR_READ(addr_5); }
+                else if (ig_md.tmp_a == 6) { BITMAP_READ(bitmap_6);  ADDR_READ(addr_6); }
+                else                        { BITMAP_READ(bitmap_7);  ADDR_READ(addr_7); }
                 
-                bitmap_tofino_t next_bitmap_result;
-                
-                if (next_slot_id == 0) {
-                    bitmap_slot_0.apply(COMBINE_BITMAP_REG_OP.OP_READ, ig_md);
-                    next_bitmap_result = ig_md.bitmap_result;
-                    addr_slot_0.apply(COMBINE_ADDR_REG_OP.OP_READ, ig_md);
-                } else if (next_slot_id == 1) {
-                    bitmap_slot_1.apply(COMBINE_BITMAP_REG_OP.OP_READ, ig_md);
-                    next_bitmap_result = ig_md.bitmap_result;
-                    addr_slot_1.apply(COMBINE_ADDR_REG_OP.OP_READ, ig_md);
-                } else if (next_slot_id == 2) {
-                    bitmap_slot_2.apply(COMBINE_BITMAP_REG_OP.OP_READ, ig_md);
-                    next_bitmap_result = ig_md.bitmap_result;
-                    addr_slot_2.apply(COMBINE_ADDR_REG_OP.OP_READ, ig_md);
-                } else if (next_slot_id == 3) {
-                    bitmap_slot_3.apply(COMBINE_BITMAP_REG_OP.OP_READ, ig_md);
-                    next_bitmap_result = ig_md.bitmap_result;
-                    addr_slot_3.apply(COMBINE_ADDR_REG_OP.OP_READ, ig_md);
-                } else if (next_slot_id == 4) {
-                    bitmap_slot_4.apply(COMBINE_BITMAP_REG_OP.OP_READ, ig_md);
-                    next_bitmap_result = ig_md.bitmap_result;
-                    addr_slot_4.apply(COMBINE_ADDR_REG_OP.OP_READ, ig_md);
-                } else if (next_slot_id == 5) {
-                    bitmap_slot_5.apply(COMBINE_BITMAP_REG_OP.OP_READ, ig_md);
-                    next_bitmap_result = ig_md.bitmap_result;
-                    addr_slot_5.apply(COMBINE_ADDR_REG_OP.OP_READ, ig_md);
-                } else if (next_slot_id == 6) {
-                    bitmap_slot_6.apply(COMBINE_BITMAP_REG_OP.OP_READ, ig_md);
-                    next_bitmap_result = ig_md.bitmap_result;
-                    addr_slot_6.apply(COMBINE_ADDR_REG_OP.OP_READ, ig_md);
-                } else {
-                    bitmap_slot_7.apply(COMBINE_BITMAP_REG_OP.OP_READ, ig_md);
-                    next_bitmap_result = ig_md.bitmap_result;
-                    addr_slot_7.apply(COMBINE_ADDR_REG_OP.OP_READ, ig_md);
-                }
-                
-                // Check queue_incomplete
-                //bit<32> queue_incomplete_val = ra_read_queue_incomplete.execute(channel_id);
-                
-                // If next token is ready, continue loopback
-                if (next_bitmap_result == 0 ) { //&& ig_md.next_loc == queue_incomplete_val
-                    // Update queue_incomplete and queue_head
-                    ig_md.tx_loc_val = ig_md.next_loc;
-                    do_read_cond_inc_queue_incomplete(channel_id);
-                    queue_incomplete = tmp_result_8;
-                    // Restore current loc for egress
-                    ig_md.tx_loc_val = hdr.payload.data00;
+                if (ig_md.tmp_c == 0) {
+                    ig_md.tmp_b = ig_md.tx_loc_val; // current token loc as tmp_b
+                    ig_md.tx_loc_val = tmp_next_loc;
+                    do_read_cond_inc_queue_incomplete(ig_md.channel_id); // return tmp_a
+
+                    ig_md.tx_loc_val = ig_md.tmp_b;
+                    hdr.payload.data00 = tmp_next_loc;
                     
-                    if (ig_md.root_rank_id == 0) {
-                        queue_head_slot_0.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_INC, ig_md);
-                    } else if (ig_md.root_rank_id == 1) {
-                        queue_head_slot_1.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_INC, ig_md);
-                    } else if (ig_md.root_rank_id == 2) {
-                        queue_head_slot_2.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_INC, ig_md);
-                    } else if (ig_md.root_rank_id == 3) {
-                        queue_head_slot_3.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_INC, ig_md);
-                    } else if (ig_md.root_rank_id == 4) {
-                        queue_head_slot_4.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_INC, ig_md);
-                    } else if (ig_md.root_rank_id == 5) {
-                        queue_head_slot_5.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_INC, ig_md);
-                    } else if (ig_md.root_rank_id == 6) {
-                        queue_head_slot_6.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_INC, ig_md);
-                    } else if (ig_md.root_rank_id == 7) {
-                        queue_head_slot_7.apply(COMBINE_QUEUE_POINTER_REG_OP.OP_INC, ig_md);
-                    }
+                    if (ig_md.root_rank_id == 0)      { QUEUE_PTR_INC(queue_head_0); }
+                    else if (ig_md.root_rank_id == 1) { QUEUE_PTR_INC(queue_head_1); }
+                    else if (ig_md.root_rank_id == 2) { QUEUE_PTR_INC(queue_head_2); }
+                    else if (ig_md.root_rank_id == 3) { QUEUE_PTR_INC(queue_head_3); }
+                    else if (ig_md.root_rank_id == 4) { QUEUE_PTR_INC(queue_head_4); }
+                    else if (ig_md.root_rank_id == 5) { QUEUE_PTR_INC(queue_head_5); }
+                    else if (ig_md.root_rank_id == 6) { QUEUE_PTR_INC(queue_head_6); }
+                    else if (ig_md.root_rank_id == 7) { QUEUE_PTR_INC(queue_head_7); }
                     
-                    // Set loopback to continue and update payload.data00 to ig_md.next_loc
                     ig_tm_md.mcast_grp_b = LOOPBACK_MCAST_GRP;
-                    hdr.payload.data00 = ig_md.next_loc;
-                    //ig_md.next_token_addr[31:0] = ig_md.addr_result[31:0];
-                    //ig_md.next_token_addr[63:32] = ig_md.addr_result[63:32];
+
                     step_write_addr_lo();
                     step_write_addr_hi();
                 }
             }
-            
-            
-            
+
+            hdr.bth.psn = ig_md.psn;
             return;
         }
-
     }
 }
 
 
 /*******************************************************************************
- * CombineEgress
- * Processing:
- * 1. Loopback port output - construct WRITE_FIRST to continue loop
- * 2. Broadcast to rx - set opcode by rid, read aggregation result
- * 3. CONN_TX - aggregate and return ACK
- * 4. Other ACK packets
+ * CombineEgress - unchanged from previous version
  ******************************************************************************/
 control CombineEgress(
     inout a2a_headers_t hdr,
@@ -1404,92 +657,58 @@ control CombineEgress(
     in egress_intrinsic_metadata_t eg_intr_md,
     inout egress_intrinsic_metadata_for_deparser_t eg_dprsr_md)
 {
-    /***************************************************************************
-     * Aggregator
-     * Index: channel_id * PACKET_NUM_PER_CHANNEL_BUFFER + loc * TOKEN_PACKETS + packet_offset 
-     ***************************************************************************/
     bit<32> agg_val;
     bit<32> buffer_idx;
-    bit<32> channel_id;
-    
-    // Temporary variable for register action results
     bit<32> tmp_agg_result;
     
     Register<bit<32>, bit<32>>(COMBINE_BUFFER_ENTRIES) reg_agg;
     
     RegisterAction<bit<32>, bit<32>, void>(reg_agg) ra_store = {
-        void apply(inout bit<32> value) {
-            value = agg_val;
-        }
+        void apply(inout bit<32> value) { value = agg_val; }
     };
 
     RegisterAction<bit<32>, bit<32>, void>(reg_agg) ra_aggregate = {
-        void apply(inout bit<32> value) {
-            value = value + agg_val;
-        }
+        void apply(inout bit<32> value) { value = value + agg_val; }
     };
 
     RegisterAction<bit<32>, bit<32>, bit<32>>(reg_agg) ra_read_agg = {
-        void apply(inout bit<32> value, out bit<32> res) {
-            res = value;
-        }
+        void apply(inout bit<32> value, out bit<32> res) { res = value; }
     };
 
-    // Wrapped actions for aggregator - write to tmp variable
-    action do_store(bit<32> idx) {
-        ra_store.execute(idx);
-    }
+    action do_store(bit<32> idx) { ra_store.execute(idx); }
+    action do_aggregate(bit<32> idx) { ra_aggregate.execute(idx); }
+    action do_read_agg(bit<32> idx) { tmp_agg_result = ra_read_agg.execute(idx); }
 
-    action do_aggregate(bit<32> idx) {
-        ra_aggregate.execute(idx);
-    }
-
-    action do_read_agg(bit<32> idx) {
-        tmp_agg_result = ra_read_agg.execute(idx);
-    }
-
-    /***************************************************************************
-     * Utility Actions
-     ***************************************************************************/
     action swap_l2_l3_l4() {
         bit<48> tmp_mac = hdr.eth.src_addr;
         hdr.eth.src_addr = hdr.eth.dst_addr;
         hdr.eth.dst_addr = tmp_mac;
-        
         bit<32> tmp_ip = hdr.ipv4.src_addr;
         hdr.ipv4.src_addr = hdr.ipv4.dst_addr;
         hdr.ipv4.dst_addr = tmp_ip;
-        
         bit<16> tmp_port = hdr.udp.src_port;
         hdr.udp.src_port = hdr.udp.dst_port;
         hdr.udp.dst_port = tmp_port;
     }
 
     action set_ack_len() {
-        // ACK: UDP(8) + BTH(12) + AETH(4) + ICRC(4) = 28
         hdr.udp.length = 28;
         hdr.ipv4.total_len = 48;
         hdr.udp.checksum = 0;
-        //hdr.bth.opcode = RDMA_OP_ACK;
     }
 
     action set_write_first_len() {
-        // WRITE_FIRST: UDP(8) + BTH(12) + RETH(16) + Payload(PAYLOAD_LEN) + ICRC(4)
         hdr.udp.length = 8 + 12 + 16 + PAYLOAD_LEN + 4;
         hdr.ipv4.total_len = 20 + 8 + 12 + 16 + PAYLOAD_LEN + 4;
         hdr.udp.checksum = 0;
     }
 
     action set_write_middle_len() {
-        // WRITE_MIDDLE/LAST: UDP(8) + BTH(12) + Payload(PAYLOAD_LEN) + ICRC(4)
         hdr.udp.length = 8 + 12 + PAYLOAD_LEN + 4;
         hdr.ipv4.total_len = 20 + 8 + 12 + PAYLOAD_LEN + 4;
         hdr.udp.checksum = 0;
     }
 
-    /***************************************************************************
-     * RX info table - used to construct WRITE_FIRST for loopback
-     ***************************************************************************/
     action set_rx_info(bit<48> dst_mac, bit<32> dst_ip, bit<32> dst_qp, bit<32> rkey) {
         hdr.eth.dst_addr = dst_mac;
         hdr.ipv4.dst_addr = dst_ip;
@@ -1502,252 +721,116 @@ control CombineEgress(
             hdr.bridge.channel_id : exact;
             hdr.bridge.root_rank_id : exact;
         }
-        actions = {
-            set_rx_info;
-            NoAction;
-        }
+        actions = { set_rx_info; NoAction; }
         size = 1024;
         default_action = NoAction;
     }
 
-        // ============================================================
-    // 5. buffer_idx = channel_id * (64 * (7168 / 1024)) = channel_id * 448
-    //    448 = 512 - 64 = (1 << 9) - (1 << 6)
-    //    
-    //    完整公式: buffer_idx = channel_id * 448 + loc * 7 + offset
-    //    7 = 8 - 1 = (1 << 3) - 1
-    // ============================================================
-
-    // 中间变量声明
     bit<32> channel_mul_512;
     bit<32> channel_mul_64;
     bit<32> channel_mul_448;
-    bit<32> tmp_loc;         // 存储 loc 值
+    bit<32> tmp_loc;
     bit<32> loc_mul_8;
     bit<32> loc_mul_7;
-    bit<32> tmp_offset;      // 存储 offset 值
+    bit<32> tmp_offset;
 
-    // ============================================================
-    // buffer_idx = channel_id * 448 + loc * 7 + offset
-    // 448 = 512 - 64
-    // 7 = 8 - 1
-    // ============================================================
-
-    // Step 1: channel_id * 512
-    action step1_calc_buffer_idx() {
-        channel_mul_512 = channel_id << 9;
-    }
-
-    // Step 2: channel_id * 64
-    action step2_calc_buffer_idx() {
-        channel_mul_64 = channel_id << 6;
-    }
-
-    // Step 3: channel_id * 448 = 512 - 64
-    action step3_calc_buffer_idx() {
-        channel_mul_448 = channel_mul_512 - channel_mul_64;
-    }
-
-    // Step 4a: 设置 tmp_loc (用于存储 loc 的值)
-    action step4a_set_loc_from_tx_loc() {
-        tmp_loc = (bit<32>)hdr.bridge.tx_loc_val;
-    }
-
-    // Step 4b: loc * 8
-    action step4b_calc_loc_mul_8() {
-        loc_mul_8 = tmp_loc << 3;
-    }
-
-    // Step 5: loc * 7 = loc * 8 - loc
-    action step5_calc_loc_mul_7() {
-        loc_mul_7 = loc_mul_8 - tmp_loc;
-    }
-
-    // Step 6: buffer_idx = channel_mul_448 + loc_mul_7
-    action step6_calc_buffer_idx() {
-        buffer_idx = channel_mul_448 + loc_mul_7;
-    }
-
-    // Step 7a: 设置 tmp_offset
-    action step7a_set_offset_from_tx_offset() {
-        tmp_offset = (bit<32>)hdr.bridge.tx_offset_val;
-    }
-
-    action step7a_set_offset_from_rid() {
-        tmp_offset = (bit<32>)eg_intr_md.egress_rid;
-    }
-
-    action step7a_set_offset_from_eg() {
-        tmp_offset = (bit<32>)hdr.bridge.tx_offset_val;
-    }
-    // Step 7b: buffer_idx = buffer_idx + offset
-    action step7b_add_offset() {
-        buffer_idx = buffer_idx + tmp_offset;
-    }
-
-    // 使用方式 (在 egress):
-    // step1_calc_buffer_idx();
-    // step2_calc_buffer_idx();
-    // step3_calc_buffer_idx();
-    // step4_calc_buffer_idx((bit<32>)hdr.bridge.tx_loc_val);
-    // step5_calc_buffer_idx((bit<32>)hdr.bridge.tx_loc_val);
-    // step6_calc_buffer_idx();
-    // step7_calc_buffer_idx((bit<32>)pkt_offset);
+    action step1_calc_buffer_idx() { channel_mul_512 = hdr.bridge.channel_id << 9; }
+    action step2_calc_buffer_idx() { channel_mul_64 = hdr.bridge.channel_id << 6; }
+    action step3_calc_buffer_idx() { channel_mul_448 = channel_mul_512 - channel_mul_64; }
+    action step4a_set_loc_from_tx_loc() { tmp_loc = (bit<32>)hdr.bridge.tx_loc_val; }
+    action step4b_calc_loc_mul_8() { loc_mul_8 = tmp_loc << 3; }
+    action step5_calc_loc_mul_7() { loc_mul_7 = loc_mul_8 - tmp_loc; }
+    action step6_calc_buffer_idx() { buffer_idx = channel_mul_448 + loc_mul_7; }
+    action step7a_set_offset_from_rid() { tmp_offset = (bit<32>)eg_intr_md.egress_rid; }
+    action step7a_set_offset_from_eg() { tmp_offset = (bit<32>)hdr.bridge.tx_offset_val; }
+    action step7b_add_offset() { buffer_idx = buffer_idx + tmp_offset; }
 
     bit<32> pkt_offset;
+    action step1_prep_offset() { pkt_offset = (bit<32>)eg_intr_md.egress_rid; }
+    action step2_calc_psn_add() { eg_md.psn = eg_md.psn + pkt_offset; }
+    action step3_write_bth_psn() { hdr.bth.psn = eg_md.psn; }
 
-    action step1_prep_offset() {
-        pkt_offset = (bit<32>)eg_intr_md.egress_rid;
-    }
-
-
-    action step2_calc_psn_add() {
-        eg_md.psn = eg_md.psn + pkt_offset;
-    }
-
-    action step3_write_bth_psn() {
-        hdr.bth.psn = eg_md.psn;
-    }
-    /***************************************************************************
-     * Apply
-     ***************************************************************************/
     apply {
+        hdr.bridge.channel_id = (bit<32>)hdr.bridge.channel_id;
         
-        channel_id = (bit<32>)hdr.bridge.channel_id;
-        
-        // ================================================================
-        // 1. Loopback port output - construct WRITE_FIRST to send to loopback for continued processing
-        // ================================================================
         if (eg_intr_md.egress_port == LOOPBACK_PORT) {
-            // Construct full WRITE_FIRST
             hdr.bth.opcode = RDMA_OP_WRITE_FIRST;
-            
-            // Set RETH
             hdr.reth.setValid();
             hdr.reth.addr = hdr.bridge.next_token_addr;
-
             hdr.reth.len = TOKEN_SIZE;
-            
-            // Set payload.data00 to store loc
             hdr.payload.setValid();
-            if (!hdr.bridge.is_loopback) {
-                // From CONN_TX: first time starting loop, set current loc
-                hdr.payload.data00 = hdr.bridge.tx_loc_val;
-            }
-            // If is_loopback, payload.data00 was already set to ig_md.next_loc in ingress
-            
-            // Lookup table to set rx info (dst_mac, dst_ip, dst_qp, rkey)
+            if (!hdr.bridge.is_loopback) { hdr.payload.data00 = hdr.bridge.tx_loc_val; }
             tbl_rx_info.apply();
-            
-            // Set packet length
             set_write_first_len();
-            
-            // AETH invalid
             hdr.aeth.setInvalid();
-            
             return;
         }
         
-        // ================================================================
-        // 2. is_loopback broadcast packets - send TOKEN_PACKETS packets to rx
-        // ================================================================
         if (eg_intr_md.egress_port != LOOPBACK_PORT && hdr.bridge.is_loopback) {
-            // Determine which packet based on egress_rid (0 to TOKEN_PACKETS-1)
             step1_prep_offset();
             step2_calc_psn_add();
             step3_write_bth_psn();
             
-            // Compute buffer index and read aggregation result
-            step1_calc_buffer_idx();           // channel * 512
-            step2_calc_buffer_idx();           // channel * 64
-            step3_calc_buffer_idx();           // channel * 448
-            step4a_set_loc_from_tx_loc();      // tmp_loc = tx_loc_val
-            step4b_calc_loc_mul_8();           // loc * 8
-            step5_calc_loc_mul_7();            // loc * 7
-            step6_calc_buffer_idx();           // channel*448 + loc*7
-            step7a_set_offset_from_rid();      // tmp_offset = egress_rid
-            step7b_add_offset();               // + offset
+            step1_calc_buffer_idx();
+            step2_calc_buffer_idx();
+            step3_calc_buffer_idx();
+            step4a_set_loc_from_tx_loc();
+            step4b_calc_loc_mul_8();
+            step5_calc_loc_mul_7();
+            step6_calc_buffer_idx();
+            step7a_set_offset_from_rid();
+            step7b_add_offset();
             
             do_read_agg(buffer_idx);
             bit<32> agg_result = tmp_agg_result;
             
-            // Set payload
             hdr.payload.setValid();
             hdr.payload.data00 = agg_result;
             
-            // Set opcode and header based on pkt_offset
             if (pkt_offset == 0) {
-                // First packet: WRITE_FIRST
                 hdr.bth.opcode = RDMA_OP_WRITE_FIRST;
-                // RETH address preserved from original packet during ingress
                 hdr.reth.setValid();
                 hdr.reth.len = TOKEN_SIZE;
                 set_write_first_len();
             } else if (pkt_offset == TOKEN_PACKETS - 1) {
-                // Last packet: WRITE_LAST
                 hdr.bth.opcode = RDMA_OP_WRITE_LAST;
                 hdr.reth.setInvalid();
                 set_write_middle_len();
             } else {
-                // Middle packet: WRITE_MIDDLE
                 hdr.bth.opcode = RDMA_OP_WRITE_MIDDLE;
                 hdr.reth.setInvalid();
                 set_write_middle_len();
             }
-            
-            // AETH invalid (WRITE packets do not have AETH)
             hdr.aeth.setInvalid();
-            
             return;
         }
         
-        // ================================================================
-        // 3. CONN_TX - aggregate data and return ACK
-        // ================================================================
-        if (hdr.bridge.conn_semantics == CONN_SEMANTICS.CONN_TX && 
-            eg_intr_md.egress_port != LOOPBACK_PORT) {
-            // Compute buffer index
-            // buffer_idx = channel_id * PACKET_NUM_PER_CHANNEL_BUFFER 
-            //            + (bit<32>)hdr.bridge.tx_loc_val * TOKEN_PACKETS 
-            //            + (bit<32>)hdr.bridge.tx_offset_val;
-            step1_calc_buffer_idx();           // channel * 512
-            step2_calc_buffer_idx();           // channel * 64
-            step3_calc_buffer_idx();           // channel * 448
-            step4a_set_loc_from_tx_loc();      // tmp_loc = tx_loc_val
-            step4b_calc_loc_mul_8();           // loc * 8
-            step5_calc_loc_mul_7();            // loc * 7
-            step6_calc_buffer_idx();           // channel*448 + loc*7
-            step7a_set_offset_from_eg();      // tmp_offset = tx_offset_val
-            step7b_add_offset();               // + offset
+        if (hdr.bridge.conn_semantics == CONN_SEMANTICS.CONN_TX && eg_intr_md.egress_port != LOOPBACK_PORT) {
+            step1_calc_buffer_idx();
+            step2_calc_buffer_idx();
+            step3_calc_buffer_idx();
+            step4a_set_loc_from_tx_loc();
+            step4b_calc_loc_mul_8();
+            step5_calc_loc_mul_7();
+            step6_calc_buffer_idx();
+            step7a_set_offset_from_eg();
+            step7b_add_offset();
         
-            agg_val = hdr.payload.data00; // only data00 is used for aggregation
+            agg_val = hdr.payload.data00;
 
-            // Aggregate or store
-            if (hdr.bridge.clear_offset <= hdr.bridge.tx_offset_val) {
-                do_store(buffer_idx);
-            } else {
-                do_aggregate(buffer_idx);
-            }
+            if (hdr.bridge.agg_op == AGG_OP.STORE) { do_store(buffer_idx); }
+            else { do_aggregate(buffer_idx); }
             
-            // Set ACK packet
             swap_l2_l3_l4();
             set_ack_len();
-            
-            // Set header valid/invalid
-            // AETH syndrome/psn/msn already set in ingress
             hdr.aeth.setValid();
             hdr.bth.opcode = RDMA_OP_ACK;
             hdr.reth.setInvalid();
             hdr.payload.setInvalid();
-            
             return;
         }
         
-        // ================================================================
-        // 4. CONN_CONTROL READ_RESPONSE (completed in ingress, only need to set)
-        // ================================================================
         if (hdr.bridge.conn_semantics == CONN_SEMANTICS.CONN_CONTROL) {
-            // Set packet length: UDP: BTH(12) + AETH(4) + Payload(128) + ICRC(4) = 148, + UDP header(8) = 156; IP: UDP(156) + IP header(20) = 176
             hdr.udp.length = 156;
             hdr.ipv4.total_len = 176;
             hdr.udp.checksum = 0;
@@ -1758,9 +841,6 @@ control CombineEgress(
             return;
         }
 
-        // ================================================================
-        // 5. Other ACK packets (CONN_BITMAP)
-        // ================================================================
         if (hdr.bridge.has_aeth) {
             swap_l2_l3_l4();
             set_ack_len();
@@ -1769,7 +849,5 @@ control CombineEgress(
             hdr.bth.opcode = RDMA_OP_ACK;
             return;
         }
-        
-        
     }
 }
