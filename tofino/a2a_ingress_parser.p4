@@ -55,32 +55,32 @@ parser A2AIngressParser(
 
     state parse_write_reth {
         pkt.extract(hdr.reth);
-        ig_md.bridge.has_reth = true;
+        ig_md.has_reth = true;
         transition parse_payload;
     }
 
     state parse_read_aeth {
         pkt.extract(hdr.aeth);
-        ig_md.bridge.has_aeth = true;
+        ig_md.has_aeth = true;
         transition parse_payload;
     }
 
     // for RDMA_OP_READ_REQ, no payload
     state parse_read_reth {
         pkt.extract(hdr.reth);
-        ig_md.bridge.has_reth = true;
+        ig_md.has_reth = true;
         transition accept;
     }
 
     state parse_payload {
         pkt.extract(hdr.payload);
-        ig_md.bridge.has_payload = true;
+        ig_md.has_payload = true;
         transition accept;
     } 
 
     state parse_ack_aeth {
         pkt.extract(hdr.aeth);
-        ig_md.bridge.has_aeth = true;
+        ig_md.has_aeth = true;
         transition accept;
     }
 }

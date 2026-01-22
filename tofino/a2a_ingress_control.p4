@@ -16,16 +16,16 @@ control A2AIngress(
      */
     
     action set_a2a_traffic(CONN_PHASE conn_phase, CONN_SEMANTICS conn_semantics, bit<32> channel_id, bit<32> channel_class, bit<32> ing_rank_id, bit<32> root_rank_id) {
-        ig_md.bridge.conn_phase = conn_phase;
-        ig_md.bridge.conn_semantics = conn_semantics;
-        ig_md.bridge.channel_id = channel_id;
-        ig_md.bridge.ing_rank_id = ing_rank_id;
-        ig_md.bridge.root_rank_id = root_rank_id;
+        ig_md.conn_phase = conn_phase;
+        ig_md.conn_semantics = conn_semantics;
+        ig_md.channel_id = channel_id;
+        ig_md.ing_rank_id = ing_rank_id;
+        ig_md.root_rank_id = root_rank_id;
         ig_md.channel_class = channel_class;
     }
 
     action set_unknown_traffic() {
-        ig_md.bridge.conn_phase = CONN_PHASE.CONN_UNKNOWN;
+        ig_md.conn_phase = CONN_PHASE.CONN_UNKNOWN;
     }
     
     // classification table: distinguish traffic type and connection info based on QPN and IPs
@@ -44,67 +44,67 @@ control A2AIngress(
     }
 
     action set_bridge_ing_rank_id() {
-        hdr.bridge.ing_rank_id = ig_md.bridge.ing_rank_id;
+        hdr.bridge.ing_rank_id = ig_md.ing_rank_id;
     }
 
     action set_bridge_has_reth() {
-        hdr.bridge.has_reth = ig_md.bridge.has_reth;
+        hdr.bridge.has_reth = ig_md.has_reth;
     }
 
     action set_bridge_has_aeth() {
-        hdr.bridge.has_aeth = ig_md.bridge.has_aeth;
+        hdr.bridge.has_aeth = ig_md.has_aeth;
     }
 
     action set_bridge_has_payload() {
-        hdr.bridge.has_payload = ig_md.bridge.has_payload;
+        hdr.bridge.has_payload = ig_md.has_payload;
     }
 
     action set_bridge_conn_phase() {
-        hdr.bridge.conn_phase = ig_md.bridge.conn_phase;
+        hdr.bridge.conn_phase = ig_md.conn_phase;
     }
 
     action set_bridge_conn_semantics() {
-        hdr.bridge.conn_semantics = ig_md.bridge.conn_semantics;
+        hdr.bridge.conn_semantics = ig_md.conn_semantics;
     }
 
     action set_bridge_channel_id() {
-        hdr.bridge.channel_id = ig_md.bridge.channel_id;
+        hdr.bridge.channel_id = ig_md.channel_id;
     }
 
     action set_bridge_bitmap() {
-        hdr.bridge.bitmap = ig_md.bridge.bitmap;
+        hdr.bridge.bitmap = ig_md.bitmap;
     }
 
     action set_bridge_tx_loc_val() {
-        hdr.bridge.tx_loc_val = ig_md.bridge.tx_loc_val;
+        hdr.bridge.tx_loc_val = ig_md.tx_loc_val;
     }
 
     action set_bridge_tx_offset_val() {
-        hdr.bridge.tx_offset_val = ig_md.bridge.tx_offset_val;
+        hdr.bridge.tx_offset_val = ig_md.tx_offset_val;
     }
 
     action set_bridge_clear_offset() {
-        hdr.bridge.clear_offset = ig_md.bridge.clear_offset;
+        hdr.bridge.clear_offset = ig_md.clear_offset;
     }
 
     action set_bridge_is_loopback() {
-        hdr.bridge.is_loopback = ig_md.bridge.is_loopback;
+        hdr.bridge.is_loopback = ig_md.is_loopback;
     }
 
     action set_bridge_root_rank_id_lo() {
-        hdr.bridge.root_rank_id[15:0] = ig_md.bridge.root_rank_id[15:0];
+        hdr.bridge.root_rank_id[15:0] = ig_md.root_rank_id[15:0];
     }
 
     action set_bridge_root_rank_id_hi() {
-        hdr.bridge.root_rank_id[31:16] = ig_md.bridge.root_rank_id[31:16];
+        hdr.bridge.root_rank_id[31:16] = ig_md.root_rank_id[31:16];
     }
 
     action set_bridge_next_token_addr_hi() {
-        hdr.bridge.next_token_addr[63:32] = ig_md.bridge.next_token_addr[63:32];
+        hdr.bridge.next_token_addr[63:32] = ig_md.next_token_addr[63:32];
     }
 
     action set_bridge_next_token_addr_lo() {
-        hdr.bridge.next_token_addr[31:0] = ig_md.bridge.next_token_addr[31:0];
+        hdr.bridge.next_token_addr[31:0] = ig_md.next_token_addr[31:0];
     }
 
     
@@ -126,9 +126,9 @@ control A2AIngress(
         traffic_classify.apply();
         
         // Invoke corresponding processing logic based on traffic type
-        if (ig_md.bridge.conn_phase == CONN_PHASE.CONN_DISPATCH) {
+        if (ig_md.conn_phase == CONN_PHASE.CONN_DISPATCH) {
             dispatch_ctrl.apply(hdr, ig_md, ig_intr_md, ig_dprsr_md, ig_tm_md);
-        } else if (ig_md.bridge.conn_phase == CONN_PHASE.CONN_COMBINE) {
+        } else if (ig_md.conn_phase == CONN_PHASE.CONN_COMBINE) {
             combine_ctrl.apply(hdr, ig_md, ig_intr_md, ig_dprsr_md, ig_tm_md);
         } else {
             // drop unknown traffic

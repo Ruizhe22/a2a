@@ -78,7 +78,7 @@ control DispatchIngress(
     
     RegisterAction<bitmap_tofino_t, bit<32>, void>(reg_tx_bitmap) ra_write_tx_bitmap = {
         void apply(inout bitmap_tofino_t value) {
-            value = ig_md.bridge.bitmap;
+            value = ig_md.bitmap;
         }
     };
     
@@ -99,7 +99,7 @@ control DispatchIngress(
     }
 
     action set_aeth_msn() {
-        ig_md.bridge.has_aeth = true;
+        ig_md.has_aeth = true;
         hdr.aeth.setValid();
         hdr.aeth.msn = tmp_mul_256 * 256;
     }
@@ -119,9 +119,9 @@ control DispatchIngress(
     
     apply {
 
-        bit<32> channel_idx = (bit<32>)ig_md.bridge.channel_id;
+        bit<32> channel_idx = (bit<32>)ig_md.channel_id;
         // process ACK/NAK from rx
-        if (ig_md.bridge.conn_semantics == CONN_SEMANTICS.CONN_RX && hdr.bth.opcode == RDMA_OP_ACK) {
+        if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_RX && hdr.bth.opcode == RDMA_OP_ACK) {
             if (ig_md.syndrome > 32) {
                 ra_invalidate_tx_epsn.execute(channel_idx);
             }
@@ -130,7 +130,7 @@ control DispatchIngress(
         }
 
         // process control connection
-        if (ig_md.bridge.conn_semantics == CONN_SEMANTICS.CONN_CONTROL) {
+        if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_CONTROL) {
             ra_init_tx_msn.execute(channel_idx);
             // should be extract from payload, but we set 0 as an agreement with the endpoint
             ra_init_tx_epsn.execute(channel_idx);
@@ -140,7 +140,7 @@ control DispatchIngress(
             set_aeth_msn();
             set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
             set_aeth_psn(ig_md.psn);
-            ig_md.bridge.has_aeth = true;
+            ig_md.has_aeth = true;
             ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
             //ig_intr_md_for_dprsr.drop_ctl = 1;
             //ig_tm_md.mirror_session_id = ig_md.ing_rank_id;
@@ -148,7 +148,7 @@ control DispatchIngress(
         }
         
         // process data from tx
-        if (ig_md.bridge.conn_semantics == CONN_SEMANTICS.CONN_TX) {
+        if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_TX) {
             if (hdr.bth.opcode != RDMA_OP_WRITE_FIRST && 
                 hdr.bth.opcode != RDMA_OP_WRITE_MIDDLE &&
                 hdr.bth.opcode != RDMA_OP_WRITE_LAST &&
@@ -169,7 +169,7 @@ control DispatchIngress(
                 set_aeth_msn();
                 set_aeth_syndrome(AETH_NAK_SEQ_ERR);
                 set_aeth_psn(ig_md.expected_epsn-1);
-                ig_md.bridge.has_aeth = true;
+                ig_md.has_aeth = true;
                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
                 //ig_intr_md_for_dprsr.drop_ctl = 1;
                 //ig_tm_md.mirror_session_id = ig_md.ing_rank_id;
@@ -181,7 +181,7 @@ control DispatchIngress(
                 set_aeth_msn();
                 set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
                 set_aeth_psn(ig_md.expected_epsn-1);
-                ig_md.bridge.has_aeth = true;
+                ig_md.has_aeth = true;
                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
                 return;
             }
@@ -189,10 +189,10 @@ control DispatchIngress(
             // fetch bitmap
             if (hdr.bth.opcode == RDMA_OP_WRITE_FIRST || 
                 hdr.bth.opcode == RDMA_OP_WRITE_ONLY) {
-                ig_md.bridge.bitmap = hdr.reth.addr[31:0]; // 32ports in tofino
+                ig_md.bitmap = hdr.reth.addr[31:0]; // 32ports in tofino
                 ra_write_tx_bitmap.execute(channel_idx);
             } else {
-                ig_md.bridge.bitmap = ra_read_tx_bitmap.execute(channel_idx);
+                ig_md.bitmap = ra_read_tx_bitmap.execute(channel_idx);
             }
             
             // multicast group
@@ -205,7 +205,7 @@ control DispatchIngress(
             set_aeth_msn();
             set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
             set_aeth_psn(ig_md.expected_epsn-1);
-            ig_md.bridge.has_aeth = true;
+            ig_md.has_aeth = true;
             ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
             // MSN
             if (hdr.bth.opcode == RDMA_OP_WRITE_ONLY || 
@@ -380,7 +380,7 @@ control DispatchEgress(
 
     table dispatch_rank_info {
         key = {
-            eg_md.bridge.channel_id : exact;
+            hdr.bridge.channel_id : exact;
             eg_intr_md.egress_port   : exact;
         }
         actions = {
@@ -403,7 +403,7 @@ control DispatchEgress(
 
     table dispatch_rx_info {
         key = {
-            eg_md.bridge.channel_id : exact;
+            hdr.bridge.channel_id : exact;
             eg_md.eg_rank_id   : exact;
         }
         actions = {
@@ -447,10 +447,10 @@ control DispatchEgress(
     apply {
 
         dispatch_rank_info.apply();
-        channel_idx = (bit<32>)eg_md.bridge.channel_id;
+        channel_idx = (bit<32>)hdr.bridge.channel_id;
 
         // ==================== Control connection: initialize all RX ====================
-        if (eg_md.bridge.conn_semantics == CONN_SEMANTICS.CONN_CONTROL) {
+        if (hdr.bridge.conn_semantics == CONN_SEMANTICS.CONN_CONTROL) {
             
             // Initialize PSN (payload: data00 - data07)
             // psn_slot_0.apply(result_psn, hdr.payload.data00, DISPATCH_REG_OP.OP_INIT, channel_idx);
@@ -495,11 +495,11 @@ control DispatchEgress(
         }
 
         // ==================== Data connection: Multicast replica processing ====================
-        if (eg_md.bridge.conn_semantics == CONN_SEMANTICS.CONN_TX) {
-            if((eg_intr_md.egress_rid == 0)&&(eg_md.bridge.ing_rank_id == eg_md.eg_rank_id)) {
+        if (hdr.bridge.conn_semantics == CONN_SEMANTICS.CONN_TX) {
+            if((eg_intr_md.egress_rid == 0)&&(hdr.bridge.ing_rank_id == eg_md.eg_rank_id)) {
                 set_ack_egress();
             }
-            else if(((eg_md.bridge.bitmap >> eg_md.eg_rank_id) & 1) == 1){
+            else if(((hdr.bridge.bitmap >> eg_md.eg_rank_id) & 1) == 1){
                 // Bcast packet to all replicas
                 payload_len_32 = 1024;  // to add addr
                 // Lookup and set RX info based on egress_rid
