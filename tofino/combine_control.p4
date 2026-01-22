@@ -294,6 +294,31 @@ control CombineIngress(
     }
 
     /***************************************************************************
+     * Compare Table
+     ***************************************************************************/
+    action set_cmp(bit<32> cmp){
+        ig_md.cmp = cmp;
+    }
+
+    // table tbl_compare_a {
+    //     key = {
+    //         ig_md.diff : ternary;
+    //     }
+    //     actions = {
+    //         set_cmp;
+    //     }
+    // }
+
+    // table tbl_compare_b {
+    //     key = {
+    //         ig_md.diff : ternary;
+    //     }
+    //     actions = {
+    //         set_cmp;
+    //     }
+    // }
+
+    /***************************************************************************
      * Index Calculation Actions
      ***************************************************************************/
     action step1_cal_tx_reg_idx() { ig_md.tx_reg_idx = ig_md.ing_rank_id; }
@@ -399,7 +424,11 @@ control CombineIngress(
             do_read_cond_inc_rx_bitmap_epsn(ig_md.channel_id);
             // bit<32> expected_psn = ig_md.tmp_a;
             
-            if (ig_md.psn == ig_md.tmp_a) {
+            ig_md.diff = ig_md.psn - ig_md.tmp_a;
+
+            //tbl_compare_a.apply();
+
+            if (ig_md.cmp == 0) {
                 if (ig_md.ing_rank_id == 0) { QUEUE_PTR_READ_ADD(queue_tail_0);  }
                 else if (ig_md.ing_rank_id == 1) { QUEUE_PTR_READ_ADD(queue_tail_1);  }
                 else if (ig_md.ing_rank_id == 2) { QUEUE_PTR_READ_ADD(queue_tail_2);  }
@@ -455,10 +484,10 @@ control CombineIngress(
                 set_aeth_psn(ig_md.psn);
                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
                 
-            } else if (ig_md.psn < ig_md.tmp_a) {
+            } else if (ig_md.cmp == 1) {
                 ig_md.msn = ig_md.tmp_a;
                 mul_256();
-                set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
+                set_aeth_syndrome(AETH_NAK_SEQ_ERR);
                 set_aeth_msn();
                 set_aeth_psn(ig_md.tmp_a - 1);
                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
@@ -484,12 +513,13 @@ control CombineIngress(
                 ig_dprsr_md.drop_ctl = 1;
                 return;
             }
-
+            //tbl_compare_a.apply();
             //ig_md.psn_to_read = ig_md.psn; 
             do_read_cond_inc_tx_epsn(ig_md.tx_reg_idx); //bit<32> expected_psn = ig_md.tmp_a;
             do_read_tx_msn(ig_md.tx_reg_idx); //bit<32> current_msn = ig_md.tmp_b;
             // 计算token的loc和packet在token的offset
-            if (ig_md.psn == ig_md.tmp_a) {
+            
+            if (ig_md.cmp == 0) {
                 if (hdr.bth.opcode == RDMA_OP_WRITE_FIRST || hdr.bth.opcode == RDMA_OP_WRITE_ONLY) {
                     ig_md.tx_loc_val = hdr.reth.addr[63:32];
                     ig_md.tx_offset_val = 0;
@@ -507,11 +537,16 @@ control CombineIngress(
                 step3_calc_token_idx_from_tx_loc(); // ig_md.tmp_b token_idx
                 do_read_set_clear(); // ig_md.tmp_a
                 // ig_md.clear_offset = ig_md.tmp_a;
-                if(ig_md.tmp_a <= ig_md.tx_offset_val){
-                    ig_md.agg_op = AGG_OP.STORE;
+
+                ig_md.diff = ig_md.tmp_a - ig_md.tx_offset_val;
+
+                //tbl_compare_b.apply();
+
+                if(ig_md.cmp == 1){
+                    ig_md.agg_op = AGG_OP.AGGREGATE;
                 }
                 else{
-                    ig_md.agg_op = AGG_OP.AGGREGATE;
+                    ig_md.agg_op = AGG_OP.STORE;
                 }
                 
                 if (hdr.bth.opcode == RDMA_OP_WRITE_ONLY || hdr.bth.opcode == RDMA_OP_WRITE_LAST) {
@@ -556,7 +591,7 @@ control CombineIngress(
                 set_aeth_psn(ig_md.psn);
                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
                 
-            } else if (ig_md.psn < ig_md.tmp_a) {
+            } else if (ig_md.cmp == 2) {
                 ig_md.msn = ig_md.tmp_b;
                 mul_256();
                 set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
@@ -588,7 +623,9 @@ control CombineIngress(
             do_read_add_rx_token_epsn(ig_md.channel_id); // tmp_a epsn
             ig_md.psn = ig_md.tmp_a;
 
-            if (tmp_next_loc >= COMBINE_QUEUE_LENGTH - 1) { tmp_next_loc = 0; } // next_loc
+            //tbl_compare_b.apply();
+            //if (tmp_next_loc >= COMBINE_QUEUE_LENGTH - 1) { tmp_next_loc = 0; } // next_loc
+            if (ig_md.cmp != 2) { tmp_next_loc = 0; }
             else { tmp_next_loc = tmp_next_loc + 1; } //本质是+1，防绕回
             
             ig_md.tmp_b = tmp_next_loc; // tmp_b next_loc

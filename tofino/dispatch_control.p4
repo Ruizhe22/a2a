@@ -111,6 +111,22 @@ control DispatchIngress(
         hdr.bth.psn = psn; // If there's an ack header (e.g., RDMA_OP_ACK or Read response), PSN is determined by the ack, set here
 
     }
+
+    /***************************************************************************
+     * Compare Table
+     ***************************************************************************/
+    action set_cmp(bit<32> cmp){
+        ig_md.cmp = cmp;
+    }
+
+    table tbl_compare {
+        key = {
+            ig_md.diff : ternary;
+        }
+        actions = {
+            set_cmp;
+        }
+    }
     
     /***************************************************************************
      * Apply
@@ -120,7 +136,7 @@ control DispatchIngress(
 
         // process ACK/NAK from rx
         if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_RX && hdr.bth.opcode == RDMA_OP_ACK) {
-            if (ig_md.syndrome > 32) {
+            if (ig_md.syndrome[6:6] == 1) {
                 ra_invalidate_tx_epsn.execute(ig_md.channel_id);
             }
             ig_dprsr_md.drop_ctl = 1;
@@ -156,11 +172,15 @@ control DispatchIngress(
             }
             
             // PSN validation
-            ig_md.psn = ig_md.psn;
 
             ig_md.tmp_a = ra_read_cond_inc_tx_epsn.execute(ig_md.channel_id); // ig_md.tmp_a ig_md.expected_epsn
             ig_md.tmp_b = ra_read_tx_msn.execute(ig_md.channel_id); // ig_md.tmp_b ig_md.msn_saved
-            if(ig_md.psn > ig_md.tmp_a) {
+            
+            ig_md.diff = ig_md.psn - ig_md.tmp_a;
+
+            //tbl_compare.apply();
+
+            if(ig_md.cmp == 1) {
                 //set_ack_ingress(AETH_NAK_SEQ_ERR, ig_md.expected_epsn-1, ig_md.msn_saved);
                 ig_md.msn = ig_md.tmp_b;
                 mul_256();
@@ -172,7 +192,7 @@ control DispatchIngress(
                 //ig_intr_md_for_dprsr.drop_ctl = 1;
                 //ig_tm_md.mirror_session_id = ig_md.ing_rank_id;
                 return;
-            } else if(ig_md.psn < ig_md.tmp_a){
+            } else if(ig_md.cmp == 0){
                 //set_ack_ingress(AETH_ACK_CREDIT_INVALID, ig_md.expected_epsn-1, ig_md.msn_saved);
                 ig_md.msn = ig_md.tmp_b;
                 mul_256();
@@ -401,7 +421,7 @@ control DispatchEgress(
 
     table dispatch_rx_info {
         key = {
-            hdr.bridge.channel_id : exact;
+            eg_md.channel_id : exact;
             eg_md.eg_rank_id   : exact;
         }
         actions = {
@@ -411,6 +431,36 @@ control DispatchEgress(
         size = 1024;
         default_action = NoAction;
     }
+
+    /***************************************************************************
+     * Compare Table
+     ***************************************************************************/
+    action set_cmp(bit<32> cmp){
+        eg_md.cmp = cmp;
+    }
+
+    // table tbl_compare {
+    //     key = {
+    //         eg_md.diff : ternary;
+    //     }
+    //     actions = {
+    //         set_cmp;
+    //     }
+    // }
+
+    action set_in_bitmap(bit<32> cmp){
+        eg_md.cmp = cmp;
+    }
+
+    // table tbl_in_bitmap {
+    //     key = {
+    //         eg_md.bitmap : exact;
+    //         eg_md.eg_rank_id : exact;
+    //     }
+    //     actions = {
+    //         set_in_bitmap;
+    //     }
+    // }
 
     /***************************************************************************
      * Apply
@@ -445,10 +495,10 @@ control DispatchEgress(
     apply {
 
         dispatch_rank_info.apply();
-        channel_id = (bit<32>)hdr.bridge.channel_id;
+        channel_id = (bit<32>)eg_md.channel_id;
 
         // ==================== Control connection: initialize all RX ====================
-        if (hdr.bridge.conn_semantics == CONN_SEMANTICS.CONN_CONTROL) {
+        if (eg_md.conn_semantics == CONN_SEMANTICS.CONN_CONTROL) {
             
             // Initialize PSN (payload: data00 - data07)
             // psn_slot_0.apply(result_psn, hdr.payload.data00, DISPATCH_REG_OP.OP_INIT, ig_md.channel_id);
@@ -493,77 +543,88 @@ control DispatchEgress(
         }
 
         // ==================== Data connection: Multicast replica processing ====================
-        if (hdr.bridge.conn_semantics == CONN_SEMANTICS.CONN_TX) {
-            if((eg_intr_md.egress_rid == 0)&&(hdr.bridge.ing_rank_id == eg_md.eg_rank_id)) {
+        if (eg_md.conn_semantics == CONN_SEMANTICS.CONN_TX) {
+            eg_md.diff = eg_md.ing_rank_id - eg_md.eg_rank_id;
+
+            //tbl_compare.apply();
+
+            if(eg_md.cmp == 0) {
                 set_ack_egress();
             }
-            else if(((hdr.bridge.bitmap >> eg_md.eg_rank_id) & 1) == 1){
-                // Bcast packet to all replicas
-                payload_len_32 = 1024;  // to add addr
-                // Lookup and set RX info based on egress_rid
-                dispatch_rx_info.apply();
+            else{
+                
+                //tbl_in_bitmap.apply();
 
-                // ===== PSN: select corresponding slot based on rank_id =====
-                if (eg_md.eg_rank_id == 0) {
-                    psn_slot_0.apply(result_psn, 0, DISPATCH_REG_OP.OP_READ_INC, channel_id);
-                } else if (eg_md.eg_rank_id == 1) {
-                    psn_slot_1.apply(result_psn, 0, DISPATCH_REG_OP.OP_READ_INC, channel_id);
-                } else if (eg_md.eg_rank_id == 2) {
-                    psn_slot_2.apply(result_psn, 0, DISPATCH_REG_OP.OP_READ_INC, channel_id);
-                } else if (eg_md.eg_rank_id == 3) {
-                    psn_slot_3.apply(result_psn, 0, DISPATCH_REG_OP.OP_READ_INC, channel_id);
-                } else if (eg_md.eg_rank_id == 4) {
-                    psn_slot_4.apply(result_psn, 0, DISPATCH_REG_OP.OP_READ_INC, channel_id);
-                } else if (eg_md.eg_rank_id == 5) {
-                    psn_slot_5.apply(result_psn, 0, DISPATCH_REG_OP.OP_READ_INC, channel_id);
-                } else if (eg_md.eg_rank_id == 6) {
-                    psn_slot_6.apply(result_psn, 0, DISPATCH_REG_OP.OP_READ_INC, channel_id);
-                } else if (eg_md.eg_rank_id == 7) {
-                    psn_slot_7.apply(result_psn, 0, DISPATCH_REG_OP.OP_READ_INC, channel_id);
-                }
+                if(eg_md.cmp==0){
+                    // Bcast packet to all replicas
+                    payload_len_32 = 1024;  // to add addr
+                    // Lookup and set RX info based on egress_rid
+                    dispatch_rx_info.apply();
 
-                // Update BTH PSN
-                hdr.bth.psn = result_psn;
-
-                // ===== Addr: only update when RETH is valid =====
-                if (hdr.reth.isValid() && 
-                    (hdr.bth.opcode == RDMA_OP_WRITE_FIRST || 
-                    hdr.bth.opcode == RDMA_OP_WRITE_ONLY)) {
+                    // ===== PSN: select corresponding slot based on rank_id =====
                     if (eg_md.eg_rank_id == 0) {
-                        addr_slot_0.apply(result_addr, 0, 
-                                        payload_len_32, DISPATCH_REG_OP.OP_READ_ADD, channel_id);
+                        psn_slot_0.apply(result_psn, 0, DISPATCH_REG_OP.OP_READ_INC, channel_id);
                     } else if (eg_md.eg_rank_id == 1) {
-                        addr_slot_1.apply(result_addr, 0, 
-                                        payload_len_32, DISPATCH_REG_OP.OP_READ_ADD, channel_id);
+                        psn_slot_1.apply(result_psn, 0, DISPATCH_REG_OP.OP_READ_INC, channel_id);
                     } else if (eg_md.eg_rank_id == 2) {
-                        addr_slot_2.apply(result_addr, 0, 
-                                        payload_len_32, DISPATCH_REG_OP.OP_READ_ADD, channel_id);
+                        psn_slot_2.apply(result_psn, 0, DISPATCH_REG_OP.OP_READ_INC, channel_id);
                     } else if (eg_md.eg_rank_id == 3) {
-                        addr_slot_3.apply(result_addr, 0, 
-                                        payload_len_32, DISPATCH_REG_OP.OP_READ_ADD, channel_id);
+                        psn_slot_3.apply(result_psn, 0, DISPATCH_REG_OP.OP_READ_INC, channel_id);
                     } else if (eg_md.eg_rank_id == 4) {
-                        addr_slot_4.apply(result_addr, 0, 
-                                        payload_len_32, DISPATCH_REG_OP.OP_READ_ADD, channel_id);
+                        psn_slot_4.apply(result_psn, 0, DISPATCH_REG_OP.OP_READ_INC, channel_id);
                     } else if (eg_md.eg_rank_id == 5) {
-                        addr_slot_5.apply(result_addr, 0, 
-                                        payload_len_32, DISPATCH_REG_OP.OP_READ_ADD, channel_id);
+                        psn_slot_5.apply(result_psn, 0, DISPATCH_REG_OP.OP_READ_INC, channel_id);
                     } else if (eg_md.eg_rank_id == 6) {
-                        addr_slot_6.apply(result_addr, 0, 
-                                        payload_len_32, DISPATCH_REG_OP.OP_READ_ADD, channel_id);
+                        psn_slot_6.apply(result_psn, 0, DISPATCH_REG_OP.OP_READ_INC, channel_id);
                     } else if (eg_md.eg_rank_id == 7) {
-                        addr_slot_7.apply(result_addr, 0, 
-                                        payload_len_32, DISPATCH_REG_OP.OP_READ_ADD, channel_id);
+                        psn_slot_7.apply(result_psn, 0, DISPATCH_REG_OP.OP_READ_INC, channel_id);
                     }
 
-                    // Update RETH addr (addr_tofino_t: lo first, hi second)
-                    hdr.reth.addr = result_addr;
-                }
+                    // Update BTH PSN
+                    hdr.bth.psn = result_psn;
 
-                hdr.aeth.setInvalid();
+                    // ===== Addr: only update when RETH is valid =====
+                    if (hdr.reth.isValid() && 
+                        (hdr.bth.opcode == RDMA_OP_WRITE_FIRST || 
+                        hdr.bth.opcode == RDMA_OP_WRITE_ONLY)) {
+                        if (eg_md.eg_rank_id == 0) {
+                            addr_slot_0.apply(result_addr, 0, 
+                                            payload_len_32, DISPATCH_REG_OP.OP_READ_ADD, channel_id);
+                        } else if (eg_md.eg_rank_id == 1) {
+                            addr_slot_1.apply(result_addr, 0, 
+                                            payload_len_32, DISPATCH_REG_OP.OP_READ_ADD, channel_id);
+                        } else if (eg_md.eg_rank_id == 2) {
+                            addr_slot_2.apply(result_addr, 0, 
+                                            payload_len_32, DISPATCH_REG_OP.OP_READ_ADD, channel_id);
+                        } else if (eg_md.eg_rank_id == 3) {
+                            addr_slot_3.apply(result_addr, 0, 
+                                            payload_len_32, DISPATCH_REG_OP.OP_READ_ADD, channel_id);
+                        } else if (eg_md.eg_rank_id == 4) {
+                            addr_slot_4.apply(result_addr, 0, 
+                                            payload_len_32, DISPATCH_REG_OP.OP_READ_ADD, channel_id);
+                        } else if (eg_md.eg_rank_id == 5) {
+                            addr_slot_5.apply(result_addr, 0, 
+                                            payload_len_32, DISPATCH_REG_OP.OP_READ_ADD, channel_id);
+                        } else if (eg_md.eg_rank_id == 6) {
+                            addr_slot_6.apply(result_addr, 0, 
+                                            payload_len_32, DISPATCH_REG_OP.OP_READ_ADD, channel_id);
+                        } else if (eg_md.eg_rank_id == 7) {
+                            addr_slot_7.apply(result_addr, 0, 
+                                            payload_len_32, DISPATCH_REG_OP.OP_READ_ADD, channel_id);
+                        }
+
+                        // Update RETH addr (addr_tofino_t: lo first, hi second)
+                        hdr.reth.addr = result_addr;
+                    }
+
+                    hdr.aeth.setInvalid();
+                }
+                else {
+                    eg_dprsr_md.drop_ctl = 1;
+                }
             }
-            else {
-                eg_dprsr_md.drop_ctl = 1;
-            }
+             
+            
         }
     }
 }

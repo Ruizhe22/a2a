@@ -127,7 +127,10 @@ struct a2a_headers_t {
 
 
 struct a2a_ingress_metadata_t {
-    bool is_roce;
+    bit<32> diff;
+    bit<32> cmp; // 0==, 1>, 2<
+    
+    
     bit<32> psn;
     bit<32> msn;
     bit<32> syndrome;
@@ -140,7 +143,8 @@ struct a2a_ingress_metadata_t {
     bit<32> tmp_e;
     // bridge
     bit<32> ing_rank_id;
-
+    
+    bool is_roce;
     bool has_reth;
     bool has_aeth;
     bool has_payload;
@@ -164,6 +168,8 @@ struct a2a_ingress_metadata_t {
 }
 
 struct a2a_egress_metadata_t {
+    bit<32> diff;
+    bit<32> cmp; // 0==, 1>, 2<
     // bridge header
     bit<32> ing_rank_id;
     bool has_reth;
