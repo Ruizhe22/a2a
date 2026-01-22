@@ -722,9 +722,12 @@ R:\l
  "];
 cond_174 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.tmp_a == 1\l\l
  "];
-tbl_combine_ctrl_addr_0_do_read_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_0_do_read_0\l\l
+tbl_combine_ctrl_addr_0_do_read_lo_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_0_do_read_lo_0\l\l
 W:\l
  ig_md.tmp_d\l
+ "];
+tbl_combine_ctrl_addr_0_do_read_hi_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_0_do_read_hi_0\l\l
+W:\l
  ig_md.tmp_e\l
  "];
 cond_180 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.tmp_c == 0\l\l
@@ -737,9 +740,12 @@ R:\l
  "];
 cond_175 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.tmp_a == 2\l\l
  "];
-tbl_combine_ctrl_addr_1_do_read_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_1_do_read_0\l\l
+tbl_combine_ctrl_addr_1_do_read_lo_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_1_do_read_lo_0\l\l
 W:\l
  ig_md.tmp_d\l
+ "];
+tbl_combine_ctrl_addr_1_do_read_hi_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_1_do_read_hi_0\l\l
+W:\l
  ig_md.tmp_e\l
  "];
 tbl_combine_ctrl_bitmap_2_do_read [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_bitmap_2_do_read\l\l
@@ -750,9 +756,12 @@ R:\l
  "];
 cond_176 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.tmp_a == 3\l\l
  "];
-tbl_combine_ctrl_addr_2_do_read_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_2_do_read_0\l\l
+tbl_combine_ctrl_addr_2_do_read_lo_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_2_do_read_lo_0\l\l
 W:\l
  ig_md.tmp_d\l
+ "];
+tbl_combine_ctrl_addr_2_do_read_hi_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_2_do_read_hi_0\l\l
+W:\l
  ig_md.tmp_e\l
  "];
 tbl_combine_ctrl_bitmap_3_do_read [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_bitmap_3_do_read\l\l
@@ -763,9 +772,12 @@ R:\l
  "];
 cond_177 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.tmp_a == 4\l\l
  "];
-tbl_combine_ctrl_addr_3_do_read_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_3_do_read_0\l\l
+tbl_combine_ctrl_addr_3_do_read_lo_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_3_do_read_lo_0\l\l
 W:\l
  ig_md.tmp_d\l
+ "];
+tbl_combine_ctrl_addr_3_do_read_hi_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_3_do_read_hi_0\l\l
+W:\l
  ig_md.tmp_e\l
  "];
 tbl_combine_ctrl_bitmap_4_do_read [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_bitmap_4_do_read\l\l
@@ -776,9 +788,12 @@ R:\l
  "];
 cond_178 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.tmp_a == 5\l\l
  "];
-tbl_combine_ctrl_addr_4_do_read_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_4_do_read_0\l\l
+tbl_combine_ctrl_addr_4_do_read_lo_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_4_do_read_lo_0\l\l
 W:\l
  ig_md.tmp_d\l
+ "];
+tbl_combine_ctrl_addr_4_do_read_hi_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_4_do_read_hi_0\l\l
+W:\l
  ig_md.tmp_e\l
  "];
 tbl_combine_ctrl_bitmap_5_do_read [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_bitmap_5_do_read\l\l
@@ -789,9 +804,12 @@ R:\l
  "];
 cond_179 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.tmp_a == 6\l\l
  "];
-tbl_combine_ctrl_addr_5_do_read_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_5_do_read_0\l\l
+tbl_combine_ctrl_addr_5_do_read_lo_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_5_do_read_lo_0\l\l
 W:\l
  ig_md.tmp_d\l
+ "];
+tbl_combine_ctrl_addr_5_do_read_hi_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_5_do_read_hi_0\l\l
+W:\l
  ig_md.tmp_e\l
  "];
 tbl_combine_ctrl_bitmap_6_do_read [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_bitmap_6_do_read\l\l
@@ -806,14 +824,20 @@ R:\l
 \lW:\l
  ig_md.tmp_c\l
  "];
-tbl_combine_ctrl_addr_6_do_read_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_6_do_read_0\l\l
+tbl_combine_ctrl_addr_6_do_read_lo_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_6_do_read_lo_0\l\l
 W:\l
  ig_md.tmp_d\l
+ "];
+tbl_combine_ctrl_addr_6_do_read_hi_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_6_do_read_hi_0\l\l
+W:\l
  ig_md.tmp_e\l
  "];
-tbl_combine_ctrl_addr_7_do_read_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_7_do_read_0\l\l
+tbl_combine_ctrl_addr_7_do_read_lo_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_7_do_read_lo_0\l\l
 W:\l
  ig_md.tmp_d\l
+ "];
+tbl_combine_ctrl_addr_7_do_read_hi_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_7_do_read_hi_0\l\l
+W:\l
  ig_md.tmp_e\l
  "];
 tbl_combine_control621 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control621\l\l
@@ -1002,9 +1026,12 @@ R:\l
  "];
 cond_145 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.tmp_a == 1\l\l
  "];
-tbl_combine_ctrl_addr_0_do_read [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_0_do_read\l\l
+tbl_combine_ctrl_addr_0_do_read_lo [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_0_do_read_lo\l\l
 W:\l
  ig_md.tmp_d\l
+ "];
+tbl_combine_ctrl_addr_0_do_read_hi [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_0_do_read_hi\l\l
+W:\l
  ig_md.tmp_e\l
  "];
 tbl_combine_ctrl_do_read_inc_tx_msn [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_do_read_inc_tx_msn\l\l
@@ -1017,9 +1044,12 @@ R:\l
  "];
 cond_146 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.tmp_a == 2\l\l
  "];
-tbl_combine_ctrl_addr_1_do_read [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_1_do_read\l\l
+tbl_combine_ctrl_addr_1_do_read_lo [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_1_do_read_lo\l\l
 W:\l
  ig_md.tmp_d\l
+ "];
+tbl_combine_ctrl_addr_1_do_read_hi [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_1_do_read_hi\l\l
+W:\l
  ig_md.tmp_e\l
  "];
 tbl_combine_ctrl_bitmap_2_do_clear_bit [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_bitmap_2_do_clear_bit\l\l
@@ -1030,9 +1060,12 @@ R:\l
  "];
 cond_147 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.tmp_a == 3\l\l
  "];
-tbl_combine_ctrl_addr_2_do_read [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_2_do_read\l\l
+tbl_combine_ctrl_addr_2_do_read_lo [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_2_do_read_lo\l\l
 W:\l
  ig_md.tmp_d\l
+ "];
+tbl_combine_ctrl_addr_2_do_read_hi [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_2_do_read_hi\l\l
+W:\l
  ig_md.tmp_e\l
  "];
 tbl_combine_ctrl_bitmap_3_do_clear_bit [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_bitmap_3_do_clear_bit\l\l
@@ -1043,9 +1076,12 @@ R:\l
  "];
 cond_148 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.tmp_a == 4\l\l
  "];
-tbl_combine_ctrl_addr_3_do_read [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_3_do_read\l\l
+tbl_combine_ctrl_addr_3_do_read_lo [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_3_do_read_lo\l\l
 W:\l
  ig_md.tmp_d\l
+ "];
+tbl_combine_ctrl_addr_3_do_read_hi [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_3_do_read_hi\l\l
+W:\l
  ig_md.tmp_e\l
  "];
 tbl_combine_ctrl_bitmap_4_do_clear_bit [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_bitmap_4_do_clear_bit\l\l
@@ -1056,9 +1092,12 @@ R:\l
  "];
 cond_149 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.tmp_a == 5\l\l
  "];
-tbl_combine_ctrl_addr_4_do_read [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_4_do_read\l\l
+tbl_combine_ctrl_addr_4_do_read_lo [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_4_do_read_lo\l\l
 W:\l
  ig_md.tmp_d\l
+ "];
+tbl_combine_ctrl_addr_4_do_read_hi [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_4_do_read_hi\l\l
+W:\l
  ig_md.tmp_e\l
  "];
 tbl_combine_ctrl_bitmap_5_do_clear_bit [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_bitmap_5_do_clear_bit\l\l
@@ -1069,9 +1108,12 @@ R:\l
  "];
 cond_150 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.tmp_a == 6\l\l
  "];
-tbl_combine_ctrl_addr_5_do_read [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_5_do_read\l\l
+tbl_combine_ctrl_addr_5_do_read_lo [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_5_do_read_lo\l\l
 W:\l
  ig_md.tmp_d\l
+ "];
+tbl_combine_ctrl_addr_5_do_read_hi [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_5_do_read_hi\l\l
+W:\l
  ig_md.tmp_e\l
  "];
 tbl_combine_ctrl_bitmap_6_do_clear_bit [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_bitmap_6_do_clear_bit\l\l
@@ -1086,14 +1128,20 @@ R:\l
 \lW:\l
  ig_md.tmp_c\l
  "];
-tbl_combine_ctrl_addr_6_do_read [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_6_do_read\l\l
+tbl_combine_ctrl_addr_6_do_read_lo [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_6_do_read_lo\l\l
 W:\l
  ig_md.tmp_d\l
+ "];
+tbl_combine_ctrl_addr_6_do_read_hi [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_6_do_read_hi\l\l
+W:\l
  ig_md.tmp_e\l
  "];
-tbl_combine_ctrl_addr_7_do_read [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_7_do_read\l\l
+tbl_combine_ctrl_addr_7_do_read_lo [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_7_do_read_lo\l\l
 W:\l
  ig_md.tmp_d\l
+ "];
+tbl_combine_ctrl_addr_7_do_read_hi [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_7_do_read_hi\l\l
+W:\l
  ig_md.tmp_e\l
  "];
 cond_151 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.tmp_c == 0\l\l
@@ -1551,34 +1599,42 @@ R:\l
     tbl_combine_ctrl_calc_slot_id_from_next_token_idx -> cond_173
     cond_173 -> tbl_combine_ctrl_bitmap_0_do_read
     cond_173 -> cond_174
-    tbl_combine_ctrl_bitmap_0_do_read -> tbl_combine_ctrl_addr_0_do_read_0
-    tbl_combine_ctrl_addr_0_do_read_0 -> cond_180
+    tbl_combine_ctrl_bitmap_0_do_read -> tbl_combine_ctrl_addr_0_do_read_lo_0
+    tbl_combine_ctrl_addr_0_do_read_lo_0 -> tbl_combine_ctrl_addr_0_do_read_hi_0
+    tbl_combine_ctrl_addr_0_do_read_hi_0 -> cond_180
     cond_174 -> tbl_combine_ctrl_bitmap_1_do_read
     cond_174 -> cond_175
-    tbl_combine_ctrl_bitmap_1_do_read -> tbl_combine_ctrl_addr_1_do_read_0
-    tbl_combine_ctrl_addr_1_do_read_0 -> cond_180
+    tbl_combine_ctrl_bitmap_1_do_read -> tbl_combine_ctrl_addr_1_do_read_lo_0
+    tbl_combine_ctrl_addr_1_do_read_lo_0 -> tbl_combine_ctrl_addr_1_do_read_hi_0
+    tbl_combine_ctrl_addr_1_do_read_hi_0 -> cond_180
     cond_175 -> tbl_combine_ctrl_bitmap_2_do_read
     cond_175 -> cond_176
-    tbl_combine_ctrl_bitmap_2_do_read -> tbl_combine_ctrl_addr_2_do_read_0
-    tbl_combine_ctrl_addr_2_do_read_0 -> cond_180
+    tbl_combine_ctrl_bitmap_2_do_read -> tbl_combine_ctrl_addr_2_do_read_lo_0
+    tbl_combine_ctrl_addr_2_do_read_lo_0 -> tbl_combine_ctrl_addr_2_do_read_hi_0
+    tbl_combine_ctrl_addr_2_do_read_hi_0 -> cond_180
     cond_176 -> tbl_combine_ctrl_bitmap_3_do_read
     cond_176 -> cond_177
-    tbl_combine_ctrl_bitmap_3_do_read -> tbl_combine_ctrl_addr_3_do_read_0
-    tbl_combine_ctrl_addr_3_do_read_0 -> cond_180
+    tbl_combine_ctrl_bitmap_3_do_read -> tbl_combine_ctrl_addr_3_do_read_lo_0
+    tbl_combine_ctrl_addr_3_do_read_lo_0 -> tbl_combine_ctrl_addr_3_do_read_hi_0
+    tbl_combine_ctrl_addr_3_do_read_hi_0 -> cond_180
     cond_177 -> tbl_combine_ctrl_bitmap_4_do_read
     cond_177 -> cond_178
-    tbl_combine_ctrl_bitmap_4_do_read -> tbl_combine_ctrl_addr_4_do_read_0
-    tbl_combine_ctrl_addr_4_do_read_0 -> cond_180
+    tbl_combine_ctrl_bitmap_4_do_read -> tbl_combine_ctrl_addr_4_do_read_lo_0
+    tbl_combine_ctrl_addr_4_do_read_lo_0 -> tbl_combine_ctrl_addr_4_do_read_hi_0
+    tbl_combine_ctrl_addr_4_do_read_hi_0 -> cond_180
     cond_178 -> tbl_combine_ctrl_bitmap_5_do_read
     cond_178 -> cond_179
-    tbl_combine_ctrl_bitmap_5_do_read -> tbl_combine_ctrl_addr_5_do_read_0
-    tbl_combine_ctrl_addr_5_do_read_0 -> cond_180
+    tbl_combine_ctrl_bitmap_5_do_read -> tbl_combine_ctrl_addr_5_do_read_lo_0
+    tbl_combine_ctrl_addr_5_do_read_lo_0 -> tbl_combine_ctrl_addr_5_do_read_hi_0
+    tbl_combine_ctrl_addr_5_do_read_hi_0 -> cond_180
     cond_179 -> tbl_combine_ctrl_bitmap_6_do_read
     cond_179 -> tbl_combine_ctrl_bitmap_7_do_read
-    tbl_combine_ctrl_bitmap_6_do_read -> tbl_combine_ctrl_addr_6_do_read_0
-    tbl_combine_ctrl_addr_6_do_read_0 -> cond_180
-    tbl_combine_ctrl_bitmap_7_do_read -> tbl_combine_ctrl_addr_7_do_read_0
-    tbl_combine_ctrl_addr_7_do_read_0 -> cond_180
+    tbl_combine_ctrl_bitmap_6_do_read -> tbl_combine_ctrl_addr_6_do_read_lo_0
+    tbl_combine_ctrl_addr_6_do_read_lo_0 -> tbl_combine_ctrl_addr_6_do_read_hi_0
+    tbl_combine_ctrl_addr_6_do_read_hi_0 -> cond_180
+    tbl_combine_ctrl_bitmap_7_do_read -> tbl_combine_ctrl_addr_7_do_read_lo_0
+    tbl_combine_ctrl_addr_7_do_read_lo_0 -> tbl_combine_ctrl_addr_7_do_read_hi_0
+    tbl_combine_ctrl_addr_7_do_read_hi_0 -> cond_180
     cond_180 -> tbl_combine_control621
     cond_180 -> tbl_combine_control644
     tbl_combine_control621 -> tbl_combine_ctrl_do_read_cond_inc_queue_incomplete_0
@@ -1641,34 +1697,42 @@ R:\l
     combine_ctrl_tbl_rank_to_clear_mask -> cond_144
     cond_144 -> tbl_combine_ctrl_bitmap_0_do_clear_bit
     cond_144 -> cond_145
-    tbl_combine_ctrl_bitmap_0_do_clear_bit -> tbl_combine_ctrl_addr_0_do_read
-    tbl_combine_ctrl_addr_0_do_read -> tbl_combine_ctrl_do_read_inc_tx_msn
+    tbl_combine_ctrl_bitmap_0_do_clear_bit -> tbl_combine_ctrl_addr_0_do_read_lo
+    tbl_combine_ctrl_addr_0_do_read_lo -> tbl_combine_ctrl_addr_0_do_read_hi
+    tbl_combine_ctrl_addr_0_do_read_hi -> tbl_combine_ctrl_do_read_inc_tx_msn
     cond_145 -> tbl_combine_ctrl_bitmap_1_do_clear_bit
     cond_145 -> cond_146
-    tbl_combine_ctrl_bitmap_1_do_clear_bit -> tbl_combine_ctrl_addr_1_do_read
-    tbl_combine_ctrl_addr_1_do_read -> tbl_combine_ctrl_do_read_inc_tx_msn
+    tbl_combine_ctrl_bitmap_1_do_clear_bit -> tbl_combine_ctrl_addr_1_do_read_lo
+    tbl_combine_ctrl_addr_1_do_read_lo -> tbl_combine_ctrl_addr_1_do_read_hi
+    tbl_combine_ctrl_addr_1_do_read_hi -> tbl_combine_ctrl_do_read_inc_tx_msn
     cond_146 -> tbl_combine_ctrl_bitmap_2_do_clear_bit
     cond_146 -> cond_147
-    tbl_combine_ctrl_bitmap_2_do_clear_bit -> tbl_combine_ctrl_addr_2_do_read
-    tbl_combine_ctrl_addr_2_do_read -> tbl_combine_ctrl_do_read_inc_tx_msn
+    tbl_combine_ctrl_bitmap_2_do_clear_bit -> tbl_combine_ctrl_addr_2_do_read_lo
+    tbl_combine_ctrl_addr_2_do_read_lo -> tbl_combine_ctrl_addr_2_do_read_hi
+    tbl_combine_ctrl_addr_2_do_read_hi -> tbl_combine_ctrl_do_read_inc_tx_msn
     cond_147 -> tbl_combine_ctrl_bitmap_3_do_clear_bit
     cond_147 -> cond_148
-    tbl_combine_ctrl_bitmap_3_do_clear_bit -> tbl_combine_ctrl_addr_3_do_read
-    tbl_combine_ctrl_addr_3_do_read -> tbl_combine_ctrl_do_read_inc_tx_msn
+    tbl_combine_ctrl_bitmap_3_do_clear_bit -> tbl_combine_ctrl_addr_3_do_read_lo
+    tbl_combine_ctrl_addr_3_do_read_lo -> tbl_combine_ctrl_addr_3_do_read_hi
+    tbl_combine_ctrl_addr_3_do_read_hi -> tbl_combine_ctrl_do_read_inc_tx_msn
     cond_148 -> tbl_combine_ctrl_bitmap_4_do_clear_bit
     cond_148 -> cond_149
-    tbl_combine_ctrl_bitmap_4_do_clear_bit -> tbl_combine_ctrl_addr_4_do_read
-    tbl_combine_ctrl_addr_4_do_read -> tbl_combine_ctrl_do_read_inc_tx_msn
+    tbl_combine_ctrl_bitmap_4_do_clear_bit -> tbl_combine_ctrl_addr_4_do_read_lo
+    tbl_combine_ctrl_addr_4_do_read_lo -> tbl_combine_ctrl_addr_4_do_read_hi
+    tbl_combine_ctrl_addr_4_do_read_hi -> tbl_combine_ctrl_do_read_inc_tx_msn
     cond_149 -> tbl_combine_ctrl_bitmap_5_do_clear_bit
     cond_149 -> cond_150
-    tbl_combine_ctrl_bitmap_5_do_clear_bit -> tbl_combine_ctrl_addr_5_do_read
-    tbl_combine_ctrl_addr_5_do_read -> tbl_combine_ctrl_do_read_inc_tx_msn
+    tbl_combine_ctrl_bitmap_5_do_clear_bit -> tbl_combine_ctrl_addr_5_do_read_lo
+    tbl_combine_ctrl_addr_5_do_read_lo -> tbl_combine_ctrl_addr_5_do_read_hi
+    tbl_combine_ctrl_addr_5_do_read_hi -> tbl_combine_ctrl_do_read_inc_tx_msn
     cond_150 -> tbl_combine_ctrl_bitmap_6_do_clear_bit
     cond_150 -> tbl_combine_ctrl_bitmap_7_do_clear_bit
-    tbl_combine_ctrl_bitmap_6_do_clear_bit -> tbl_combine_ctrl_addr_6_do_read
-    tbl_combine_ctrl_addr_6_do_read -> tbl_combine_ctrl_do_read_inc_tx_msn
-    tbl_combine_ctrl_bitmap_7_do_clear_bit -> tbl_combine_ctrl_addr_7_do_read
-    tbl_combine_ctrl_addr_7_do_read -> tbl_combine_ctrl_do_read_inc_tx_msn
+    tbl_combine_ctrl_bitmap_6_do_clear_bit -> tbl_combine_ctrl_addr_6_do_read_lo
+    tbl_combine_ctrl_addr_6_do_read_lo -> tbl_combine_ctrl_addr_6_do_read_hi
+    tbl_combine_ctrl_addr_6_do_read_hi -> tbl_combine_ctrl_do_read_inc_tx_msn
+    tbl_combine_ctrl_bitmap_7_do_clear_bit -> tbl_combine_ctrl_addr_7_do_read_lo
+    tbl_combine_ctrl_addr_7_do_read_lo -> tbl_combine_ctrl_addr_7_do_read_hi
+    tbl_combine_ctrl_addr_7_do_read_hi -> tbl_combine_ctrl_do_read_inc_tx_msn
     tbl_combine_ctrl_do_read_inc_tx_msn -> cond_151
     cond_151 -> tbl_combine_ctrl_do_read_cond_inc_queue_incomplete
     cond_151 -> tbl_combine_ctrl_mul_3

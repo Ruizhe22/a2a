@@ -97,6 +97,7 @@ header bridge_h {
     bool has_reth;
     bool has_aeth;
     bool has_payload;
+    bool is_loopback;
     CONN_PHASE  conn_phase;  
     CONN_SEMANTICS conn_semantics;
     bit<32>  channel_id;
@@ -105,7 +106,6 @@ header bridge_h {
     bit<32> tx_loc_val;
     bit<32> tx_offset_val;
 
-    bool is_loopback;
     bit<32> root_rank_id;
     // 8
     bit<64> next_token_addr;
@@ -164,8 +164,35 @@ struct a2a_ingress_metadata_t {
 }
 
 struct a2a_egress_metadata_t {
+    // bridge header
+    bit<32> ing_rank_id;
+    bool has_reth;
+    bool has_aeth;
+    bool has_payload;
+    bool is_loopback;
+    CONN_PHASE  conn_phase;  
+    CONN_SEMANTICS conn_semantics;
+    bit<32>  channel_id;
+    bitmap_tofino_t    bitmap;
+    // combine only, 5bytes
+    bit<32> tx_loc_val;
+    bit<32> tx_offset_val;
+
+    bit<32> root_rank_id;
+    // 8
+    bit<64> next_token_addr;
+    bit<8> agg_op;
+    
+    // 
     bit<32> psn;
     bit<32> eg_rank_id;
+    bit<32> egress_rid;
+
+    //
+    bit<32> tmp_a;
+    bit<32> tmp_b;
+    bit<32> tmp_c;
+
 }
 
 /* Although the bitmap is defined to be 64 bits, we only use lower 32 bits in practice

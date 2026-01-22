@@ -152,15 +152,19 @@
             value = ig_md.tmp_e; \
         } \
     }; \
-    action NAME##_do_read() { \
+    action NAME##_do_read_lo() { \
         ig_md.tmp_d = NAME##_ra_lo_read.execute(ig_md.tmp_b); \
+    } \
+    action NAME##_do_read_hi() { \
         ig_md.tmp_e = NAME##_ra_hi_read.execute(ig_md.tmp_b); \
     } \
-    action NAME##_do_write() { \
+    action NAME##_do_write_lo() { \
         NAME##_ra_lo_write.execute(ig_md.tmp_b); \
+    } \
+    action NAME##_do_write_hi() { \
         NAME##_ra_hi_write.execute(ig_md.tmp_b); \
-    }
+    } \
 
 // Simplified call macros  
-#define ADDR_READ(NAME)   NAME##_do_read()
-#define ADDR_WRITE(NAME)  NAME##_do_write()
+#define ADDR_READ(NAME)   NAME##_do_read_lo();NAME##_do_read_hi()
+#define ADDR_WRITE(NAME)  NAME##_do_write_lo();NAME##_do_write_hi()

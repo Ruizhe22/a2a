@@ -657,27 +657,24 @@ control CombineEgress(
     in egress_intrinsic_metadata_t eg_intr_md,
     inout egress_intrinsic_metadata_for_deparser_t eg_dprsr_md)
 {
-    bit<32> agg_val;
-    bit<32> buffer_idx;
-    bit<32> tmp_agg_result;
     
     Register<bit<32>, bit<32>>(COMBINE_BUFFER_ENTRIES) reg_agg;
     
     RegisterAction<bit<32>, bit<32>, void>(reg_agg) ra_store = {
-        void apply(inout bit<32> value) { value = agg_val; }
+        void apply(inout bit<32> value) { value = eg_md.tmp_b; }
     };
 
     RegisterAction<bit<32>, bit<32>, void>(reg_agg) ra_aggregate = {
-        void apply(inout bit<32> value) { value = value + agg_val; }
+        void apply(inout bit<32> value) { value = value + eg_md.tmp_b; }
     };
 
     RegisterAction<bit<32>, bit<32>, bit<32>>(reg_agg) ra_read_agg = {
         void apply(inout bit<32> value, out bit<32> res) { res = value; }
     };
 
-    action do_store(bit<32> idx) { ra_store.execute(idx); }
-    action do_aggregate(bit<32> idx) { ra_aggregate.execute(idx); }
-    action do_read_agg(bit<32> idx) { tmp_agg_result = ra_read_agg.execute(idx); }
+    action do_store() { ra_store.execute(eg_md.tmp_a); }
+    action do_aggregate() { ra_aggregate.execute(eg_md.tmp_a); }
+    action do_read_agg() { eg_md.tmp_b = ra_read_agg.execute(eg_md.tmp_a); }
 
     action swap_l2_l3_l4() {
         bit<48> tmp_mac = hdr.eth.src_addr;
@@ -718,58 +715,47 @@ control CombineEgress(
 
     table tbl_rx_info {
         key = {
-            hdr.bridge.channel_id : exact;
-            hdr.bridge.root_rank_id : exact;
+            eg_md.channel_id : exact;
+            eg_md.root_rank_id : exact;
         }
         actions = { set_rx_info; NoAction; }
         size = 1024;
         default_action = NoAction;
     }
 
-    bit<32> channel_mul_512;
-    bit<32> channel_mul_64;
-    bit<32> channel_mul_448;
-    bit<32> tmp_loc;
-    bit<32> loc_mul_8;
-    bit<32> loc_mul_7;
-    bit<32> tmp_offset;
 
-    action step1_calc_buffer_idx() { channel_mul_512 = hdr.bridge.channel_id << 9; }
-    action step2_calc_buffer_idx() { channel_mul_64 = hdr.bridge.channel_id << 6; }
-    action step3_calc_buffer_idx() { channel_mul_448 = channel_mul_512 - channel_mul_64; }
-    action step4a_set_loc_from_tx_loc() { tmp_loc = (bit<32>)hdr.bridge.tx_loc_val; }
-    action step4b_calc_loc_mul_8() { loc_mul_8 = tmp_loc << 3; }
-    action step5_calc_loc_mul_7() { loc_mul_7 = loc_mul_8 - tmp_loc; }
-    action step6_calc_buffer_idx() { buffer_idx = channel_mul_448 + loc_mul_7; }
-    action step7a_set_offset_from_rid() { tmp_offset = (bit<32>)eg_intr_md.egress_rid; }
-    action step7a_set_offset_from_eg() { tmp_offset = (bit<32>)hdr.bridge.tx_offset_val; }
-    action step7b_add_offset() { buffer_idx = buffer_idx + tmp_offset; }
+    action step1_calc_buffer_idx() { eg_md.tmp_a = eg_md.channel_id << 9; }
+    action step2_calc_buffer_idx() { eg_md.tmp_b = eg_md.channel_id << 6; }
+    action step3_calc_buffer_idx() { eg_md.tmp_a = eg_md.tmp_a - eg_md.tmp_b; } // channel_mul_448 eg_md.tmp_a
+    action step4a_set_loc_from_tx_loc() { eg_md.tmp_b = eg_md.tx_loc_val; }
+    action step4b_calc_loc_mul_8() { eg_md.tmp_c = eg_md.tmp_b << 3; }
+    action step5_calc_loc_mul_7() { eg_md.tmp_c = eg_md.tmp_c - eg_md.tmp_b; } // loc_mul_7 tmp_c
+    action step6_calc_buffer_idx() { eg_md.tmp_a = eg_md.tmp_a + eg_md.tmp_c; } // buffer_idx eg_md.tmp_a
+    action step7a_set_offset_from_rid() { eg_md.tmp_b = eg_md.egress_rid; }
+    action step7a_set_offset_from_eg() { eg_md.tmp_b = eg_md.tx_offset_val; }
+    action step7b_add_offset() { eg_md.tmp_a = eg_md.tmp_a + eg_md.tmp_b; } // buffer_idx eg_md.tmp_a
 
-    bit<32> pkt_offset;
-    action step1_prep_offset() { pkt_offset = (bit<32>)eg_intr_md.egress_rid; }
-    action step2_calc_psn_add() { eg_md.psn = eg_md.psn + pkt_offset; }
-    action step3_write_bth_psn() { hdr.bth.psn = eg_md.psn; }
+    action step1_calc_psn_add() { eg_md.psn = eg_md.psn + eg_md.egress_rid; } // packet offset eg_md.eg_rank_id
+    action step2_write_bth_psn() { hdr.bth.psn = eg_md.psn; }
 
     apply {
-        hdr.bridge.channel_id = (bit<32>)hdr.bridge.channel_id;
         
         if (eg_intr_md.egress_port == LOOPBACK_PORT) {
             hdr.bth.opcode = RDMA_OP_WRITE_FIRST;
             hdr.reth.setValid();
-            hdr.reth.addr = hdr.bridge.next_token_addr;
+            hdr.reth.addr = eg_md.next_token_addr;
             hdr.reth.len = TOKEN_SIZE;
             hdr.payload.setValid();
-            if (!hdr.bridge.is_loopback) { hdr.payload.data00 = hdr.bridge.tx_loc_val; }
+            if (!eg_md.is_loopback) { hdr.payload_first_word.data = eg_md.tx_loc_val; }
             tbl_rx_info.apply();
             set_write_first_len();
             hdr.aeth.setInvalid();
             return;
         }
         
-        if (eg_intr_md.egress_port != LOOPBACK_PORT && hdr.bridge.is_loopback) {
-            step1_prep_offset();
-            step2_calc_psn_add();
-            step3_write_bth_psn();
+        if (eg_intr_md.egress_port != LOOPBACK_PORT && eg_md.is_loopback) {
+            step1_calc_psn_add();
+            step2_write_bth_psn();
             
             step1_calc_buffer_idx();
             step2_calc_buffer_idx();
@@ -781,18 +767,17 @@ control CombineEgress(
             step7a_set_offset_from_rid();
             step7b_add_offset();
             
-            do_read_agg(buffer_idx);
-            bit<32> agg_result = tmp_agg_result;
+            do_read_agg();
             
-            hdr.payload.setValid();
-            hdr.payload.data00 = agg_result;
+            hdr.payload_first_word.setValid();
+            hdr.payload_first_word.data = eg_md.tmp_b;
             
-            if (pkt_offset == 0) {
+            if (eg_md.eg_rank_id == 0) {
                 hdr.bth.opcode = RDMA_OP_WRITE_FIRST;
                 hdr.reth.setValid();
                 hdr.reth.len = TOKEN_SIZE;
                 set_write_first_len();
-            } else if (pkt_offset == TOKEN_PACKETS - 1) {
+            } else if (eg_md.eg_rank_id == TOKEN_PACKETS - 1) {
                 hdr.bth.opcode = RDMA_OP_WRITE_LAST;
                 hdr.reth.setInvalid();
                 set_write_middle_len();
@@ -805,7 +790,7 @@ control CombineEgress(
             return;
         }
         
-        if (hdr.bridge.conn_semantics == CONN_SEMANTICS.CONN_TX && eg_intr_md.egress_port != LOOPBACK_PORT) {
+        if (eg_md.conn_semantics == CONN_SEMANTICS.CONN_TX && eg_intr_md.egress_port != LOOPBACK_PORT) {
             step1_calc_buffer_idx();
             step2_calc_buffer_idx();
             step3_calc_buffer_idx();
@@ -816,10 +801,10 @@ control CombineEgress(
             step7a_set_offset_from_eg();
             step7b_add_offset();
         
-            agg_val = hdr.payload.data00;
+            eg_md.tmp_b = hdr.payload_first_word.data;
 
-            if (hdr.bridge.agg_op == AGG_OP.STORE) { do_store(buffer_idx); }
-            else { do_aggregate(buffer_idx); }
+            if (eg_md.agg_op == AGG_OP.STORE) { do_store(); }
+            else { do_aggregate(); }
             
             swap_l2_l3_l4();
             set_ack_len();
@@ -830,7 +815,7 @@ control CombineEgress(
             return;
         }
         
-        if (hdr.bridge.conn_semantics == CONN_SEMANTICS.CONN_CONTROL) {
+        if (eg_md.conn_semantics == CONN_SEMANTICS.CONN_CONTROL) {
             hdr.udp.length = 156;
             hdr.ipv4.total_len = 176;
             hdr.udp.checksum = 0;
@@ -841,7 +826,7 @@ control CombineEgress(
             return;
         }
 
-        if (hdr.bridge.has_aeth) {
+        if (eg_md.has_aeth) {
             swap_l2_l3_l4();
             set_ack_len();
             hdr.reth.setInvalid();

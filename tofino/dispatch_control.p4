@@ -378,7 +378,7 @@ control DispatchEgress(
 
     table dispatch_rank_info {
         key = {
-            hdr.bridge.channel_id : exact;
+            eg_md.channel_id : exact;
             eg_intr_md.egress_port   : exact;
         }
         actions = {
