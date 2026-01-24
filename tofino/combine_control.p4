@@ -153,23 +153,23 @@ control CombineIngress(
      ***************************************************************************/
     // Queue Head Slots (8 instances)
     QUEUE_PTR_SLOT_DECLARE(queue_head_0)
-    QUEUE_PTR_SLOT_DECLARE(queue_head_1)
-    QUEUE_PTR_SLOT_DECLARE(queue_head_2)
-    QUEUE_PTR_SLOT_DECLARE(queue_head_3)
-    QUEUE_PTR_SLOT_DECLARE(queue_head_4)
-    QUEUE_PTR_SLOT_DECLARE(queue_head_5)
-    QUEUE_PTR_SLOT_DECLARE(queue_head_6)
-    QUEUE_PTR_SLOT_DECLARE(queue_head_7)
+    // QUEUE_PTR_SLOT_DECLARE(queue_head_1)
+    // QUEUE_PTR_SLOT_DECLARE(queue_head_2)
+    // QUEUE_PTR_SLOT_DECLARE(queue_head_3)
+    // QUEUE_PTR_SLOT_DECLARE(queue_head_4)
+    // QUEUE_PTR_SLOT_DECLARE(queue_head_5)
+    // QUEUE_PTR_SLOT_DECLARE(queue_head_6)
+    // QUEUE_PTR_SLOT_DECLARE(queue_head_7)
 
     // Queue Tail Slots (8 instances)
     QUEUE_PTR_SLOT_DECLARE(queue_tail_0)
-    QUEUE_PTR_SLOT_DECLARE(queue_tail_1)
-    QUEUE_PTR_SLOT_DECLARE(queue_tail_2)
-    QUEUE_PTR_SLOT_DECLARE(queue_tail_3)
-    QUEUE_PTR_SLOT_DECLARE(queue_tail_4)
-    QUEUE_PTR_SLOT_DECLARE(queue_tail_5)
-    QUEUE_PTR_SLOT_DECLARE(queue_tail_6)
-    QUEUE_PTR_SLOT_DECLARE(queue_tail_7)
+    // QUEUE_PTR_SLOT_DECLARE(queue_tail_1)
+    // QUEUE_PTR_SLOT_DECLARE(queue_tail_2)
+    // QUEUE_PTR_SLOT_DECLARE(queue_tail_3)
+    // QUEUE_PTR_SLOT_DECLARE(queue_tail_4)
+    // QUEUE_PTR_SLOT_DECLARE(queue_tail_5)
+    // QUEUE_PTR_SLOT_DECLARE(queue_tail_6)
+    // QUEUE_PTR_SLOT_DECLARE(queue_tail_7)
 
     /***************************************************************************
      * Queue Incomplete Register
@@ -201,25 +201,25 @@ control CombineIngress(
      * Bitmap Slots - using macros (8 instances)
      ***************************************************************************/
     BITMAP_SLOT_DECLARE(bitmap_0)
-    BITMAP_SLOT_DECLARE(bitmap_1)
-    BITMAP_SLOT_DECLARE(bitmap_2)
-    BITMAP_SLOT_DECLARE(bitmap_3)
-    BITMAP_SLOT_DECLARE(bitmap_4)
-    BITMAP_SLOT_DECLARE(bitmap_5)
-    BITMAP_SLOT_DECLARE(bitmap_6)
-    BITMAP_SLOT_DECLARE(bitmap_7)
+    // BITMAP_SLOT_DECLARE(bitmap_1)
+    // BITMAP_SLOT_DECLARE(bitmap_2)
+    // BITMAP_SLOT_DECLARE(bitmap_3)
+    // BITMAP_SLOT_DECLARE(bitmap_4)
+    // BITMAP_SLOT_DECLARE(bitmap_5)
+    // BITMAP_SLOT_DECLARE(bitmap_6)
+    // BITMAP_SLOT_DECLARE(bitmap_7)
 
     /***************************************************************************
      * Addr Slots - using macros (8 instances)
      ***************************************************************************/
     ADDR_SLOT_DECLARE(addr_0)
-    ADDR_SLOT_DECLARE(addr_1)
-    ADDR_SLOT_DECLARE(addr_2)
-    ADDR_SLOT_DECLARE(addr_3)
-    ADDR_SLOT_DECLARE(addr_4)
-    ADDR_SLOT_DECLARE(addr_5)
-    ADDR_SLOT_DECLARE(addr_6)
-    ADDR_SLOT_DECLARE(addr_7)
+    // ADDR_SLOT_DECLARE(addr_1)
+    // ADDR_SLOT_DECLARE(addr_2)
+    // ADDR_SLOT_DECLARE(addr_3)
+    // ADDR_SLOT_DECLARE(addr_4)
+    // ADDR_SLOT_DECLARE(addr_5)
+    // ADDR_SLOT_DECLARE(addr_6)
+    // ADDR_SLOT_DECLARE(addr_7)
 
     /***************************************************************************
      * Utility Actions
@@ -280,53 +280,59 @@ control CombineIngress(
         ig_md.psn_cmp = cmp;
     }
 
-    // table tbl_compare_a {
-    //     key = {
-    //         ig_md.psn_diff : ternary;
-    //     }
-    //     actions = {
-    //         set_cmp;
-    //     }
-    // }
+    table tbl_compare_psn {
+        key = {
+            ig_md.psn_diff : ternary;
+        }
+        actions = {
+            set_cmp;
+        }
+    }
 
-    // table tbl_compare_b {
-    //     key = {
-    //         ig_md.psn_diff : ternary;
-    //     }
-    //     actions = {
-    //         set_cmp;
-    //     }
-    // }
+
+    action cal_slot(bit<32> slot_id, bit<32> slot_index){
+        ig_md.tmp_a = slot_id;
+        ig_md.tmp_b = slot_index;
+    }
+
+    table tbl_cal_slot {
+        key = {
+            ig_md.tmp_c: exact;
+            ig_md.channel_id: exact;
+        }
+        actions = { cal_slot; }
+
+        size = 128;
+    }
 
     /***************************************************************************
      * Index Calculation Actions
      ***************************************************************************/
-    action step1_cal_tx_reg_idx() { ig_md.tx_reg_idx = ig_md.ing_rank_id; }
-    action step2_cal_tx_reg_idx() { ig_md.tx_reg_idx = ig_md.tx_reg_idx + ig_md.channel_class; }
+    // action step1_cal_tx_reg_idx() { ig_md.tx_reg_idx = ig_md.ing_rank_id; }
+    // action step2_cal_tx_reg_idx() { ig_md.tx_reg_idx = ig_md.tx_reg_idx + ig_md.channel_class; }
 
-    action step1_calc_token_idx_from_tail() { ig_md.tmp_a = ig_md.channel_id * 64; }
-    action step2_calc_token_idx_from_tail() { ig_md.tmp_b = ig_md.tmp_c; }
-    action step3_calc_token_idx_from_tail() { ig_md.tmp_b = ig_md.tmp_b + ig_md.tmp_a; } // tmp_b as token_idx
+    // action step1_calc_token_idx_from_tail() { ig_md.tmp_a = ig_md.channel_id * 64; }
+    // action step2_calc_token_idx_from_tail() { ig_md.tmp_b = ig_md.tmp_c; }
+    // action step3_calc_token_idx_from_tail() { ig_md.tmp_b = ig_md.tmp_b + ig_md.tmp_a; } // tmp_b as token_idx
     
-    action calc_slot_index_from_token_idx() { ig_md.tmp_b = ig_md.tmp_b >> 3; } // tmp_b as slot_index
-    action calc_slot_id_from_token_idx() { ig_md.tmp_a = ig_md.tmp_b & 0x7;} // tmp_a as slot_id
+    // action calc_slot_index_from_token_idx() { ig_md.tmp_b = ig_md.tmp_b >> 3; } // tmp_b as slot_index
+    // action calc_slot_id_from_token_idx() { ig_md.tmp_a = ig_md.tmp_b & 0x7;} // tmp_a as slot_id
 
-    action calc_slot_index_from_next_token_idx() { ig_md.tmp_b = ig_md.tmp_b >> 3; } // tmp_b = next_slot_index
-    action calc_slot_id_from_next_token_idx() { ig_md.tmp_a = ig_md.tmp_b & 0x7;} // tmp_a as slot_id
+    // action calc_slot_index_from_next_token_idx() { ig_md.tmp_b = ig_md.tmp_b >> 3; } // tmp_b = next_slot_index
+    // action calc_slot_id_from_next_token_idx() { ig_md.tmp_a = ig_md.tmp_b & 0x7;} // tmp_a as slot_id
 
 
-    action step1_calc_token_idx_from_tx_loc() { ig_md.tmp_a = ig_md.channel_id * 64; }
-    action step2_calc_token_idx_from_tx_loc() { ig_md.tmp_b = ig_md.tx_loc_val; }
-    action step3_calc_token_idx_from_tx_loc() { ig_md.tmp_b = ig_md.tmp_b + ig_md.tmp_a; }
+    // action step1_calc_token_idx_from_tx_loc() { ig_md.tmp_a = ig_md.channel_id * 64; }
+    // action step2_calc_token_idx_from_tx_loc() { ig_md.tmp_b = ig_md.tx_loc_val; }
+    // action step3_calc_token_idx_from_tx_loc() { ig_md.tmp_b = ig_md.tmp_b + ig_md.tmp_a; }
 
-    action step1_calc_next_token_idx() { ig_md.tmp_a = ig_md.channel_id * 64; }
-    action step2_calc_next_token_idx() { ig_md.tmp_b = ig_md.tx_offset_val; }
-    action step3_calc_next_token_idx() { ig_md.tmp_b = ig_md.tmp_b + ig_md.tmp_a; }
+    // action step1_calc_next_token_idx() { ig_md.tmp_a = ig_md.channel_id * 64; }
+    // action step2_calc_next_token_idx() { ig_md.tmp_b = ig_md.tx_offset_val; }
+    // action step3_calc_next_token_idx() { ig_md.tmp_b = ig_md.tmp_b + ig_md.tmp_a; }
 
-    bit<32> temp_head_shifted;
-    action step1_calc_shift_head() { ig_md.tmp_a = ig_md.tmp_a << 16; }
-    action step2_calc_combine_tail() { ig_md.tmp_a = ig_md.tmp_a | ig_md.tmp_c; }
-    action step3_write_payload_data_0() { hdr.payload.data00 = ig_md.tmp_a; }
+    // action step1_calc_shift_head() { ig_md.tmp_a = ig_md.tmp_a << 16; }
+    // action step2_calc_combine_tail() { ig_md.tmp_a = ig_md.tmp_a | ig_md.tmp_c; }
+    // action step3_write_payload_data_0() { hdr.payload.data00 = ig_md.tmp_a; }
     // action step3_write_payload_data_1() { hdr.payload.data01 = ig_md.tmp_a; }
     // action step3_write_payload_data_2() { hdr.payload.data02 = ig_md.tmp_a; }
     // action step3_write_payload_data_3() { hdr.payload.data03 = ig_md.tmp_a; }
@@ -335,11 +341,11 @@ control CombineIngress(
     // action step3_write_payload_data_6() { hdr.payload.data06 = ig_md.tmp_a; }
     // action step3_write_payload_data_7() { hdr.payload.data07 = ig_md.tmp_a; }
 
-    action step1_calc_next_token_idx_from_next_loc() { ig_md.tmp_a = ig_md.channel_id << 6; }
-    action step2_calc_next_token_idx_from_next_loc() { ig_md.tmp_b = ig_md.tmp_a + ig_md.tmp_b; }
+    // action step1_calc_next_token_idx_from_next_loc() { ig_md.tmp_a = ig_md.channel_id << 6; }
+    // action step2_calc_next_token_idx_from_next_loc() { ig_md.tmp_b = ig_md.tmp_a + ig_md.tmp_b; }
 
-    action step_write_addr_lo() { ig_md.next_token_addr[31:0] = ig_md.tmp_d; }
-    action step_write_addr_hi() { ig_md.next_token_addr[63:32] = ig_md.tmp_e; }
+    // action step_write_addr_lo() { ig_md.next_token_addr[31:0] = ig_md.tmp_d; }
+    // action step_write_addr_hi() { ig_md.next_token_addr[63:32] = ig_md.tmp_e; }
 
     /***************************************************************************
      * Apply
@@ -354,84 +360,85 @@ control CombineIngress(
         
         // No PSN check needed for CONTROL
 
-        if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_BITMAP) {
-            do_read_cond_inc_rx_bitmap_epsn(ig_md.channel_id);
-            ig_md.psn_diff = ig_md.psn - ig_md.tmp_a;
-            // ig_md.psn_cmp set by comparison
-            if(ig_md.psn_cmp == 1) { // psn < epsn
-                ig_md.msn = ig_md.tmp_a;
-                mul_256();
-                set_aeth_syndrome(AETH_NAK_SEQ_ERR);
-                set_aeth_msn();
-                set_aeth_psn(ig_md.tmp_a - 1);
-                ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
-                return;
-            }
-            else if(ig_md.psn_cmp == 2) {
-                ig_md.msn = ig_md.tmp_a;
-                mul_256();
-                set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
-                set_aeth_msn();
-                set_aeth_psn(ig_md.tmp_a - 1);
-                ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
-                return;
-            }
-        }
-        else if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_TX) {
-            if (ig_intr_md.ingress_port != LOOPBACK_PORT) {
-                do_read_cond_inc_tx_epsn(ig_md.tx_reg_idx);
-                // ig_md.psn_cmp set by comparison
+        // if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_BITMAP) {
+        //     do_read_cond_inc_rx_bitmap_epsn(ig_md.channel_id);
+        //     ig_md.psn_diff = ig_md.psn - ig_md.tmp_a;
+        //     // ig_md.psn_cmp set by comparison
+        //     tbl_compare_psn.apply();
+        //     if(ig_md.psn_cmp == 1) { // psn < epsn
+        //         ig_md.msn = ig_md.tmp_a;
+        //         mul_256();
+        //         set_aeth_syndrome(AETH_NAK_SEQ_ERR);
+        //         set_aeth_msn();
+        //         set_aeth_psn(ig_md.tmp_a - 1);
+        //         ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
+        //         return;
+        //     }
+        //     else if(ig_md.psn_cmp == 2) {
+        //         ig_md.msn = ig_md.tmp_a;
+        //         mul_256();
+        //         set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
+        //         set_aeth_msn();
+        //         set_aeth_psn(ig_md.tmp_a - 1);
+        //         ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
+        //         return;
+        //     }
+        // }
+        // else if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_TX) {
+        //     if (ig_intr_md.ingress_port != LOOPBACK_PORT) {
+        //         do_read_cond_inc_tx_epsn(ig_md.tx_reg_idx);
+        //         // ig_md.psn_cmp set by comparison
         
-                if (ig_md.psn_cmp == 1){ // loss data
-                    do_read_tx_msn(ig_md.tx_reg_idx); //bit<32> current_msn = ig_md.tmp_b;
-                    ig_md.msn = ig_md.tmp_b;
-                    mul_256();
-                    set_aeth_syndrome(AETH_NAK_SEQ_ERR);
-                    set_aeth_msn();
-                    set_aeth_psn(ig_md.tmp_a - 1);
-                    ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
-                    return;
-                }
-                else if(ig_md.psn_cmp == 2){ // loss ack
-                    do_read_tx_msn(ig_md.tx_reg_idx); //bit<32> current_msn = ig_md.tmp_b;
-                    ig_md.msn = ig_md.tmp_b;
-                    mul_256();
-                    set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
-                    set_aeth_msn();
-                    set_aeth_psn(ig_md.tmp_a - 1);
-                    ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
-                    return;
-                }
-                else if(hdr.bth.opcode != RDMA_OP_WRITE_ONLY && hdr.bth.opcode != RDMA_OP_WRITE_LAST){
-                        do_read_tx_msn(ig_md.tx_reg_idx); //bit<32> current_msn = ig_md.tmp_b;
-                        ig_md.msn = ig_md.tmp_b;
-                        mul_256();
-                        set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
-                        set_aeth_msn();
-                        set_aeth_psn(ig_md.tmp_a);
-                        ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
-                        return;
+        //         if (ig_md.psn_cmp == 1){ // loss data
+        //             do_read_tx_msn(ig_md.tx_reg_idx); //bit<32> current_msn = ig_md.tmp_b;
+        //             ig_md.msn = ig_md.tmp_b;
+        //             mul_256();
+        //             set_aeth_syndrome(AETH_NAK_SEQ_ERR);
+        //             set_aeth_msn();
+        //             set_aeth_psn(ig_md.tmp_a - 1);
+        //             ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
+        //             return;
+        //         }
+        //         else if(ig_md.psn_cmp == 2){ // loss ack
+        //             do_read_tx_msn(ig_md.tx_reg_idx); //bit<32> current_msn = ig_md.tmp_b;
+        //             ig_md.msn = ig_md.tmp_b;
+        //             mul_256();
+        //             set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
+        //             set_aeth_msn();
+        //             set_aeth_psn(ig_md.tmp_a - 1);
+        //             ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
+        //             return;
+        //         }
+        //         else if(hdr.bth.opcode != RDMA_OP_WRITE_ONLY && hdr.bth.opcode != RDMA_OP_WRITE_LAST){
+        //                 do_read_tx_msn(ig_md.tx_reg_idx); //bit<32> current_msn = ig_md.tmp_b;
+        //                 ig_md.msn = ig_md.tmp_b;
+        //                 mul_256();
+        //                 set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
+        //                 set_aeth_msn();
+        //                 set_aeth_psn(ig_md.tmp_a);
+        //                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
+        //                 return;
 
-                }
-                else {
-                    do_read_inc_tx_msn(ig_md.tx_reg_idx);
-                    ig_md.msn = ig_md.tmp_b;
-                    mul_256();
-                    set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
-                    set_aeth_msn();
-                    set_aeth_psn(ig_md.tmp_a);
-                    ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
-                }
+        //         }
+        //         else {
+        //             do_read_inc_tx_msn(ig_md.tx_reg_idx);
+        //             ig_md.msn = ig_md.tmp_b;
+        //             mul_256();
+        //             set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
+        //             set_aeth_msn();
+        //             set_aeth_psn(ig_md.tmp_a);
+        //             ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
+        //         }
                 
-            }
-            else {
-                do_read_add_rx_token_epsn(ig_md.channel_id);
-                ig_md.psn = ig_md.tmp_a;
-                hdr.bth.psn = ig_md.psn;
-                ig_md.is_loopback = true;
-                ig_tm_md.mcast_grp_a = (bit<16>)ig_md.root_rank_id;
-            }
-        }
+        //     }
+        //     else {
+        //         do_read_add_rx_token_epsn(ig_md.channel_id);
+        //         ig_md.psn = ig_md.tmp_a;
+        //         hdr.bth.psn = ig_md.psn;
+        //         ig_md.is_loopback = true;
+        //         ig_tm_md.mcast_grp_a = (bit<16>)ig_md.root_rank_id;
+        //     }
+        // }
 
         
         // ================================================================
@@ -504,37 +511,42 @@ control CombineIngress(
                 // if (ig_md.root_rank_id == 7) { QUEUE_PTR_READ(queue_tail_7);  }
                 if (ig_md.tx_offset_val == ig_md.tmp_c) { return; }
             }
+            else {
+                ig_md.tmp_c = ig_md.tx_loc_val;
+            }
         }
 
         // ================================================================
         // STAGE 4: Token Index Calculation (uses queue_tail from STAGE 3 for BITMAP)
         // ================================================================
-        if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_BITMAP) {
-            // Uses tmp_c (queue_tail) from STAGE 3
-            step1_calc_token_idx_from_tail();
-            step2_calc_token_idx_from_tail();
-            step3_calc_token_idx_from_tail(); // tmp_b = token_idx
-            calc_slot_id_from_token_idx(); // ig_md.tmp_a slot_id
-            calc_slot_index_from_token_idx(); // ig_md.tmp_b slot_index 
-        }
-        else if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_TX) {
-            if (ig_intr_md.ingress_port != LOOPBACK_PORT) {
-                // Uses tx_loc_val from STAGE 2 (NOT queue_tail)
-                step1_calc_token_idx_from_tx_loc();
-                step2_calc_token_idx_from_tx_loc();
-                step3_calc_token_idx_from_tx_loc(); // ig_md.tmp_b token_idx
-                calc_slot_id_from_token_idx(); // ig_md.tmp_a slot_id
-                calc_slot_index_from_token_idx(); // ig_md.tmp_b slot_index 
-                tbl_rank_to_clear_mask.apply(); // ig_md.tmp_c clear_mask
-            }
-            else {
-                step1_calc_next_token_idx();
-                step2_calc_next_token_idx();
-                step3_calc_next_token_idx();
-                calc_slot_id_from_next_token_idx(); // tmp_a = next_slot_id
-                calc_slot_index_from_next_token_idx(); // tmp_b = next_slot_index
-            }
-        }
+        //tbl_cal_slot.apply();
+        
+        // if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_BITMAP) {
+        //     // Uses tmp_c (queue_tail) from STAGE 3
+        //     // step1_calc_token_idx_from_tail();
+        //     // step2_calc_token_idx_from_tail();
+        //     // step3_calc_token_idx_from_tail(); // tmp_b = token_idx
+        //     // calc_slot_id_from_token_idx(); // ig_md.tmp_a slot_id
+        //     // calc_slot_index_from_token_idx(); // ig_md.tmp_b slot_index 
+        // }
+        // else if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_TX) {
+        //     if (ig_intr_md.ingress_port != LOOPBACK_PORT) {
+        //         // Uses tx_loc_val from STAGE 2 (NOT queue_tail)
+        //         // step1_calc_token_idx_from_tx_loc();
+        //         // step2_calc_token_idx_from_tx_loc();
+        //         // step3_calc_token_idx_from_tx_loc(); // ig_md.tmp_b token_idx
+        //         // calc_slot_id_from_token_idx(); // ig_md.tmp_a slot_id
+        //         // calc_slot_index_from_token_idx(); // ig_md.tmp_b slot_index 
+        //         tbl_rank_to_clear_mask.apply(); // ig_md.tmp_c clear_mask
+        //     }
+        //     else {
+        //         // step1_calc_next_token_idx();
+        //         // step2_calc_next_token_idx();
+        //         // step3_calc_next_token_idx();
+        //         // calc_slot_id_from_next_token_idx(); // tmp_a = next_slot_id
+        //         // calc_slot_index_from_next_token_idx(); // tmp_b = next_slot_index
+        //     }
+        // }
 
         // ================================================================
         // STAGE 5: Bitmap Operations
@@ -719,24 +731,41 @@ control CombineEgress(
             eg_md.root_rank_id : exact;
         }
         actions = { set_rx_info; NoAction; }
-        size = 1024;
+        size = 128;
         default_action = NoAction;
     }
 
 
-    action step1_calc_buffer_idx() { eg_md.tmp_a = eg_md.channel_id << 9; }
-    action step2_calc_buffer_idx() { eg_md.tmp_b = eg_md.channel_id << 6; }
-    action step3_calc_buffer_idx() { eg_md.tmp_a = eg_md.tmp_a - eg_md.tmp_b; } // channel_mul_448 eg_md.tmp_a
-    action step4a_set_loc_from_tx_loc() { eg_md.tmp_b = eg_md.tx_loc_val; }
-    action step4b_calc_loc_mul_8() { eg_md.tmp_c = eg_md.tmp_b << 3; }
-    action step5_calc_loc_mul_7() { eg_md.tmp_c = eg_md.tmp_c - eg_md.tmp_b; } // loc_mul_7 tmp_c
-    action step6_calc_buffer_idx() { eg_md.tmp_a = eg_md.tmp_a + eg_md.tmp_c; } // buffer_idx eg_md.tmp_a
-    action step7a_set_offset_from_rid() { eg_md.tmp_b = eg_md.egress_rid; }
-    action step7a_set_offset_from_eg() { eg_md.tmp_b = eg_md.tx_offset_val; }
-    action step7b_add_offset() { eg_md.tmp_a = eg_md.tmp_a + eg_md.tmp_b; } // buffer_idx eg_md.tmp_a
+    // action step1_calc_buffer_idx() { eg_md.tmp_a = eg_md.channel_id << 9; }
+    // action step2_calc_buffer_idx() { eg_md.tmp_b = eg_md.channel_id << 6; }
+    // action step3_calc_buffer_idx() { eg_md.tmp_a = eg_md.tmp_a - eg_md.tmp_b; } // channel_mul_448 eg_md.tmp_a
+    // action step4a_set_loc_from_tx_loc() { eg_md.tmp_b = eg_md.tx_loc_val; }
+    // action step4b_calc_loc_mul_8() { eg_md.tmp_c = eg_md.tmp_b << 3; }
+    // action step5_calc_loc_mul_7() { eg_md.tmp_c = eg_md.tmp_c - eg_md.tmp_b; } // loc_mul_7 tmp_c
+    // action step6_calc_buffer_idx() { eg_md.tmp_a = eg_md.tmp_a + eg_md.tmp_c; } // buffer_idx eg_md.tmp_a
+    // action step7a_set_offset_from_rid() { eg_md.tmp_b = eg_md.egress_rid; }
+    // action step7a_set_offset_from_eg() { eg_md.tmp_b = eg_md.tx_offset_val; }
+    // action step7b_add_offset() { eg_md.tmp_a = eg_md.tmp_a + eg_md.tmp_b; } // buffer_idx eg_md.tmp_a
 
     action step1_calc_psn_add() { eg_md.psn = eg_md.psn + eg_md.egress_rid; } // packet offset eg_md.eg_rank_id
     action step2_write_bth_psn() { hdr.bth.psn = eg_md.psn; }
+
+
+    action cal_buffer_idx(bit<32> buffer_idx){
+        eg_md.tmp_a = buffer_idx;
+    }
+
+    table tbl_buffer_idx {
+        key = {
+            eg_md.channel_id: exact;
+            eg_md.tx_loc_val: exact;
+            eg_md.tmp_b: exact;
+        }
+        actions = {
+            cal_buffer_idx;
+        }
+        size = 128;
+    }
 
     apply {
         
@@ -746,36 +775,40 @@ control CombineEgress(
                 hdr.reth.setValid();
                 hdr.reth.addr = eg_md.next_token_addr;
                 hdr.reth.len = TOKEN_SIZE;
-                hdr.payload.setValid();
-                if (!eg_md.is_loopback) { hdr.payload_first_word.data = eg_md.tx_loc_val; }
+                if (!eg_md.is_loopback) { hdr.payload_first_word.data = eg_md.tx_loc_val; } // if it's loopback packet, first_word is already next loc
                 tbl_rx_info.apply();
                 set_write_first_len();
                 hdr.aeth.setInvalid();
             }
             else { // eg_intr_md.egress_port != LOOPBACK_PORT
-                step1_calc_buffer_idx();
-                step2_calc_buffer_idx();
-                step3_calc_buffer_idx();
-                step4a_set_loc_from_tx_loc();
-                step4b_calc_loc_mul_8();
-                step5_calc_loc_mul_7();
-                step6_calc_buffer_idx();
                 if(eg_md.is_loopback){
-                    step7a_set_offset_from_rid();
+                    eg_md.tmp_b = eg_md.egress_rid;
                 }
                 else {
-                    step7a_set_offset_from_eg();
+                    eg_md.tmp_b = eg_md.tx_offset_val;
                 }
-                step7b_add_offset();
+
+                // step1_calc_buffer_idx();
+                // step2_calc_buffer_idx();
+                // step3_calc_buffer_idx();
+                // step4a_set_loc_from_tx_loc();
+                // step4b_calc_loc_mul_8();
+                // step5_calc_loc_mul_7();
+                // step6_calc_buffer_idx();
+                // if(eg_md.is_loopback){
+                //     step7a_set_offset_from_rid();
+                // }
+                // else {
+                //     step7a_set_offset_from_eg();
+                // }
+                // step7b_add_offset();
+                //tbl_buffer_idx.apply();
 
                 hdr.payload_first_word.setValid();
                 eg_md.tmp_b = hdr.payload_first_word.data;
 
                 if(eg_md.is_loopback){
                     eg_md.tmp_b = ra_read_agg.execute(eg_md.tmp_a);
-                }
-                else if (eg_md.agg_op == AGG_OP.STORE) { 
-                    ra_store.execute(eg_md.tmp_a); 
                 }
                 else { 
                     //do_aggregate(); 
