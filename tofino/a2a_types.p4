@@ -15,17 +15,17 @@ enum bit<8> AGG_OP {
 }
 
 
-enum bit<2> CONN_PHASE {
-    CONN_DISPATCH = 1,
-    CONN_COMBINE = 2,
-    CONN_UNKNOWN = 0
+enum bit<1> CONN_PHASE {
+    CONN_DISPATCH = 0,
+    CONN_COMBINE = 1,
 }
 
-enum bit<2> CONN_SEMANTICS {
+enum bit<3> CONN_SEMANTICS {
     CONN_CONTROL = 0,
     CONN_TX = 1,
     CONN_RX = 2,
-    CONN_BITMAP = 3 // only for combine
+    CONN_BITMAP = 3, // only for combine
+    CONN_LOOPBACK = 4
 }
 
 // partial payload size which can be processed by tofino stages while remaining payload is in the real packet payload

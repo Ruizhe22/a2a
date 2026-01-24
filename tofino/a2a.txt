@@ -6,6 +6,32 @@ pkg_info {
 }
 tables {
   preamble {
+    id: 37396829
+    name: "pipe.A2AIngress.combine_ctrl.tbl_rank_to_clear_mask"
+    alias: "tbl_rank_to_clear_mask"
+  }
+  match_fields {
+    id: 1
+    name: "ig_md.ing_rank_id"
+    bitwidth: 32
+    match_type: EXACT
+  }
+  action_refs {
+    id: 25221030
+  }
+  initial_default_action {
+    action_id: 25221030
+    arguments {
+      param_id: 1
+      value: "\000\000\000\000"
+    }
+  }
+  size: 8
+  is_const_table: true
+  has_initial_entries: true
+}
+tables {
+  preamble {
     id: 48531407
     name: "pipe.A2AIngress.traffic_classify"
     alias: "traffic_classify"
@@ -28,16 +54,24 @@ tables {
     bitwidth: 32
     match_type: EXACT
   }
+  match_fields {
+    id: 4
+    name: "ig_intr_md.ingress_port"
+    bitwidth: 9
+    match_type: EXACT
+  }
   action_refs {
     id: 23149940
   }
   action_refs {
-    id: 16844530
+    id: 21257015
+    annotations: "@defaultonly"
+    scope: DEFAULT_ONLY
   }
   initial_default_action {
-    action_id: 16844530
+    action_id: 21257015
   }
-  size: 32768
+  size: 128
 }
 tables {
   preamble {
@@ -126,6 +160,51 @@ tables {
   }
   size: 128
 }
+tables {
+  preamble {
+    id: 44043810
+    name: "pipe.A2AEgress.combine_egress.tbl_buffer_idx"
+    alias: "tbl_buffer_idx"
+  }
+  match_fields {
+    id: 1
+    name: "eg_md.channel_id"
+    bitwidth: 32
+    match_type: EXACT
+  }
+  match_fields {
+    id: 2
+    name: "eg_md.tx_loc_val"
+    bitwidth: 32
+    match_type: EXACT
+  }
+  match_fields {
+    id: 3
+    name: "eg_md.tmp_b"
+    bitwidth: 32
+    match_type: EXACT
+  }
+  action_refs {
+    id: 18480416
+  }
+  action_refs {
+    id: 21257015
+    annotations: "@defaultonly"
+    scope: DEFAULT_ONLY
+  }
+  initial_default_action {
+    action_id: 21257015
+  }
+  size: 128
+}
+actions {
+  preamble {
+    id: 21257015
+    name: "NoAction"
+    alias: "NoAction"
+    annotations: "@noWarn(\"unused\")"
+  }
+}
 actions {
   preamble {
     id: 26342838
@@ -165,7 +244,21 @@ actions {
   preamble {
     id: 29111771
     name: "A2AIngress.dispatch_ctrl.do_read_cond_inc_tx_epsn"
-    alias: "do_read_cond_inc_tx_epsn"
+    alias: "dispatch_ctrl.do_read_cond_inc_tx_epsn"
+  }
+}
+actions {
+  preamble {
+    id: 32511051
+    name: "A2AIngress.combine_ctrl.do_read_cond_inc_tx_epsn"
+    alias: "combine_ctrl.do_read_cond_inc_tx_epsn"
+  }
+}
+actions {
+  preamble {
+    id: 30788156
+    name: "A2AIngress.combine_ctrl.do_read_inc_tx_msn"
+    alias: "do_read_inc_tx_msn"
   }
 }
 actions {
@@ -194,6 +287,20 @@ actions {
     id: 29694101
     name: "A2AIngress.combine_ctrl.do_reset_tx_offset"
     alias: "do_reset_tx_offset"
+  }
+}
+actions {
+  preamble {
+    id: 21763327
+    name: "A2AIngress.combine_ctrl.do_read_cond_inc_rx_bitmap_epsn"
+    alias: "do_read_cond_inc_rx_bitmap_epsn"
+  }
+}
+actions {
+  preamble {
+    id: 30592437
+    name: "A2AIngress.combine_ctrl.do_read_add_rx_token_epsn"
+    alias: "do_read_add_rx_token_epsn"
   }
 }
 actions {
@@ -247,30 +354,105 @@ actions {
 }
 actions {
   preamble {
-    id: 28837636
-    name: "A2AIngress.combine_ctrl.addr_0_do_read_lo"
-    alias: "addr_0_do_read_lo"
+    id: 25221030
+    name: "A2AIngress.combine_ctrl.set_bitmap_clear_mask"
+    alias: "set_bitmap_clear_mask"
+  }
+  params {
+    id: 1
+    name: "m"
+    bitwidth: 32
   }
 }
 actions {
   preamble {
-    id: 31023326
-    name: "A2AIngress.combine_ctrl.addr_0_do_read_hi"
-    alias: "addr_0_do_read_hi"
+    id: 18925597
+    name: "A2AIngress.combine_ctrl.step1_calc_token_idx_from_tail"
+    alias: "step1_calc_token_idx_from_tail"
   }
 }
 actions {
   preamble {
-    id: 21454549
-    name: "A2AIngress.combine_ctrl.addr_0_do_write_lo"
-    alias: "addr_0_do_write_lo"
+    id: 19461363
+    name: "A2AIngress.combine_ctrl.step2_calc_token_idx_from_tail"
+    alias: "step2_calc_token_idx_from_tail"
   }
 }
 actions {
   preamble {
-    id: 23854731
-    name: "A2AIngress.combine_ctrl.addr_0_do_write_hi"
-    alias: "addr_0_do_write_hi"
+    id: 27382451
+    name: "A2AIngress.combine_ctrl.step3_calc_token_idx_from_tail"
+    alias: "step3_calc_token_idx_from_tail"
+  }
+}
+actions {
+  preamble {
+    id: 19577311
+    name: "A2AIngress.combine_ctrl.calc_slot_index_from_token_idx"
+    alias: "calc_slot_index_from_token_idx"
+  }
+}
+actions {
+  preamble {
+    id: 22764220
+    name: "A2AIngress.combine_ctrl.calc_slot_id_from_token_idx"
+    alias: "calc_slot_id_from_token_idx"
+  }
+}
+actions {
+  preamble {
+    id: 31029939
+    name: "A2AIngress.combine_ctrl.calc_slot_index_from_next_token_idx"
+    alias: "calc_slot_index_from_next_token_idx"
+  }
+}
+actions {
+  preamble {
+    id: 22472066
+    name: "A2AIngress.combine_ctrl.calc_slot_id_from_next_token_idx"
+    alias: "calc_slot_id_from_next_token_idx"
+  }
+}
+actions {
+  preamble {
+    id: 22718605
+    name: "A2AIngress.combine_ctrl.step1_calc_token_idx_from_tx_loc"
+    alias: "step1_calc_token_idx_from_tx_loc"
+  }
+}
+actions {
+  preamble {
+    id: 18411650
+    name: "A2AIngress.combine_ctrl.step2_calc_token_idx_from_tx_loc"
+    alias: "step2_calc_token_idx_from_tx_loc"
+  }
+}
+actions {
+  preamble {
+    id: 26946928
+    name: "A2AIngress.combine_ctrl.step3_calc_token_idx_from_tx_loc"
+    alias: "step3_calc_token_idx_from_tx_loc"
+  }
+}
+actions {
+  preamble {
+    id: 31246154
+    name: "A2AIngress.combine_ctrl.step1_calc_next_token_idx"
+    alias: "step1_calc_next_token_idx"
+  }
+}
+actions {
+  preamble {
+    id: 23861168
+    name: "A2AIngress.combine_ctrl.step2_calc_next_token_idx"
+    alias: "step2_calc_next_token_idx"
+  }
+}
+actions {
+  preamble {
+    id: 21253178
+    name: "A2AIngress.combine_ctrl.step3_calc_next_token_idx"
+    alias: "step3_calc_next_token_idx"
   }
 }
 actions {
@@ -282,12 +464,12 @@ actions {
   params {
     id: 1
     name: "conn_phase"
-    bitwidth: 2
+    bitwidth: 1
   }
   params {
     id: 2
     name: "conn_semantics"
-    bitwidth: 2
+    bitwidth: 3
   }
   params {
     id: 3
@@ -309,20 +491,10 @@ actions {
     name: "root_rank_id"
     bitwidth: 32
   }
-}
-actions {
-  preamble {
-    id: 16844530
-    name: "A2AIngress.set_unknown_traffic"
-    alias: "set_unknown_traffic"
-  }
-}
-actions {
-  preamble {
-    id: 21257015
-    name: "NoAction"
-    alias: "NoAction"
-    annotations: "@noWarn(\"unused\")"
+  params {
+    id: 7
+    name: "reg_idx"
+    bitwidth: 32
   }
 }
 actions {
@@ -423,6 +595,18 @@ actions {
   params {
     id: 4
     name: "rkey"
+    bitwidth: 32
+  }
+}
+actions {
+  preamble {
+    id: 18480416
+    name: "A2AEgress.combine_egress.cal_buffer_idx"
+    alias: "cal_buffer_idx"
+  }
+  params {
+    id: 1
+    name: "buffer_idx"
     bitwidth: 32
   }
 }
@@ -1441,12 +1625,12 @@ externs {
         fields {
           id: 33
           name: "hdr.bridge.conn_phase"
-          bitwidth: 2
+          bitwidth: 1
         }
         fields {
           id: 34
           name: "hdr.bridge.conn_semantics"
-          bitwidth: 2
+          bitwidth: 3
         }
         fields {
           id: 35
@@ -1621,12 +1805,12 @@ externs {
         fields {
           id: 69
           name: "ig_md.conn_phase"
-          bitwidth: 2
+          bitwidth: 1
         }
         fields {
           id: 70
           name: "ig_md.conn_semantics"
-          bitwidth: 2
+          bitwidth: 3
         }
         fields {
           id: 71
@@ -1994,12 +2178,12 @@ externs {
         fields {
           id: 33
           name: "hdr.bridge.conn_phase"
-          bitwidth: 2
+          bitwidth: 1
         }
         fields {
           id: 34
           name: "hdr.bridge.conn_semantics"
-          bitwidth: 2
+          bitwidth: 3
         }
         fields {
           id: 35
@@ -2129,12 +2313,12 @@ externs {
         fields {
           id: 112
           name: "eg_md.conn_phase"
-          bitwidth: 2
+          bitwidth: 1
         }
         fields {
           id: 113
           name: "eg_md.conn_semantics"
-          bitwidth: 2
+          bitwidth: 3
         }
         fields {
           id: 114
@@ -2380,19 +2564,15 @@ type_info {
     key: "CONN_PHASE"
     value {
       underlying_type {
-        bitwidth: 2
+        bitwidth: 1
       }
       members {
         name: "CONN_DISPATCH"
-        value: "\001"
+        value: "\000"
       }
       members {
         name: "CONN_COMBINE"
-        value: "\002"
-      }
-      members {
-        name: "CONN_UNKNOWN"
-        value: "\000"
+        value: "\001"
       }
     }
   }
@@ -2400,7 +2580,7 @@ type_info {
     key: "CONN_SEMANTICS"
     value {
       underlying_type {
-        bitwidth: 2
+        bitwidth: 3
       }
       members {
         name: "CONN_CONTROL"
@@ -2417,6 +2597,10 @@ type_info {
       members {
         name: "CONN_BITMAP"
         value: "\003"
+      }
+      members {
+        name: "CONN_LOOPBACK"
+        value: "\004"
       }
     }
   }

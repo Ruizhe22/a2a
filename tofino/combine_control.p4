@@ -311,163 +311,64 @@ control CombineIngress(
     // action step1_cal_tx_reg_idx() { ig_md.tx_reg_idx = ig_md.ing_rank_id; }
     // action step2_cal_tx_reg_idx() { ig_md.tx_reg_idx = ig_md.tx_reg_idx + ig_md.channel_class; }
 
-    // action step1_calc_token_idx_from_tail() { ig_md.tmp_a = ig_md.channel_id * 64; }
-    // action step2_calc_token_idx_from_tail() { ig_md.tmp_b = ig_md.tmp_c; }
-    // action step3_calc_token_idx_from_tail() { ig_md.tmp_b = ig_md.tmp_b + ig_md.tmp_a; } // tmp_b as token_idx
+    action step1_calc_token_idx_from_tail() { ig_md.tmp_a = ig_md.channel_id * 64; }
+    action step2_calc_token_idx_from_tail() { ig_md.tmp_b = ig_md.tmp_c; }
+    action step3_calc_token_idx_from_tail() { ig_md.tmp_b = ig_md.tmp_b + ig_md.tmp_a; } // tmp_b as token_idx
     
-    // action calc_slot_index_from_token_idx() { ig_md.tmp_b = ig_md.tmp_b >> 3; } // tmp_b as slot_index
-    // action calc_slot_id_from_token_idx() { ig_md.tmp_a = ig_md.tmp_b & 0x7;} // tmp_a as slot_id
+    action calc_slot_index_from_token_idx() { ig_md.tmp_b = ig_md.tmp_b >> 3; } // tmp_b as slot_index
+    action calc_slot_id_from_token_idx() { ig_md.tmp_a = ig_md.tmp_b & 0x7;} // tmp_a as slot_id
 
-    // action calc_slot_index_from_next_token_idx() { ig_md.tmp_b = ig_md.tmp_b >> 3; } // tmp_b = next_slot_index
-    // action calc_slot_id_from_next_token_idx() { ig_md.tmp_a = ig_md.tmp_b & 0x7;} // tmp_a as slot_id
+    action calc_slot_index_from_next_token_idx() { ig_md.tmp_b = ig_md.tmp_b >> 3; } // tmp_b = next_slot_index
+    action calc_slot_id_from_next_token_idx() { ig_md.tmp_a = ig_md.tmp_b & 0x7;} // tmp_a as slot_id
 
 
-    // action step1_calc_token_idx_from_tx_loc() { ig_md.tmp_a = ig_md.channel_id * 64; }
-    // action step2_calc_token_idx_from_tx_loc() { ig_md.tmp_b = ig_md.tx_loc_val; }
-    // action step3_calc_token_idx_from_tx_loc() { ig_md.tmp_b = ig_md.tmp_b + ig_md.tmp_a; }
+    action step1_calc_token_idx_from_tx_loc() { ig_md.tmp_a = ig_md.channel_id * 64; }
+    action step2_calc_token_idx_from_tx_loc() { ig_md.tmp_b = ig_md.tx_loc_val; }
+    action step3_calc_token_idx_from_tx_loc() { ig_md.tmp_b = ig_md.tmp_b + ig_md.tmp_a; }
 
-    // action step1_calc_next_token_idx() { ig_md.tmp_a = ig_md.channel_id * 64; }
-    // action step2_calc_next_token_idx() { ig_md.tmp_b = ig_md.tx_offset_val; }
-    // action step3_calc_next_token_idx() { ig_md.tmp_b = ig_md.tmp_b + ig_md.tmp_a; }
-
-    // action step1_calc_shift_head() { ig_md.tmp_a = ig_md.tmp_a << 16; }
-    // action step2_calc_combine_tail() { ig_md.tmp_a = ig_md.tmp_a | ig_md.tmp_c; }
-    // action step3_write_payload_data_0() { hdr.payload.data00 = ig_md.tmp_a; }
-    // action step3_write_payload_data_1() { hdr.payload.data01 = ig_md.tmp_a; }
-    // action step3_write_payload_data_2() { hdr.payload.data02 = ig_md.tmp_a; }
-    // action step3_write_payload_data_3() { hdr.payload.data03 = ig_md.tmp_a; }
-    // action step3_write_payload_data_4() { hdr.payload.data04 = ig_md.tmp_a; }
-    // action step3_write_payload_data_5() { hdr.payload.data05 = ig_md.tmp_a; }
-    // action step3_write_payload_data_6() { hdr.payload.data06 = ig_md.tmp_a; }
-    // action step3_write_payload_data_7() { hdr.payload.data07 = ig_md.tmp_a; }
-
-    // action step1_calc_next_token_idx_from_next_loc() { ig_md.tmp_a = ig_md.channel_id << 6; }
-    // action step2_calc_next_token_idx_from_next_loc() { ig_md.tmp_b = ig_md.tmp_a + ig_md.tmp_b; }
-
-    // action step_write_addr_lo() { ig_md.next_token_addr[31:0] = ig_md.tmp_d; }
-    // action step_write_addr_hi() { ig_md.next_token_addr[63:32] = ig_md.tmp_e; }
+    action step1_calc_next_token_idx() { ig_md.tmp_a = ig_md.channel_id * 64; }
+    action step2_calc_next_token_idx() { ig_md.tmp_b = ig_md.tx_offset_val; }
+    action step3_calc_next_token_idx() { ig_md.tmp_b = ig_md.tmp_b + ig_md.tmp_a; }
 
     /***************************************************************************
      * Apply
      ***************************************************************************/
     apply {
-    
-        ig_md.tx_reg_idx = ig_md.ing_rank_id + ig_md.channel_class;
 
-        // ================================================================
-        // STAGE 1: PSN Processing
-        // ================================================================
-        
-        // No PSN check needed for CONTROL
-
-        // if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_BITMAP) {
-        //     do_read_cond_inc_rx_bitmap_epsn(ig_md.channel_id);
-        //     ig_md.psn_diff = ig_md.psn - ig_md.tmp_a;
-        //     // ig_md.psn_cmp set by comparison
-        //     tbl_compare_psn.apply();
-        //     if(ig_md.psn_cmp == 1) { // psn < epsn
-        //         ig_md.msn = ig_md.tmp_a;
-        //         mul_256();
-        //         set_aeth_syndrome(AETH_NAK_SEQ_ERR);
-        //         set_aeth_msn();
-        //         set_aeth_psn(ig_md.tmp_a - 1);
-        //         ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
-        //         return;
-        //     }
-        //     else if(ig_md.psn_cmp == 2) {
-        //         ig_md.msn = ig_md.tmp_a;
-        //         mul_256();
-        //         set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
-        //         set_aeth_msn();
-        //         set_aeth_psn(ig_md.tmp_a - 1);
-        //         ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
-        //         return;
-        //     }
-        // }
-        // else if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_TX) {
-        //     if (ig_intr_md.ingress_port != LOOPBACK_PORT) {
-        //         do_read_cond_inc_tx_epsn(ig_md.tx_reg_idx);
-        //         // ig_md.psn_cmp set by comparison
-        
-        //         if (ig_md.psn_cmp == 1){ // loss data
-        //             do_read_tx_msn(ig_md.tx_reg_idx); //bit<32> current_msn = ig_md.tmp_b;
-        //             ig_md.msn = ig_md.tmp_b;
-        //             mul_256();
-        //             set_aeth_syndrome(AETH_NAK_SEQ_ERR);
-        //             set_aeth_msn();
-        //             set_aeth_psn(ig_md.tmp_a - 1);
-        //             ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
-        //             return;
-        //         }
-        //         else if(ig_md.psn_cmp == 2){ // loss ack
-        //             do_read_tx_msn(ig_md.tx_reg_idx); //bit<32> current_msn = ig_md.tmp_b;
-        //             ig_md.msn = ig_md.tmp_b;
-        //             mul_256();
-        //             set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
-        //             set_aeth_msn();
-        //             set_aeth_psn(ig_md.tmp_a - 1);
-        //             ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
-        //             return;
-        //         }
-        //         else if(hdr.bth.opcode != RDMA_OP_WRITE_ONLY && hdr.bth.opcode != RDMA_OP_WRITE_LAST){
-        //                 do_read_tx_msn(ig_md.tx_reg_idx); //bit<32> current_msn = ig_md.tmp_b;
-        //                 ig_md.msn = ig_md.tmp_b;
-        //                 mul_256();
-        //                 set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
-        //                 set_aeth_msn();
-        //                 set_aeth_psn(ig_md.tmp_a);
-        //                 ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
-        //                 return;
-
-        //         }
-        //         else {
-        //             do_read_inc_tx_msn(ig_md.tx_reg_idx);
-        //             ig_md.msn = ig_md.tmp_b;
-        //             mul_256();
-        //             set_aeth_syndrome(AETH_ACK_CREDIT_INVALID);
-        //             set_aeth_msn();
-        //             set_aeth_psn(ig_md.tmp_a);
-        //             ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
-        //         }
-                
-        //     }
-        //     else {
-        //         do_read_add_rx_token_epsn(ig_md.channel_id);
-        //         ig_md.psn = ig_md.tmp_a;
-        //         hdr.bth.psn = ig_md.psn;
-        //         ig_md.is_loopback = true;
-        //         ig_tm_md.mcast_grp_a = (bit<16>)ig_md.root_rank_id;
-        //     }
-        // }
-
-        
-        // ================================================================
-        // STAGE 2: Token Location/Offset
-        // ================================================================
-        if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_TX) {
-            if(ig_intr_md.ingress_port != LOOPBACK_PORT){
-                ig_md.tx_loc_val = hdr.reth.addr[63:32];
-                ig_md.tx_offset_val = 0;
-                if (hdr.bth.opcode == RDMA_OP_WRITE_FIRST || hdr.bth.opcode == RDMA_OP_WRITE_ONLY) {     
-                    do_write_tx_loc(ig_md.tx_reg_idx);
-                    do_reset_tx_offset(ig_md.tx_reg_idx);
-                } else {
-                    do_read_tx_loc(ig_md.tx_reg_idx);
-                    do_read_inc_tx_offset(ig_md.tx_reg_idx);
-                }
+        if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_BITMAP) {
+            do_read_cond_inc_rx_bitmap_epsn(ig_md.channel_id);
+        }
+        else if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_TX) {
+            do_read_cond_inc_tx_epsn(ig_md.tx_reg_idx);
+            do_read_inc_tx_msn(ig_md.tx_reg_idx);
+            ig_md.msn = ig_md.tmp_b;
+            if(hdr.bth.opcode != RDMA_OP_WRITE_LAST){
+                return;
             }
-            else{
-                bit<8> token_loc = (bit<8>)hdr.payload.data00;
+            ig_md.tx_loc_val = hdr.reth.addr[63:32];
+            ig_md.tx_offset_val = 0;
+
+            if (hdr.bth.opcode == RDMA_OP_WRITE_FIRST || hdr.bth.opcode == RDMA_OP_WRITE_ONLY) {     
+                do_write_tx_loc(ig_md.tx_reg_idx);
+                do_reset_tx_offset(ig_md.tx_reg_idx);
+            } else {
+                do_read_tx_loc(ig_md.tx_reg_idx);
+                do_read_inc_tx_offset(ig_md.tx_reg_idx);
+            }
+        }
+        else if(ig_md.conn_semantics == CONN_SEMANTICS.CONN_LOOPBACK){
+                do_read_add_rx_token_epsn(ig_md.channel_id);
+                ig_md.psn = ig_md.tmp_a;
+                hdr.bth.psn = ig_md.psn;
+                ig_md.is_loopback = true;
+                ig_tm_md.mcast_grp_a = (bit<16>)ig_md.root_rank_id;
                 ig_md.tx_loc_val = hdr.payload.data00;
-                if (token_loc == 63) { ig_md.tx_offset_val = 0; }
+                if (ig_md.tx_loc_val == 63) { ig_md.tx_offset_val = 0; }
                 else { ig_md.tx_offset_val = ig_md.tx_loc_val + 1; } // payload,tx_offset_val, next_loc ,  to save space.
-            }
-            
+        
         }
 
-        // ================================================================
-        // STAGE 3: Queue Tail Operations (MUST be before Token Index for BITMAP)
-        // ================================================================
+
         if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_CONTROL) {
                 QUEUE_PTR_READ(queue_tail_0); // queue_tail -> tmp_c
                 hdr.payload.data00 = ig_md.tmp_c;
@@ -485,8 +386,6 @@ control CombineIngress(
                 // hdr.payload.data06 = ig_md.tmp_c;
                 // QUEUE_PTR_READ(queue_tail_7); // queue_tail -> tmp_c
                 // hdr.payload.data07 = ig_md.tmp_c;
-
-
         }
         else if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_BITMAP) {
                 // Read and increment queue tail, result in tmp_c
@@ -498,60 +397,13 @@ control CombineIngress(
                 // if (ig_md.ing_rank_id == 5) { QUEUE_PTR_READ_ADD(queue_tail_5);  }
                 // if (ig_md.ing_rank_id == 6) { QUEUE_PTR_READ_ADD(queue_tail_6);  }
                 // if (ig_md.ing_rank_id == 7) { QUEUE_PTR_READ_ADD(queue_tail_7);  }
-        }
-        else if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_TX) {
-            if (ig_intr_md.ingress_port == LOOPBACK_PORT) {
-                if (ig_md.root_rank_id == 0)      { QUEUE_PTR_READ(queue_tail_0);  }
-                // if (ig_md.root_rank_id == 1) { QUEUE_PTR_READ(queue_tail_1);  }
-                // if (ig_md.root_rank_id == 2) { QUEUE_PTR_READ(queue_tail_2);  }
-                // if (ig_md.root_rank_id == 3) { QUEUE_PTR_READ(queue_tail_3);  }
-                // if (ig_md.root_rank_id == 4) { QUEUE_PTR_READ(queue_tail_4);  }
-                // if (ig_md.root_rank_id == 5) { QUEUE_PTR_READ(queue_tail_5);  }
-                // if (ig_md.root_rank_id == 6) { QUEUE_PTR_READ(queue_tail_6);  }
-                // if (ig_md.root_rank_id == 7) { QUEUE_PTR_READ(queue_tail_7);  }
-                if (ig_md.tx_offset_val == ig_md.tmp_c) { return; }
-            }
-            else {
-                ig_md.tmp_c = ig_md.tx_loc_val;
-            }
-        }
 
-        // ================================================================
-        // STAGE 4: Token Index Calculation (uses queue_tail from STAGE 3 for BITMAP)
-        // ================================================================
-        //tbl_cal_slot.apply();
-        
-        // if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_BITMAP) {
-        //     // Uses tmp_c (queue_tail) from STAGE 3
-        //     // step1_calc_token_idx_from_tail();
-        //     // step2_calc_token_idx_from_tail();
-        //     // step3_calc_token_idx_from_tail(); // tmp_b = token_idx
-        //     // calc_slot_id_from_token_idx(); // ig_md.tmp_a slot_id
-        //     // calc_slot_index_from_token_idx(); // ig_md.tmp_b slot_index 
-        // }
-        // else if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_TX) {
-        //     if (ig_intr_md.ingress_port != LOOPBACK_PORT) {
-        //         // Uses tx_loc_val from STAGE 2 (NOT queue_tail)
-        //         // step1_calc_token_idx_from_tx_loc();
-        //         // step2_calc_token_idx_from_tx_loc();
-        //         // step3_calc_token_idx_from_tx_loc(); // ig_md.tmp_b token_idx
-        //         // calc_slot_id_from_token_idx(); // ig_md.tmp_a slot_id
-        //         // calc_slot_index_from_token_idx(); // ig_md.tmp_b slot_index 
-        //         tbl_rank_to_clear_mask.apply(); // ig_md.tmp_c clear_mask
-        //     }
-        //     else {
-        //         // step1_calc_next_token_idx();
-        //         // step2_calc_next_token_idx();
-        //         // step3_calc_next_token_idx();
-        //         // calc_slot_id_from_next_token_idx(); // tmp_a = next_slot_id
-        //         // calc_slot_index_from_next_token_idx(); // tmp_b = next_slot_index
-        //     }
-        // }
+                step1_calc_token_idx_from_tail();
+                step2_calc_token_idx_from_tail();
+                step3_calc_token_idx_from_tail(); // tmp_b = token_idx
+                calc_slot_id_from_token_idx(); // ig_md.tmp_a slot_id
+                calc_slot_index_from_token_idx(); // ig_md.tmp_b slot_index
 
-        // ================================================================
-        // STAGE 5: Bitmap Operations
-        // ================================================================
-        if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_BITMAP) {
                 ig_md.tmp_c = hdr.payload.data00; 
                 BITMAP_WRITE(bitmap_0);
                 // ig_md.tmp_c = hdr.payload.data01; 
@@ -570,8 +422,14 @@ control CombineIngress(
                 // BITMAP_WRITE(bitmap_7);
         }
         else if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_TX) {
-            if (ig_intr_md.ingress_port != LOOPBACK_PORT) {
-                // BITMAP_CLEAR_BIT based on tmp_a (slot_id)
+                //ig_md.tmp_c = ig_md.tx_loc_val;
+                step1_calc_token_idx_from_tx_loc();
+                step2_calc_token_idx_from_tx_loc();
+                step3_calc_token_idx_from_tx_loc(); // ig_md.tmp_b token_idx
+                calc_slot_id_from_token_idx(); // ig_md.tmp_a slot_id
+                calc_slot_index_from_token_idx(); // ig_md.tmp_b slot_index 
+                tbl_rank_to_clear_mask.apply(); // ig_md.tmp_c clear_mask
+
                 if (ig_md.tmp_a == 0)      { BITMAP_CLEAR_BIT(bitmap_0);} // ig_md.tmp_c bitmap_result 
                 // if (ig_md.tmp_a == 1) { BITMAP_CLEAR_BIT(bitmap_1); }
                 // if (ig_md.tmp_a == 2) { BITMAP_CLEAR_BIT(bitmap_2); }
@@ -581,26 +439,6 @@ control CombineIngress(
                 // if (ig_md.tmp_a == 6) { BITMAP_CLEAR_BIT(bitmap_6); }
                 // else                  { BITMAP_CLEAR_BIT(bitmap_7); }
 
-            }
-            else if (ig_intr_md.ingress_port == LOOPBACK_PORT) {
-                if (ig_md.tmp_a == 0)      { BITMAP_READ(bitmap_0);} // ig_md.tmp_c bitmap_result 
-                // if (ig_md.tmp_a == 1) { BITMAP_READ(bitmap_1); }
-                // if (ig_md.tmp_a == 2) { BITMAP_READ(bitmap_2); }
-                // if (ig_md.tmp_a == 3) { BITMAP_READ(bitmap_3); }
-                // if (ig_md.tmp_a == 4) { BITMAP_READ(bitmap_4); }
-                // if (ig_md.tmp_a == 5) { BITMAP_READ(bitmap_5); }
-                // if (ig_md.tmp_a == 6) { BITMAP_READ(bitmap_6); }
-                // else                  { BITMAP_READ(bitmap_7); }
-            }
-
-            if(ig_md.tmp_c != 0) { return; } // token aggregation finished
-        }
-
-        // ================================================================
-        // STAGE 6: Queue Head / Incomplete Operations
-        // ================================================================
-        if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_TX) {
-            if (ig_intr_md.ingress_port != LOOPBACK_PORT) {
                 if (ig_md.ing_rank_id == 0)      { QUEUE_PTR_COND_INC(queue_head_0); }
                 // if (ig_md.ing_rank_id == 1) { QUEUE_PTR_COND_INC(queue_head_1); }
                 // if (ig_md.ing_rank_id == 2) { QUEUE_PTR_COND_INC(queue_head_2); }
@@ -612,11 +450,41 @@ control CombineIngress(
 
                 if(ig_md.tmp_c != ig_md.tx_loc_val) { return; }
                 else { ig_tm_md.mcast_grp_b = LOOPBACK_MCAST_GRP; }
+        }
+        else if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_LOOPBACK) {
+                if (ig_md.root_rank_id == 0)      { QUEUE_PTR_READ(queue_tail_0);  }
+                // if (ig_md.root_rank_id == 1) { QUEUE_PTR_READ(queue_tail_1);  }
+                // if (ig_md.root_rank_id == 2) { QUEUE_PTR_READ(queue_tail_2);  }
+                // if (ig_md.root_rank_id == 3) { QUEUE_PTR_READ(queue_tail_3);  }
+                // if (ig_md.root_rank_id == 4) { QUEUE_PTR_READ(queue_tail_4);  }
+                // if (ig_md.root_rank_id == 5) { QUEUE_PTR_READ(queue_tail_5);  }
+                // if (ig_md.root_rank_id == 6) { QUEUE_PTR_READ(queue_tail_6);  }
+                // if (ig_md.root_rank_id == 7) { QUEUE_PTR_READ(queue_tail_7);  }
+                if (ig_md.tx_offset_val == ig_md.tmp_c) { return; }
 
-            }
+                step1_calc_next_token_idx();
+                step2_calc_next_token_idx();
+                step3_calc_next_token_idx();
+                calc_slot_id_from_next_token_idx(); // tmp_a = next_slot_id
+                calc_slot_index_from_next_token_idx(); // tmp_b = next_slot_index
 
-            else {
-                
+                if (ig_md.tmp_a == 0)      { BITMAP_READ(bitmap_0);} // ig_md.tmp_c bitmap_result 
+                // if (ig_md.tmp_a == 1) { BITMAP_READ(bitmap_1); }
+                // if (ig_md.tmp_a == 2) { BITMAP_READ(bitmap_2); }
+                // if (ig_md.tmp_a == 3) { BITMAP_READ(bitmap_3); }
+                // if (ig_md.tmp_a == 4) { BITMAP_READ(bitmap_4); }
+                // if (ig_md.tmp_a == 5) { BITMAP_READ(bitmap_5); }
+                // if (ig_md.tmp_a == 6) { BITMAP_READ(bitmap_6); }
+                // else                  { BITMAP_READ(bitmap_7); }
+            
+
+                if(ig_md.tmp_c != 0) { return; } 
+                else {
+                    hdr.payload.data00 = ig_md.tx_offset_val;
+                    ig_tm_md.mcast_grp_b = LOOPBACK_MCAST_GRP;
+                }
+                // token aggregation finished
+
                 if (ig_md.root_rank_id == 0)    { QUEUE_PTR_INC(queue_head_0); }
                 // if (ig_md.root_rank_id == 1) { QUEUE_PTR_INC(queue_head_1); }
                 // if (ig_md.root_rank_id == 2) { QUEUE_PTR_INC(queue_head_2); }
@@ -626,35 +494,8 @@ control CombineIngress(
                 // if (ig_md.root_rank_id == 6) { QUEUE_PTR_INC(queue_head_6); }
                 // if (ig_md.root_rank_id == 7) { QUEUE_PTR_INC(queue_head_7); }
                 
-                hdr.payload.data00 = ig_md.tx_offset_val;
-                ig_tm_md.mcast_grp_b = LOOPBACK_MCAST_GRP;
                 
-            }
-        }
-
-        // ================================================================
-        // STAGE 7: Address Operations
-        // ================================================================
-        if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_BITMAP) {
-            // ADDR_WRITE based on slot
-            //ig_md.tmp_d = hdr.payload.data08;
-            //ig_md.tmp_e = hdr.payload.data09;
-            ADDR_WRITE(addr_0);
-            // ... addr_1..7
-        }
-        else if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_TX) {
-            if (ig_md.tmp_a == 0)    { ADDR_READ(addr_0);} // ig_md.tmp_d, ig_md.tmp_e
-            // if (ig_md.tmp_a == 1) { ADDR_READ(addr_1); }
-            // if (ig_md.tmp_a == 2) { ADDR_READ(addr_2); }
-            // if (ig_md.tmp_a == 3) { ADDR_READ(addr_3); }
-            // if (ig_md.tmp_a == 4) { ADDR_READ(addr_4); }
-            // if (ig_md.tmp_a == 5) { ADDR_READ(addr_5); }
-            // if (ig_md.tmp_a == 6) { ADDR_READ(addr_6); }
-            // else                  { ADDR_READ(addr_7); }
-
-            ig_md.next_token_addr[31:0] = ig_md.tmp_d;
-            ig_md.next_token_addr[63:32] = ig_md.tmp_e;
-        }
+        }        
 
     }
 }
@@ -802,7 +643,7 @@ control CombineEgress(
                 //     step7a_set_offset_from_eg();
                 // }
                 // step7b_add_offset();
-                //tbl_buffer_idx.apply();
+                tbl_buffer_idx.apply();
 
                 hdr.payload_first_word.setValid();
                 eg_md.tmp_b = hdr.payload_first_word.data;
@@ -811,7 +652,6 @@ control CombineEgress(
                     eg_md.tmp_b = ra_read_agg.execute(eg_md.tmp_a);
                 }
                 else { 
-                    //do_aggregate(); 
                     ra_aggregate.execute(eg_md.tmp_a);    
                 }
 
@@ -819,8 +659,6 @@ control CombineEgress(
                     hdr.payload_first_word.data = eg_md.tmp_b;
                     eg_md.psn = eg_md.psn + eg_md.egress_rid;
                     hdr.bth.psn = eg_md.psn;
-                    //step1_calc_psn_add();
-                    //step2_write_bth_psn();
                     if (eg_md.eg_rank_id == 0) {
                         hdr.bth.opcode = RDMA_OP_WRITE_FIRST;
                         hdr.reth.setValid();

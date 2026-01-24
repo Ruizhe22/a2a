@@ -15,17 +15,14 @@ control A2AIngress(
      * Classify dispatch and combine traffic based on QP, IP, etc.
      */
     
-    action set_a2a_traffic(CONN_PHASE conn_phase, CONN_SEMANTICS conn_semantics, bit<32> channel_id, bit<32> channel_class, bit<32> ing_rank_id, bit<32> root_rank_id) {
+    action set_a2a_traffic(CONN_PHASE conn_phase, CONN_SEMANTICS conn_semantics, bit<32> channel_id, bit<32> channel_class, bit<32> ing_rank_id, bit<32> root_rank_id, bit<32> reg_idx) {
         ig_md.conn_phase = conn_phase;
         ig_md.conn_semantics = conn_semantics;
         ig_md.channel_id = channel_id;
         ig_md.ing_rank_id = ing_rank_id;
         ig_md.root_rank_id = root_rank_id;
         ig_md.channel_class = channel_class;
-    }
-
-    action set_unknown_traffic() {
-        ig_md.conn_phase = CONN_PHASE.CONN_UNKNOWN;
+        ig_md.tx_reg_idx = reg_idx;
     }
     
     // classification table: distinguish traffic type and connection info based on QPN and IPs
@@ -34,13 +31,12 @@ control A2AIngress(
             hdr.ipv4.src_addr : exact;
             hdr.ipv4.dst_addr : exact;
             hdr.bth.dst_qp : exact;
+            ig_intr_md.ingress_port: exact;
         }
         actions = {
             set_a2a_traffic;
-            set_unknown_traffic;
         }
-        size = 32768;
-        default_action = set_unknown_traffic;
+        size = 128;
     }
 
     action set_bridge_ing_rank_id() {
@@ -110,18 +106,10 @@ control A2AIngress(
     
     
     apply {
-        // Process only RoCE packets
-        if (!ig_md.is_roce) {
-            ig_dprsr_md.drop_ctl = 1;
-            return;
-        }
 
         ig_md.psn = hdr.bth.psn;
         ig_md.psn[0:0] = 0;
-        if(hdr.aeth.isValid()){
-            ig_md.msn = hdr.aeth.msn & 32w0xFFFFFF00;
-            ig_md.syndrome = hdr.aeth.msn & 32w0x000000FF;
-        }
+        
         // Traffic classification
         traffic_classify.apply();
         
@@ -130,28 +118,25 @@ control A2AIngress(
             dispatch_ctrl.apply(hdr, ig_md, ig_intr_md, ig_dprsr_md, ig_tm_md);
         } else if (ig_md.conn_phase == CONN_PHASE.CONN_COMBINE) {
             combine_ctrl.apply(hdr, ig_md, ig_intr_md, ig_dprsr_md, ig_tm_md);
-        } else {
-            // drop unknown traffic
-            ig_dprsr_md.drop_ctl = 1;
         }
 
-        // hdr.bridge.setValid();
-        // hdr.bridge.ing_rank_id = ig_md.ing_rank_id;
-        // hdr.bridge.has_reth = (bit<1>)ig_md.has_reth;
-        // hdr.bridge.has_aeth = (bit<1>)ig_md.has_aeth;
-        // hdr.bridge.has_payload = (bit<1>)ig_md.has_payload;
-        // hdr.bridge.conn_phase = ig_md.conn_phase;
-        // hdr.bridge.conn_semantics = ig_md.conn_semantics;
-        // hdr.bridge.channel_id = ig_md.channel_id;
-        // hdr.bridge.bitmap = ig_md.bitmap;
-        // hdr.bridge.tx_loc_val = ig_md.tx_loc_val;
-        // hdr.bridge.tx_offset_val = ig_md.tx_offset_val;
-        // hdr.bridge.agg_op = ig_md.agg_op;
-        // hdr.bridge.is_loopback = (bit<1>)ig_md.is_loopback;
-        // hdr.bridge.root_rank_id[15:0] = ig_md.root_rank_id[15:0];
-        // hdr.bridge.root_rank_id[31:16] = ig_md.root_rank_id[31:16];
-        // hdr.bridge.next_token_addr[63:32] = ig_md.next_token_addr[63:32];
-        // hdr.bridge.next_token_addr[31:0] = ig_md.next_token_addr[31:0];
+        hdr.bridge.setValid();
+        hdr.bridge.ing_rank_id = ig_md.ing_rank_id;
+        hdr.bridge.has_reth = (bit<1>)ig_md.has_reth;
+        hdr.bridge.has_aeth = (bit<1>)ig_md.has_aeth;
+        hdr.bridge.has_payload = (bit<1>)ig_md.has_payload;
+        hdr.bridge.conn_phase = ig_md.conn_phase;
+        hdr.bridge.conn_semantics = ig_md.conn_semantics;
+        hdr.bridge.channel_id = ig_md.channel_id;
+        hdr.bridge.bitmap = ig_md.bitmap;
+        hdr.bridge.tx_loc_val = ig_md.tx_loc_val;
+        hdr.bridge.tx_offset_val = ig_md.tx_offset_val;
+        hdr.bridge.agg_op = ig_md.agg_op;
+        hdr.bridge.is_loopback = (bit<1>)ig_md.is_loopback;
+        hdr.bridge.root_rank_id[15:0] = ig_md.root_rank_id[15:0];
+        hdr.bridge.root_rank_id[31:16] = ig_md.root_rank_id[31:16];
+        hdr.bridge.next_token_addr[63:32] = ig_md.next_token_addr[63:32];
+        hdr.bridge.next_token_addr[31:0] = ig_md.next_token_addr[31:0];
         // set_bridge_ing_rank_id();
         // set_bridge_has_reth();
         // set_bridge_has_aeth();
