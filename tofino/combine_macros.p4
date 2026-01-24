@@ -14,9 +14,13 @@
 
 #define QUEUE_PTR_SLOT_DECLARE(NAME) \
     Register<bit<32>, bit<32>>(NUM_COMBINE_CHANNELS_PER_RX) NAME##_reg; \
-    RegisterAction<bit<32>, bit<32>, void>(NAME##_reg) NAME##_ra_init = { \
-        void apply(inout bit<32> value) { \
-            value = 0; \
+    RegisterAction<bit<32>, bit<32>, bit<32>>(NAME##_reg) NAME##_ra_cond_inc = { \
+        void apply(inout bit<32> value, out bit<32> result) { \
+            result = value; \
+            if(value == ig_md.tx_loc_val) { \
+                if (value == 63) { value = 0; } \
+                else { value = value + 1; } \
+            } \
         } \
     }; \
     RegisterAction<bit<32>, bit<32>, bit<32>>(NAME##_reg) NAME##_ra_read = { \
@@ -43,8 +47,8 @@
             } \
         } \
     }; \
-    action NAME##_do_init() { \
-        NAME##_ra_init.execute(ig_md.channel_class); \
+    action NAME##_do_cond_inc() { \
+        ig_md.tmp_c = NAME##_ra_cond_inc.execute(ig_md.channel_class); \
     } \
     action NAME##_do_read() { \
         ig_md.tmp_c = NAME##_ra_read.execute(ig_md.channel_class); \
@@ -57,7 +61,7 @@
     }
 
 // Simplified call macros
-#define QUEUE_PTR_INIT(NAME)      NAME##_do_init()
+#define QUEUE_PTR_COND_INC(NAME)      NAME##_do_cond_inc()
 #define QUEUE_PTR_READ(NAME)      NAME##_do_read()
 #define QUEUE_PTR_INC(NAME)       NAME##_do_inc()
 #define QUEUE_PTR_READ_ADD(NAME)  NAME##_do_read_add()
@@ -163,8 +167,9 @@
     } \
     action NAME##_do_write_hi() { \
         NAME##_ra_hi_write.execute(ig_md.tmp_b); \
-    } \
+    } 
+
 
 // Simplified call macros  
-#define ADDR_READ(NAME)   NAME##_do_read_lo();NAME##_do_read_hi()
-#define ADDR_WRITE(NAME)  NAME##_do_write_lo();NAME##_do_write_hi()
+#define ADDR_READ(NAME)  NAME##_do_read_lo();NAME##_do_read_hi()
+#define ADDR_WRITE(NAME) NAME##_do_write_lo();NAME##_do_write_hi()

@@ -1,0 +1,1102 @@
+digraph ingress {
+cond_86 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.is_roce\l\l
+ "];
+tbl_a2a_ingress_control119 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_a2a_ingress_control119\l\l
+R:\l
+ hdr.bth.psn\l
+\lW:\l
+ ig_md.psn\l
+ "];
+tbl_a2a_ingress_control115 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_a2a_ingress_control115\l\l
+W:\l
+ ig_intr_md_for_dprsr.drop_ctl\l
+ "];
+tbl_a2a_ingress_control120 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_a2a_ingress_control120\l\l
+W:\l
+ ig_md.psn\l
+ "];
+cond_87 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.aeth.$valid == 1\l\l
+ "];
+traffic_classify_0 [ shape=record, style="filled", fillcolor=cornsilk, label="traffic_classify_0\l\l
+M:\l
+ hdr.ipv4.src_addr\l
+ hdr.ipv4.dst_addr\l
+ hdr.bth.dst_qp\l
+\lW:\l
+ hdr.bridge.conn_phase\l
+ hdr.bridge.conn_semantics\l
+ hdr.bridge.channel_id\l
+ hdr.bridge.ing_rank_id\l
+ ig_md.root_rank_id\l
+ ig_md.channel_class\l
+ "];
+cond_88 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.conn_phase == 1\l\l
+ "];
+cond_89 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.conn_semantics == 2 && hdr.bth.opcode == 17\l\l
+ "];
+cond_95 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.conn_phase == 2\l\l
+ "];
+tbl_dispatch_control154 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control154\l\l
+W:\l
+ ig_intr_md_for_dprsr.drop_ctl\l
+ "];
+cond_90 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.conn_semantics == 0\l\l
+ "];
+tbl_a2a_ingress_control138 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_a2a_ingress_control138\l\l
+R:\l
+ ig_md.root_rank_id\l
+\lW:\l
+ hdr.bridge.$valid\l
+ hdr.bridge.root_rank_id\l
+ "];
+tbl_dispatch_ctrl_do_init_tx_epsn [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_ctrl_do_init_tx_epsn\l\l
+R:\l
+ ig_md.psn\l
+\l "];
+cond_91 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.conn_semantics == 1\l\l
+ "];
+tbl_dispatch_control161 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control161\l\l
+R:\l
+ ig_md.psn\l
+ hdr.bth.opcode\l
+\lW:\l
+ ig_md.msn\l
+ "];
+tbl_dispatch_ctrl_mul [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_ctrl_mul\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ ig_md.msn\l
+ "];
+tbl_dispatch_ctrl_set_aeth_syndrome [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_ctrl_set_aeth_syndrome\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ ig_md.msn\l
+ "];
+tbl_dispatch_ctrl_set_aeth_msn [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_ctrl_set_aeth_msn\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ hdr.aeth.$valid\l
+ hdr.aeth.msn\l
+ "];
+tbl_dispatch_ctrl_set_aeth_psn [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_ctrl_set_aeth_psn\l\l
+R:\l
+ ig_md.psn\l
+\lW:\l
+ hdr.bth.psn\l
+ "];
+tbl_dispatch_control169 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control169\l\l
+R:\l
+ ig_intr_md.ingress_port\l
+\lW:\l
+ hdr.bridge.has_aeth\l
+ ig_intr_md_for_tm.ucast_egress_port\l
+ "];
+tbl_dispatch_ctrl_do_read_cond_inc_tx_epsn [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_ctrl_do_read_cond_inc_tx_epsn\l\l
+R:\l
+ ig_md.psn\l
+\lW:\l
+ ig_md.tmp_a\l
+ "];
+tbl_dispatch_control182 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control182\l\l
+R:\l
+ hdr.bth.opcode\l
+\lW:\l
+ ig_md.tmp_b\l
+ "];
+cond_92 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.psn_cmp == 1\l\l
+ "];
+tbl_dispatch_control190 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control190\l\l
+R:\l
+ ig_md.tmp_b\l
+\lW:\l
+ ig_md.msn\l
+ "];
+cond_93 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.psn_cmp == 0\l\l
+ "];
+tbl_dispatch_ctrl_mul_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_ctrl_mul_0\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ ig_md.msn\l
+ "];
+tbl_dispatch_ctrl_set_aeth_syndrome_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_ctrl_set_aeth_syndrome_0\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ ig_md.msn\l
+ "];
+tbl_dispatch_ctrl_set_aeth_msn_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_ctrl_set_aeth_msn_0\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ hdr.aeth.$valid\l
+ hdr.aeth.msn\l
+ "];
+tbl_dispatch_ctrl_set_aeth_psn_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_ctrl_set_aeth_psn_0\l\l
+R:\l
+ ig_md.tmp_a\l
+\lW:\l
+ hdr.bth.psn\l
+ "];
+tbl_dispatch_control195 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control195\l\l
+R:\l
+ ig_intr_md.ingress_port\l
+\lW:\l
+ hdr.bridge.has_aeth\l
+ ig_intr_md_for_tm.ucast_egress_port\l
+ "];
+tbl_dispatch_control202 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control202\l\l
+R:\l
+ ig_md.tmp_b\l
+\lW:\l
+ ig_md.msn\l
+ "];
+cond_94 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.bth.opcode == 6 || hdr.bth.opcode == 10\l\l
+ "];
+tbl_dispatch_ctrl_mul_1 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_ctrl_mul_1\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ ig_md.msn\l
+ "];
+tbl_dispatch_ctrl_set_aeth_syndrome_1 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_ctrl_set_aeth_syndrome_1\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ ig_md.msn\l
+ "];
+tbl_dispatch_ctrl_set_aeth_msn_1 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_ctrl_set_aeth_msn_1\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ hdr.aeth.$valid\l
+ hdr.aeth.msn\l
+ "];
+tbl_dispatch_ctrl_set_aeth_psn_1 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_ctrl_set_aeth_psn_1\l\l
+R:\l
+ ig_md.tmp_a\l
+\lW:\l
+ hdr.bth.psn\l
+ "];
+tbl_dispatch_control207 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control207\l\l
+R:\l
+ ig_intr_md.ingress_port\l
+\lW:\l
+ hdr.bridge.has_aeth\l
+ ig_intr_md_for_tm.ucast_egress_port\l
+ "];
+tbl_dispatch_control215 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control215\l\l
+R:\l
+ hdr.reth.addr\l
+\lW:\l
+ hdr.bridge.bitmap\l
+ "];
+tbl_dispatch_control218 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control218\l\l
+R:\l
+ hdr.bridge.bitmap\l
+\lW:\l
+ hdr.bridge.bitmap\l
+ "];
+tbl_dispatch_control216 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control216\l\l
+R:\l
+ hdr.bridge.bitmap\l
+\l "];
+tbl_dispatch_control222 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control222\l\l
+R:\l
+ ig_md.tmp_b\l
+\lW:\l
+ ig_intr_md_for_tm.mcast_grp_a\l
+ ig_md.msn\l
+ "];
+tbl_dispatch_ctrl_mul_2 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_ctrl_mul_2\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ ig_md.msn\l
+ "];
+tbl_dispatch_ctrl_set_aeth_syndrome_2 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_ctrl_set_aeth_syndrome_2\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ ig_md.msn\l
+ "];
+tbl_dispatch_ctrl_set_aeth_msn_2 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_ctrl_set_aeth_msn_2\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ hdr.aeth.$valid\l
+ hdr.aeth.msn\l
+ "];
+tbl_dispatch_ctrl_set_aeth_psn_2 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_ctrl_set_aeth_psn_2\l\l
+R:\l
+ ig_md.tmp_a\l
+\lW:\l
+ hdr.bth.psn\l
+ "];
+tbl_dispatch_control231 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_dispatch_control231\l\l
+R:\l
+ ig_intr_md.ingress_port\l
+\lW:\l
+ hdr.bridge.has_aeth\l
+ ig_intr_md_for_tm.ucast_egress_port\l
+ "];
+tbl_combine_control349 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control349\l\l
+R:\l
+ hdr.bridge.ing_rank_id\l
+ ig_md.channel_class\l
+\lW:\l
+ ig_md.tx_reg_idx\l
+ "];
+tbl_a2a_ingress_control135 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_a2a_ingress_control135\l\l
+W:\l
+ ig_intr_md_for_dprsr.drop_ctl\l
+ "];
+cond_96 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.conn_semantics == 3\l\l
+ "];
+tbl_combine_ctrl_do_read_cond_inc_rx_bitmap_epsn [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_do_read_cond_inc_rx_bitmap_epsn\l\l
+R:\l
+ ig_md.psn\l
+\lW:\l
+ ig_md.tmp_a\l
+ "];
+cond_99 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.conn_semantics == 1\l\l
+ "];
+cond_97 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.psn_cmp == 1\l\l
+ "];
+tbl_combine_control362 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control362\l\l
+R:\l
+ ig_md.tmp_a\l
+\lW:\l
+ ig_md.msn\l
+ "];
+cond_98 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.psn_cmp == 2\l\l
+ "];
+tbl_combine_ctrl_mul [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_mul\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ ig_md.msn\l
+ "];
+tbl_combine_ctrl_set_aeth_syndrome [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_set_aeth_syndrome\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ ig_md.msn\l
+ "];
+tbl_combine_ctrl_set_aeth_msn [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_set_aeth_msn\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ hdr.bridge.has_aeth\l
+ hdr.aeth.$valid\l
+ hdr.aeth.msn\l
+ "];
+tbl_combine_ctrl_set_aeth_psn [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_set_aeth_psn\l\l
+R:\l
+ ig_md.tmp_a\l
+\lW:\l
+ hdr.bth.psn\l
+ "];
+tbl_combine_control367 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control367\l\l
+R:\l
+ ig_intr_md.ingress_port\l
+\lW:\l
+ ig_intr_md_for_tm.ucast_egress_port\l
+ combine_ctrl_hasReturned\l
+ "];
+cond_104 [ shape=record, style="filled", fillcolor=cornsilk, label="combine_ctrl_hasReturned\l\l
+ "];
+tbl_combine_control371 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control371\l\l
+R:\l
+ ig_md.tmp_a\l
+\lW:\l
+ ig_md.msn\l
+ "];
+tbl_combine_ctrl_mul_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_mul_0\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ ig_md.msn\l
+ "];
+tbl_combine_ctrl_set_aeth_syndrome_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_set_aeth_syndrome_0\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ ig_md.msn\l
+ "];
+tbl_combine_ctrl_set_aeth_msn_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_set_aeth_msn_0\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ hdr.bridge.has_aeth\l
+ hdr.aeth.$valid\l
+ hdr.aeth.msn\l
+ "];
+tbl_combine_ctrl_set_aeth_psn_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_set_aeth_psn_0\l\l
+R:\l
+ ig_md.tmp_a\l
+\lW:\l
+ hdr.bth.psn\l
+ "];
+tbl_combine_control376 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control376\l\l
+R:\l
+ ig_intr_md.ingress_port\l
+\lW:\l
+ ig_intr_md_for_tm.ucast_egress_port\l
+ combine_ctrl_hasReturned\l
+ "];
+cond_100 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_intr_md.ingress_port != 192\l\l
+ "];
+tbl_combine_ctrl_do_read_cond_inc_tx_epsn [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_do_read_cond_inc_tx_epsn\l\l
+R:\l
+ ig_md.psn\l
+\lW:\l
+ ig_md.tmp_a\l
+ "];
+tbl_combine_ctrl_do_read_add_rx_token_epsn [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_do_read_add_rx_token_epsn\l\l
+W:\l
+ ig_md.tmp_a\l
+ "];
+tbl_combine_control429 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control429\l\l
+R:\l
+ ig_md.tmp_a\l
+ ig_md.root_rank_id\l
+\lW:\l
+ hdr.bth.psn\l
+ hdr.bridge.is_loopback\l
+ ig_intr_md_for_tm.mcast_grp_a\l
+ "];
+cond_101 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.psn_cmp == 1\l\l
+ "];
+tbl_combine_ctrl_do_read_tx_msn [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_do_read_tx_msn\l\l
+W:\l
+ ig_md.tmp_b\l
+ "];
+cond_102 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.psn_cmp == 2\l\l
+ "];
+tbl_combine_control387 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control387\l\l
+R:\l
+ ig_md.tmp_b\l
+\lW:\l
+ ig_md.msn\l
+ "];
+tbl_combine_ctrl_mul_1 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_mul_1\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ ig_md.msn\l
+ "];
+tbl_combine_ctrl_set_aeth_syndrome_1 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_set_aeth_syndrome_1\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ ig_md.msn\l
+ "];
+tbl_combine_ctrl_set_aeth_msn_1 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_set_aeth_msn_1\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ hdr.bridge.has_aeth\l
+ hdr.aeth.$valid\l
+ hdr.aeth.msn\l
+ "];
+tbl_combine_ctrl_set_aeth_psn_1 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_set_aeth_psn_1\l\l
+R:\l
+ ig_md.tmp_a\l
+\lW:\l
+ hdr.bth.psn\l
+ "];
+tbl_combine_control392 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control392\l\l
+R:\l
+ ig_intr_md.ingress_port\l
+\lW:\l
+ ig_intr_md_for_tm.ucast_egress_port\l
+ combine_ctrl_hasReturned\l
+ "];
+tbl_combine_ctrl_do_read_tx_msn_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_do_read_tx_msn_0\l\l
+W:\l
+ ig_md.tmp_b\l
+ "];
+cond_103 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.bth.opcode != 10 && hdr.bth.opcode != 8\l\l
+ "];
+tbl_combine_control397 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control397\l\l
+R:\l
+ ig_md.tmp_b\l
+\lW:\l
+ ig_md.msn\l
+ "];
+tbl_combine_ctrl_mul_2 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_mul_2\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ ig_md.msn\l
+ "];
+tbl_combine_ctrl_set_aeth_syndrome_2 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_set_aeth_syndrome_2\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ ig_md.msn\l
+ "];
+tbl_combine_ctrl_set_aeth_msn_2 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_set_aeth_msn_2\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ hdr.bridge.has_aeth\l
+ hdr.aeth.$valid\l
+ hdr.aeth.msn\l
+ "];
+tbl_combine_ctrl_set_aeth_psn_2 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_set_aeth_psn_2\l\l
+R:\l
+ ig_md.tmp_a\l
+\lW:\l
+ hdr.bth.psn\l
+ "];
+tbl_combine_control402 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control402\l\l
+R:\l
+ ig_intr_md.ingress_port\l
+\lW:\l
+ ig_intr_md_for_tm.ucast_egress_port\l
+ combine_ctrl_hasReturned\l
+ "];
+tbl_combine_ctrl_do_read_tx_msn_1 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_do_read_tx_msn_1\l\l
+W:\l
+ ig_md.tmp_b\l
+ "];
+tbl_combine_ctrl_do_read_inc_tx_msn [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_do_read_inc_tx_msn\l\l
+W:\l
+ ig_md.tmp_b\l
+ "];
+tbl_combine_control418 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control418\l\l
+R:\l
+ ig_md.tmp_b\l
+\lW:\l
+ ig_md.msn\l
+ "];
+tbl_combine_ctrl_mul_4 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_mul_4\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ ig_md.msn\l
+ "];
+tbl_combine_ctrl_set_aeth_syndrome_4 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_set_aeth_syndrome_4\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ ig_md.msn\l
+ "];
+tbl_combine_ctrl_set_aeth_msn_4 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_set_aeth_msn_4\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ hdr.bridge.has_aeth\l
+ hdr.aeth.$valid\l
+ hdr.aeth.msn\l
+ "];
+tbl_combine_ctrl_set_aeth_psn_4 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_set_aeth_psn_4\l\l
+R:\l
+ ig_md.tmp_a\l
+\lW:\l
+ hdr.bth.psn\l
+ "];
+tbl_combine_control423 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control423\l\l
+R:\l
+ ig_intr_md.ingress_port\l
+\lW:\l
+ ig_intr_md_for_tm.ucast_egress_port\l
+ "];
+tbl_combine_control407 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control407\l\l
+R:\l
+ ig_md.tmp_b\l
+\lW:\l
+ ig_md.msn\l
+ "];
+tbl_combine_ctrl_mul_3 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_mul_3\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ ig_md.msn\l
+ "];
+tbl_combine_ctrl_set_aeth_syndrome_3 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_set_aeth_syndrome_3\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ ig_md.msn\l
+ "];
+tbl_combine_ctrl_set_aeth_msn_3 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_set_aeth_msn_3\l\l
+R:\l
+ ig_md.msn\l
+\lW:\l
+ hdr.bridge.has_aeth\l
+ hdr.aeth.$valid\l
+ hdr.aeth.msn\l
+ "];
+tbl_combine_ctrl_set_aeth_psn_3 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_set_aeth_psn_3\l\l
+R:\l
+ ig_md.tmp_a\l
+\lW:\l
+ hdr.bth.psn\l
+ "];
+tbl_combine_control412 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control412\l\l
+R:\l
+ ig_intr_md.ingress_port\l
+\lW:\l
+ ig_intr_md_for_tm.ucast_egress_port\l
+ combine_ctrl_hasReturned\l
+ "];
+cond_105 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.conn_semantics == 1\l\l
+ "];
+cond_116 [ shape=record, style="filled", fillcolor=cornsilk, label="combine_ctrl_hasReturned\l\l
+ "];
+cond_106 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_intr_md.ingress_port != 192\l\l
+ "];
+cond_109 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.conn_semantics == 0\l\l
+ "];
+tbl_combine_control442 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control442\l\l
+R:\l
+ hdr.reth.addr\l
+\lW:\l
+ hdr.bridge.tx_loc_val\l
+ hdr.bridge.tx_offset_val\l
+ "];
+tbl_combine_control454 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control454\l\l
+R:\l
+ hdr.payload.data00\l
+\lW:\l
+ hdr.bridge.tx_loc_val\l
+ "];
+cond_108 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.payload.data00[7:0] == 63\l\l
+ "];
+tbl_combine_control455 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control455\l\l
+W:\l
+ hdr.bridge.tx_offset_val\l
+ "];
+tbl_combine_control456 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control456\l\l
+R:\l
+ hdr.payload.data00\l
+\lW:\l
+ hdr.bridge.tx_offset_val\l
+ "];
+cond_107 [ shape=record, style="filled", fillcolor=cornsilk, label="hdr.bth.opcode == 6 || hdr.bth.opcode == 10\l\l
+ "];
+tbl_combine_ctrl_do_write_tx_loc [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_do_write_tx_loc\l\l
+R:\l
+ hdr.bridge.tx_loc_val\l
+\l "];
+tbl_combine_ctrl_do_read_tx_loc [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_do_read_tx_loc\l\l
+R:\l
+ hdr.bridge.tx_loc_val\l
+\lW:\l
+ hdr.bridge.tx_loc_val\l
+ "];
+tbl_combine_ctrl_do_reset_tx_offset [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_do_reset_tx_offset\l\l
+ "];
+tbl_combine_ctrl_do_read_inc_tx_offset [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_do_read_inc_tx_offset\l\l
+W:\l
+ hdr.bridge.tx_offset_val\l
+ "];
+tbl_combine_ctrl_queue_tail_0_do_read [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_queue_tail_0_do_read\l\l
+W:\l
+ ig_md.tmp_c\l
+ "];
+cond_110 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.conn_semantics == 3\l\l
+ "];
+tbl_combine_control466 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control466\l\l
+R:\l
+ ig_md.tmp_c\l
+\lW:\l
+ hdr.payload.data00\l
+ "];
+cond_111 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.ing_rank_id == 0\l\l
+ "];
+cond_112 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.conn_semantics == 1\l\l
+ "];
+tbl_combine_ctrl_queue_tail_0_do_read_add [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_queue_tail_0_do_read_add\l\l
+W:\l
+ ig_md.tmp_c\l
+ "];
+cond_113 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_intr_md.ingress_port == 192\l\l
+ "];
+cond_114 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.root_rank_id == 0\l\l
+ "];
+tbl_combine_ctrl_queue_tail_0_do_read_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_queue_tail_0_do_read_0\l\l
+W:\l
+ ig_md.tmp_c\l
+ "];
+cond_115 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.tx_offset_val == ig_md.tmp_c\l\l
+ "];
+tbl_combine_control505 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control505\l\l
+W:\l
+ combine_ctrl_hasReturned\l
+ "];
+cond_117 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.conn_semantics == 3\l\l
+ "];
+cond_127 [ shape=record, style="filled", fillcolor=cornsilk, label="combine_ctrl_hasReturned\l\l
+ "];
+tbl_combine_ctrl_step1_calc_token_idx_from_tail [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_step1_calc_token_idx_from_tail\l\l
+R:\l
+ hdr.bridge.channel_id\l
+\lW:\l
+ ig_md.tmp_a\l
+ "];
+cond_118 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.conn_semantics == 1\l\l
+ "];
+tbl_combine_ctrl_step2_calc_token_idx_from_tail [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_step2_calc_token_idx_from_tail\l\l
+R:\l
+ ig_md.tmp_c\l
+\lW:\l
+ ig_md.tmp_b\l
+ "];
+tbl_combine_ctrl_step3_calc_token_idx_from_tail [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_step3_calc_token_idx_from_tail\l\l
+R:\l
+ ig_md.tmp_b\l
+ ig_md.tmp_a\l
+\lW:\l
+ ig_md.tmp_b\l
+ "];
+tbl_combine_ctrl_calc_slot_id_from_token_idx [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_calc_slot_id_from_token_idx\l\l
+R:\l
+ ig_md.tmp_b\l
+\lW:\l
+ ig_md.tmp_a\l
+ "];
+tbl_combine_ctrl_calc_slot_index_from_token_idx [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_calc_slot_index_from_token_idx\l\l
+R:\l
+ ig_md.tmp_b\l
+\lW:\l
+ ig_md.tmp_b\l
+ "];
+cond_120 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.conn_semantics == 3\l\l
+ "];
+cond_119 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_intr_md.ingress_port != 192\l\l
+ "];
+tbl_combine_ctrl_step1_calc_token_idx_from_tx_loc [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_step1_calc_token_idx_from_tx_loc\l\l
+R:\l
+ hdr.bridge.channel_id\l
+\lW:\l
+ ig_md.tmp_a\l
+ "];
+tbl_combine_ctrl_step1_calc_next_token_idx [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_step1_calc_next_token_idx\l\l
+R:\l
+ hdr.bridge.channel_id\l
+\lW:\l
+ ig_md.tmp_a\l
+ "];
+tbl_combine_ctrl_step2_calc_next_token_idx [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_step2_calc_next_token_idx\l\l
+R:\l
+ hdr.bridge.tx_offset_val\l
+\lW:\l
+ ig_md.tmp_b\l
+ "];
+tbl_combine_ctrl_step3_calc_next_token_idx [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_step3_calc_next_token_idx\l\l
+R:\l
+ ig_md.tmp_b\l
+ ig_md.tmp_a\l
+\lW:\l
+ ig_md.tmp_b\l
+ "];
+tbl_combine_ctrl_calc_slot_id_from_next_token_idx [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_calc_slot_id_from_next_token_idx\l\l
+R:\l
+ ig_md.tmp_b\l
+\lW:\l
+ ig_md.tmp_a\l
+ "];
+tbl_combine_ctrl_calc_slot_index_from_next_token_idx [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_calc_slot_index_from_next_token_idx\l\l
+R:\l
+ ig_md.tmp_b\l
+\lW:\l
+ ig_md.tmp_b\l
+ "];
+tbl_combine_ctrl_step2_calc_token_idx_from_tx_loc [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_step2_calc_token_idx_from_tx_loc\l\l
+R:\l
+ hdr.bridge.tx_loc_val\l
+\lW:\l
+ ig_md.tmp_b\l
+ "];
+tbl_combine_ctrl_step3_calc_token_idx_from_tx_loc [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_step3_calc_token_idx_from_tx_loc\l\l
+R:\l
+ ig_md.tmp_b\l
+ ig_md.tmp_a\l
+\lW:\l
+ ig_md.tmp_b\l
+ "];
+tbl_combine_ctrl_calc_slot_id_from_token_idx_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_calc_slot_id_from_token_idx_0\l\l
+R:\l
+ ig_md.tmp_b\l
+\lW:\l
+ ig_md.tmp_a\l
+ "];
+tbl_combine_ctrl_calc_slot_index_from_token_idx_0 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_calc_slot_index_from_token_idx_0\l\l
+R:\l
+ ig_md.tmp_b\l
+\lW:\l
+ ig_md.tmp_b\l
+ "];
+combine_ctrl_tbl_rank_to_clear_mask [ shape=record, style="filled", fillcolor=cornsilk, label="combine_ctrl_tbl_rank_to_clear_mask\l\l
+M:\l
+ hdr.bridge.ing_rank_id\l
+\lW:\l
+ ig_md.tmp_c\l
+ "];
+tbl_combine_control543 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control543\l\l
+R:\l
+ hdr.payload.data00\l
+\lW:\l
+ ig_md.tmp_c\l
+ "];
+cond_121 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.conn_semantics == 1\l\l
+ "];
+tbl_combine_ctrl_bitmap_0_do_write [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_bitmap_0_do_write\l\l
+R:\l
+ ig_md.tmp_c\l
+\l "];
+cond_122 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_intr_md.ingress_port != 192\l\l
+ "];
+cond_123 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.tmp_a == 0\l\l
+ "];
+cond_124 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_intr_md.ingress_port == 192\l\l
+ "];
+cond_125 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.tmp_a == 0\l\l
+ "];
+cond_126 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.tmp_c != 0\l\l
+ "];
+tbl_combine_ctrl_bitmap_0_do_read [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_bitmap_0_do_read\l\l
+R:\l
+ ig_md.tmp_c\l
+\lW:\l
+ ig_md.tmp_c\l
+ "];
+tbl_combine_ctrl_bitmap_0_do_clear_bit [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_bitmap_0_do_clear_bit\l\l
+R:\l
+ ig_md.tmp_c\l
+\lW:\l
+ ig_md.tmp_c\l
+ "];
+tbl_combine_control584 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control584\l\l
+W:\l
+ combine_ctrl_hasReturned\l
+ "];
+cond_128 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.conn_semantics == 1\l\l
+ "];
+cond_133 [ shape=record, style="filled", fillcolor=cornsilk, label="combine_ctrl_hasReturned\l\l
+ "];
+cond_129 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_intr_md.ingress_port != 192\l\l
+ "];
+cond_130 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.ing_rank_id == 0\l\l
+ "];
+cond_132 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.root_rank_id == 0\l\l
+ "];
+tbl_combine_ctrl_queue_head_0_do_inc [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_queue_head_0_do_inc\l\l
+R:\l
+ hdr.bridge.tx_loc_val\l
+\l "];
+tbl_combine_control617 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control617\l\l
+R:\l
+ hdr.bridge.tx_offset_val\l
+\lW:\l
+ hdr.payload.data00\l
+ ig_intr_md_for_tm.mcast_grp_b\l
+ "];
+tbl_combine_ctrl_queue_head_0_do_cond_inc [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_queue_head_0_do_cond_inc\l\l
+R:\l
+ hdr.bridge.tx_loc_val\l
+\lW:\l
+ ig_md.tmp_c\l
+ "];
+cond_131 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.tmp_c != ig_md.tx_loc_val\l\l
+ "];
+tbl_combine_control601 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control601\l\l
+W:\l
+ combine_ctrl_hasReturned\l
+ "];
+tbl_combine_control602 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control602\l\l
+W:\l
+ ig_intr_md_for_tm.mcast_grp_b\l
+ "];
+cond_134 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.conn_semantics == 3\l\l
+ "];
+tbl_combine_ctrl_addr_0_do_write_lo [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_0_do_write_lo\l\l
+R:\l
+ ig_md.tmp_d\l
+\l "];
+cond_135 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.conn_semantics == 1\l\l
+ "];
+tbl_combine_ctrl_addr_0_do_write_hi [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_0_do_write_hi\l\l
+R:\l
+ ig_md.tmp_e\l
+\l "];
+cond_136 [ shape=record, style="filled", fillcolor=cornsilk, label="ig_md.tmp_a == 0\l\l
+ "];
+tbl_combine_ctrl_addr_0_do_read_lo [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_0_do_read_lo\l\l
+R:\l
+ ig_md.tmp_d\l
+\lW:\l
+ ig_md.tmp_d\l
+ "];
+tbl_combine_control643 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control643\l\l
+R:\l
+ ig_md.tmp_d\l
+\lW:\l
+ ig_md.next_token_addr\l
+ "];
+tbl_combine_ctrl_addr_0_do_read_hi [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_ctrl_addr_0_do_read_hi\l\l
+R:\l
+ ig_md.tmp_e\l
+\lW:\l
+ ig_md.tmp_e\l
+ "];
+tbl_combine_control644 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_combine_control644\l\l
+R:\l
+ ig_md.tmp_e\l
+\lW:\l
+ ig_md.next_token_addr\l
+ "];
+tbl_a2a_ingress_control152 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_a2a_ingress_control152\l\l
+R:\l
+ ig_md.root_rank_id\l
+ ig_md.next_token_addr\l
+\lW:\l
+ hdr.bridge.root_rank_id\l
+ hdr.bridge.next_token_addr\l
+ "];
+tbl_a2a_ingress_control154 [ shape=record, style="filled", fillcolor=cornsilk, label="tbl_a2a_ingress_control154\l\l
+R:\l
+ ig_md.next_token_addr\l
+\lW:\l
+ hdr.bridge.next_token_addr\l
+ "];
+    PARSER -> cond_86
+    cond_86 -> tbl_a2a_ingress_control119
+    PARSER -> cond_86
+    cond_86 -> tbl_a2a_ingress_control115
+    tbl_a2a_ingress_control119 -> tbl_a2a_ingress_control120
+    tbl_a2a_ingress_control120 -> cond_87
+    cond_87 -> traffic_classify_0
+    traffic_classify_0 -> cond_88
+    cond_88 -> cond_89
+    cond_88 -> cond_95
+    cond_89 -> tbl_dispatch_control154
+    cond_89 -> cond_90
+    tbl_dispatch_control154 -> tbl_a2a_ingress_control138
+    cond_90 -> tbl_dispatch_ctrl_do_init_tx_epsn
+    cond_90 -> cond_91
+    tbl_dispatch_ctrl_do_init_tx_epsn -> tbl_dispatch_control161
+    tbl_dispatch_control161 -> tbl_dispatch_ctrl_mul
+    tbl_dispatch_ctrl_mul -> tbl_dispatch_ctrl_set_aeth_syndrome
+    tbl_dispatch_ctrl_set_aeth_syndrome -> tbl_dispatch_ctrl_set_aeth_msn
+    tbl_dispatch_ctrl_set_aeth_msn -> tbl_dispatch_ctrl_set_aeth_psn
+    tbl_dispatch_ctrl_set_aeth_psn -> tbl_dispatch_control169
+    tbl_dispatch_control169 -> tbl_a2a_ingress_control138
+    cond_91 -> tbl_dispatch_ctrl_do_read_cond_inc_tx_epsn
+    cond_91 -> tbl_a2a_ingress_control138
+    tbl_dispatch_ctrl_do_read_cond_inc_tx_epsn -> tbl_dispatch_control182
+    tbl_dispatch_control182 -> cond_92
+    cond_92 -> tbl_dispatch_control190
+    cond_92 -> cond_93
+    tbl_dispatch_control190 -> tbl_dispatch_ctrl_mul_0
+    tbl_dispatch_ctrl_mul_0 -> tbl_dispatch_ctrl_set_aeth_syndrome_0
+    tbl_dispatch_ctrl_set_aeth_syndrome_0 -> tbl_dispatch_ctrl_set_aeth_msn_0
+    tbl_dispatch_ctrl_set_aeth_msn_0 -> tbl_dispatch_ctrl_set_aeth_psn_0
+    tbl_dispatch_ctrl_set_aeth_psn_0 -> tbl_dispatch_control195
+    tbl_dispatch_control195 -> tbl_a2a_ingress_control138
+    cond_93 -> tbl_dispatch_control202
+    cond_93 -> cond_94
+    tbl_dispatch_control202 -> tbl_dispatch_ctrl_mul_1
+    tbl_dispatch_ctrl_mul_1 -> tbl_dispatch_ctrl_set_aeth_syndrome_1
+    tbl_dispatch_ctrl_set_aeth_syndrome_1 -> tbl_dispatch_ctrl_set_aeth_msn_1
+    tbl_dispatch_ctrl_set_aeth_msn_1 -> tbl_dispatch_ctrl_set_aeth_psn_1
+    tbl_dispatch_ctrl_set_aeth_psn_1 -> tbl_dispatch_control207
+    tbl_dispatch_control207 -> tbl_a2a_ingress_control138
+    cond_94 -> tbl_dispatch_control215
+    cond_94 -> tbl_dispatch_control218
+    tbl_dispatch_control215 -> tbl_dispatch_control216
+    tbl_dispatch_control216 -> tbl_dispatch_control222
+    tbl_dispatch_control218 -> tbl_dispatch_control222
+    tbl_dispatch_control222 -> tbl_dispatch_ctrl_mul_2
+    tbl_dispatch_ctrl_mul_2 -> tbl_dispatch_ctrl_set_aeth_syndrome_2
+    tbl_dispatch_ctrl_set_aeth_syndrome_2 -> tbl_dispatch_ctrl_set_aeth_msn_2
+    tbl_dispatch_ctrl_set_aeth_msn_2 -> tbl_dispatch_ctrl_set_aeth_psn_2
+    tbl_dispatch_ctrl_set_aeth_psn_2 -> tbl_dispatch_control231
+    tbl_dispatch_control231 -> tbl_a2a_ingress_control138
+    cond_95 -> tbl_combine_control349
+    cond_95 -> tbl_a2a_ingress_control135
+    tbl_combine_control349 -> cond_96
+    cond_96 -> tbl_combine_ctrl_do_read_cond_inc_rx_bitmap_epsn
+    cond_96 -> cond_99
+    tbl_combine_ctrl_do_read_cond_inc_rx_bitmap_epsn -> cond_97
+    cond_97 -> tbl_combine_control362
+    cond_97 -> cond_98
+    tbl_combine_control362 -> tbl_combine_ctrl_mul
+    tbl_combine_ctrl_mul -> tbl_combine_ctrl_set_aeth_syndrome
+    tbl_combine_ctrl_set_aeth_syndrome -> tbl_combine_ctrl_set_aeth_msn
+    tbl_combine_ctrl_set_aeth_msn -> tbl_combine_ctrl_set_aeth_psn
+    tbl_combine_ctrl_set_aeth_psn -> tbl_combine_control367
+    tbl_combine_control367 -> cond_104
+    cond_98 -> tbl_combine_control371
+    cond_98 -> cond_104
+    tbl_combine_control371 -> tbl_combine_ctrl_mul_0
+    tbl_combine_ctrl_mul_0 -> tbl_combine_ctrl_set_aeth_syndrome_0
+    tbl_combine_ctrl_set_aeth_syndrome_0 -> tbl_combine_ctrl_set_aeth_msn_0
+    tbl_combine_ctrl_set_aeth_msn_0 -> tbl_combine_ctrl_set_aeth_psn_0
+    tbl_combine_ctrl_set_aeth_psn_0 -> tbl_combine_control376
+    tbl_combine_control376 -> cond_104
+    cond_99 -> cond_100
+    cond_99 -> cond_104
+    cond_100 -> tbl_combine_ctrl_do_read_cond_inc_tx_epsn
+    cond_100 -> tbl_combine_ctrl_do_read_add_rx_token_epsn
+    tbl_combine_ctrl_do_read_add_rx_token_epsn -> tbl_combine_control429
+    tbl_combine_control429 -> cond_104
+    tbl_combine_ctrl_do_read_cond_inc_tx_epsn -> cond_101
+    cond_101 -> tbl_combine_ctrl_do_read_tx_msn
+    cond_101 -> cond_102
+    tbl_combine_ctrl_do_read_tx_msn -> tbl_combine_control387
+    tbl_combine_control387 -> tbl_combine_ctrl_mul_1
+    tbl_combine_ctrl_mul_1 -> tbl_combine_ctrl_set_aeth_syndrome_1
+    tbl_combine_ctrl_set_aeth_syndrome_1 -> tbl_combine_ctrl_set_aeth_msn_1
+    tbl_combine_ctrl_set_aeth_msn_1 -> tbl_combine_ctrl_set_aeth_psn_1
+    tbl_combine_ctrl_set_aeth_psn_1 -> tbl_combine_control392
+    tbl_combine_control392 -> cond_104
+    cond_102 -> tbl_combine_ctrl_do_read_tx_msn_0
+    cond_102 -> cond_103
+    tbl_combine_ctrl_do_read_tx_msn_0 -> tbl_combine_control397
+    tbl_combine_control397 -> tbl_combine_ctrl_mul_2
+    tbl_combine_ctrl_mul_2 -> tbl_combine_ctrl_set_aeth_syndrome_2
+    tbl_combine_ctrl_set_aeth_syndrome_2 -> tbl_combine_ctrl_set_aeth_msn_2
+    tbl_combine_ctrl_set_aeth_msn_2 -> tbl_combine_ctrl_set_aeth_psn_2
+    tbl_combine_ctrl_set_aeth_psn_2 -> tbl_combine_control402
+    tbl_combine_control402 -> cond_104
+    cond_103 -> tbl_combine_ctrl_do_read_tx_msn_1
+    cond_103 -> tbl_combine_ctrl_do_read_inc_tx_msn
+    tbl_combine_ctrl_do_read_inc_tx_msn -> tbl_combine_control418
+    tbl_combine_control418 -> tbl_combine_ctrl_mul_4
+    tbl_combine_ctrl_mul_4 -> tbl_combine_ctrl_set_aeth_syndrome_4
+    tbl_combine_ctrl_set_aeth_syndrome_4 -> tbl_combine_ctrl_set_aeth_msn_4
+    tbl_combine_ctrl_set_aeth_msn_4 -> tbl_combine_ctrl_set_aeth_psn_4
+    tbl_combine_ctrl_set_aeth_psn_4 -> tbl_combine_control423
+    tbl_combine_control423 -> cond_104
+    tbl_combine_ctrl_do_read_tx_msn_1 -> tbl_combine_control407
+    tbl_combine_control407 -> tbl_combine_ctrl_mul_3
+    tbl_combine_ctrl_mul_3 -> tbl_combine_ctrl_set_aeth_syndrome_3
+    tbl_combine_ctrl_set_aeth_syndrome_3 -> tbl_combine_ctrl_set_aeth_msn_3
+    tbl_combine_ctrl_set_aeth_msn_3 -> tbl_combine_ctrl_set_aeth_psn_3
+    tbl_combine_ctrl_set_aeth_psn_3 -> tbl_combine_control412
+    tbl_combine_control412 -> cond_104
+    cond_104 -> cond_105
+    cond_104 -> cond_116
+    cond_105 -> cond_106
+    cond_105 -> cond_109
+    cond_106 -> tbl_combine_control442
+    cond_106 -> tbl_combine_control454
+    tbl_combine_control454 -> cond_108
+    cond_108 -> tbl_combine_control455
+    cond_108 -> tbl_combine_control456
+    tbl_combine_control455 -> cond_109
+    tbl_combine_control456 -> cond_109
+    tbl_combine_control442 -> cond_107
+    cond_107 -> tbl_combine_ctrl_do_write_tx_loc
+    cond_107 -> tbl_combine_ctrl_do_read_tx_loc
+    tbl_combine_ctrl_do_write_tx_loc -> tbl_combine_ctrl_do_reset_tx_offset
+    tbl_combine_ctrl_do_reset_tx_offset -> cond_109
+    tbl_combine_ctrl_do_read_tx_loc -> tbl_combine_ctrl_do_read_inc_tx_offset
+    tbl_combine_ctrl_do_read_inc_tx_offset -> cond_109
+    cond_109 -> tbl_combine_ctrl_queue_tail_0_do_read
+    cond_109 -> cond_110
+    tbl_combine_ctrl_queue_tail_0_do_read -> tbl_combine_control466
+    tbl_combine_control466 -> cond_116
+    cond_110 -> cond_111
+    cond_110 -> cond_112
+    cond_111 -> tbl_combine_ctrl_queue_tail_0_do_read_add
+    cond_111 -> cond_116
+    tbl_combine_ctrl_queue_tail_0_do_read_add -> cond_116
+    cond_112 -> cond_113
+    cond_112 -> cond_116
+    cond_113 -> cond_114
+    cond_113 -> cond_116
+    cond_114 -> tbl_combine_ctrl_queue_tail_0_do_read_0
+    cond_114 -> cond_115
+    tbl_combine_ctrl_queue_tail_0_do_read_0 -> cond_115
+    cond_115 -> tbl_combine_control505
+    cond_115 -> cond_116
+    tbl_combine_control505 -> cond_116
+    cond_116 -> cond_117
+    cond_116 -> cond_127
+    cond_117 -> tbl_combine_ctrl_step1_calc_token_idx_from_tail
+    cond_117 -> cond_118
+    tbl_combine_ctrl_step1_calc_token_idx_from_tail -> tbl_combine_ctrl_step2_calc_token_idx_from_tail
+    tbl_combine_ctrl_step2_calc_token_idx_from_tail -> tbl_combine_ctrl_step3_calc_token_idx_from_tail
+    tbl_combine_ctrl_step3_calc_token_idx_from_tail -> tbl_combine_ctrl_calc_slot_id_from_token_idx
+    tbl_combine_ctrl_calc_slot_id_from_token_idx -> tbl_combine_ctrl_calc_slot_index_from_token_idx
+    tbl_combine_ctrl_calc_slot_index_from_token_idx -> cond_120
+    cond_118 -> cond_119
+    cond_118 -> cond_120
+    cond_119 -> tbl_combine_ctrl_step1_calc_token_idx_from_tx_loc
+    cond_119 -> tbl_combine_ctrl_step1_calc_next_token_idx
+    tbl_combine_ctrl_step1_calc_next_token_idx -> tbl_combine_ctrl_step2_calc_next_token_idx
+    tbl_combine_ctrl_step2_calc_next_token_idx -> tbl_combine_ctrl_step3_calc_next_token_idx
+    tbl_combine_ctrl_step3_calc_next_token_idx -> tbl_combine_ctrl_calc_slot_id_from_next_token_idx
+    tbl_combine_ctrl_calc_slot_id_from_next_token_idx -> tbl_combine_ctrl_calc_slot_index_from_next_token_idx
+    tbl_combine_ctrl_calc_slot_index_from_next_token_idx -> cond_120
+    tbl_combine_ctrl_step1_calc_token_idx_from_tx_loc -> tbl_combine_ctrl_step2_calc_token_idx_from_tx_loc
+    tbl_combine_ctrl_step2_calc_token_idx_from_tx_loc -> tbl_combine_ctrl_step3_calc_token_idx_from_tx_loc
+    tbl_combine_ctrl_step3_calc_token_idx_from_tx_loc -> tbl_combine_ctrl_calc_slot_id_from_token_idx_0
+    tbl_combine_ctrl_calc_slot_id_from_token_idx_0 -> tbl_combine_ctrl_calc_slot_index_from_token_idx_0
+    tbl_combine_ctrl_calc_slot_index_from_token_idx_0 -> combine_ctrl_tbl_rank_to_clear_mask
+    combine_ctrl_tbl_rank_to_clear_mask -> cond_120
+    cond_120 -> tbl_combine_control543
+    cond_120 -> cond_121
+    tbl_combine_control543 -> tbl_combine_ctrl_bitmap_0_do_write
+    tbl_combine_ctrl_bitmap_0_do_write -> cond_127
+    cond_121 -> cond_122
+    cond_121 -> cond_127
+    cond_122 -> cond_123
+    cond_122 -> cond_124
+    cond_124 -> cond_125
+    cond_124 -> cond_126
+    cond_125 -> tbl_combine_ctrl_bitmap_0_do_read
+    cond_125 -> cond_126
+    tbl_combine_ctrl_bitmap_0_do_read -> cond_126
+    cond_123 -> tbl_combine_ctrl_bitmap_0_do_clear_bit
+    cond_123 -> cond_126
+    tbl_combine_ctrl_bitmap_0_do_clear_bit -> cond_126
+    cond_126 -> tbl_combine_control584
+    cond_126 -> cond_127
+    tbl_combine_control584 -> cond_127
+    cond_127 -> cond_128
+    cond_127 -> cond_133
+    cond_128 -> cond_129
+    cond_128 -> cond_133
+    cond_129 -> cond_130
+    cond_129 -> cond_132
+    cond_132 -> tbl_combine_ctrl_queue_head_0_do_inc
+    cond_132 -> tbl_combine_control617
+    tbl_combine_ctrl_queue_head_0_do_inc -> tbl_combine_control617
+    tbl_combine_control617 -> cond_133
+    cond_130 -> tbl_combine_ctrl_queue_head_0_do_cond_inc
+    cond_130 -> cond_131
+    tbl_combine_ctrl_queue_head_0_do_cond_inc -> cond_131
+    cond_131 -> tbl_combine_control601
+    cond_131 -> tbl_combine_control602
+    tbl_combine_control602 -> cond_133
+    tbl_combine_control601 -> cond_133
+    cond_133 -> cond_134
+    cond_133 -> tbl_a2a_ingress_control138
+    cond_134 -> tbl_combine_ctrl_addr_0_do_write_lo
+    cond_134 -> cond_135
+    tbl_combine_ctrl_addr_0_do_write_lo -> tbl_combine_ctrl_addr_0_do_write_hi
+    tbl_combine_ctrl_addr_0_do_write_hi -> tbl_a2a_ingress_control138
+    cond_135 -> cond_136
+    cond_135 -> tbl_a2a_ingress_control138
+    cond_136 -> tbl_combine_ctrl_addr_0_do_read_lo
+    cond_136 -> tbl_combine_control643
+    tbl_combine_ctrl_addr_0_do_read_lo -> tbl_combine_ctrl_addr_0_do_read_hi
+    tbl_combine_ctrl_addr_0_do_read_hi -> tbl_combine_control643
+    tbl_combine_control643 -> tbl_combine_control644
+    tbl_combine_control644 -> tbl_a2a_ingress_control138
+    tbl_a2a_ingress_control135 -> tbl_a2a_ingress_control138
+    tbl_a2a_ingress_control138 -> tbl_a2a_ingress_control152
+    tbl_a2a_ingress_control152 -> tbl_a2a_ingress_control154
+    tbl_a2a_ingress_control154 -> DEPARSER
+    tbl_a2a_ingress_control115 -> DEPARSER
+}

@@ -57,14 +57,21 @@ actions {
     alias: "drop"
   }
 }
+actions {
+  preamble {
+    id: 18800197
+    name: "SwitchIngress.ainc"
+    alias: "ainc"
+  }
+}
 externs {
   extern_type_id: 139
   extern_type_name: "Register"
   instances {
     preamble {
-      id: 2340928737
-      name: "pipe.SwitchIngress.counter_ctrl_1.counters"
-      alias: "counter_ctrl_1.counters"
+      id: 2338617131
+      name: "pipe.SwitchIngress.counters"
+      alias: "counters"
     }
     info {
       [type.googleapis.com/barefoot.Register] {
@@ -76,147 +83,7 @@ externs {
           }
         }
         size: 4096
-        data_field_name: "SwitchIngress.counter_ctrl_1.counters"
-      }
-    }
-  }
-  instances {
-    preamble {
-      id: 2343733378
-      name: "pipe.SwitchIngress.counter_ctrl_2.counters"
-      alias: "counter_ctrl_2.counters"
-    }
-    info {
-      [type.googleapis.com/barefoot.Register] {
-        type_spec {
-          bitstring {
-            bit {
-              bitwidth: 32
-            }
-          }
-        }
-        size: 4096
-        data_field_name: "SwitchIngress.counter_ctrl_2.counters"
-      }
-    }
-  }
-  instances {
-    preamble {
-      id: 2332347456
-      name: "pipe.SwitchIngress.counter_ctrl_3.counters"
-      alias: "counter_ctrl_3.counters"
-    }
-    info {
-      [type.googleapis.com/barefoot.Register] {
-        type_spec {
-          bitstring {
-            bit {
-              bitwidth: 32
-            }
-          }
-        }
-        size: 4096
-        data_field_name: "SwitchIngress.counter_ctrl_3.counters"
-      }
-    }
-  }
-  instances {
-    preamble {
-      id: 2342737945
-      name: "pipe.SwitchIngress.counter_ctrl_4.counters"
-      alias: "counter_ctrl_4.counters"
-    }
-    info {
-      [type.googleapis.com/barefoot.Register] {
-        type_spec {
-          bitstring {
-            bit {
-              bitwidth: 32
-            }
-          }
-        }
-        size: 4096
-        data_field_name: "SwitchIngress.counter_ctrl_4.counters"
-      }
-    }
-  }
-  instances {
-    preamble {
-      id: 2348505490
-      name: "pipe.SwitchIngress.counter_ctrl_5.counters"
-      alias: "counter_ctrl_5.counters"
-    }
-    info {
-      [type.googleapis.com/barefoot.Register] {
-        type_spec {
-          bitstring {
-            bit {
-              bitwidth: 32
-            }
-          }
-        }
-        size: 4096
-        data_field_name: "SwitchIngress.counter_ctrl_5.counters"
-      }
-    }
-  }
-  instances {
-    preamble {
-      id: 2338500754
-      name: "pipe.SwitchIngress.counter_ctrl_6.counters"
-      alias: "counter_ctrl_6.counters"
-    }
-    info {
-      [type.googleapis.com/barefoot.Register] {
-        type_spec {
-          bitstring {
-            bit {
-              bitwidth: 32
-            }
-          }
-        }
-        size: 4096
-        data_field_name: "SwitchIngress.counter_ctrl_6.counters"
-      }
-    }
-  }
-  instances {
-    preamble {
-      id: 2334248906
-      name: "pipe.SwitchIngress.counter_ctrl_7.counters"
-      alias: "counter_ctrl_7.counters"
-    }
-    info {
-      [type.googleapis.com/barefoot.Register] {
-        type_spec {
-          bitstring {
-            bit {
-              bitwidth: 32
-            }
-          }
-        }
-        size: 4096
-        data_field_name: "SwitchIngress.counter_ctrl_7.counters"
-      }
-    }
-  }
-  instances {
-    preamble {
-      id: 2343451485
-      name: "pipe.SwitchIngress.counter_ctrl_8.counters"
-      alias: "counter_ctrl_8.counters"
-    }
-    info {
-      [type.googleapis.com/barefoot.Register] {
-        type_spec {
-          bitstring {
-            bit {
-              bitwidth: 32
-            }
-          }
-        }
-        size: 4096
-        data_field_name: "SwitchIngress.counter_ctrl_8.counters"
+        data_field_name: "SwitchIngress.counters"
       }
     }
   }
@@ -240,198 +107,6 @@ externs {
 externs {
   extern_type_id: 145
   extern_type_name: "Snapshot"
-  instances {
-    preamble {
-      id: 2432714103
-      name: "pipe.SwitchIngress.SwitchIngress"
-      alias: "SwitchIngress"
-    }
-    info {
-      [type.googleapis.com/barefoot.Snapshot] {
-        pipe: "pipe"
-        fields {
-          id: 1
-          name: "hdr.ethernet.$valid"
-          bitwidth: 1
-        }
-        fields {
-          id: 2
-          name: "hdr.ethernet.dst_addr"
-          bitwidth: 48
-        }
-        fields {
-          id: 3
-          name: "hdr.ethernet.src_addr"
-          bitwidth: 48
-        }
-        fields {
-          id: 4
-          name: "hdr.ethernet.ether_type"
-          bitwidth: 16
-        }
-        fields {
-          id: 5
-          name: "meta.counter_index"
-          bitwidth: 32
-        }
-        fields {
-          id: 6
-          name: "meta.increment_amount"
-          bitwidth: 32
-        }
-        fields {
-          id: 7
-          name: "ig_intr_md.resubmit_flag"
-          bitwidth: 1
-        }
-        fields {
-          id: 8
-          name: "ig_intr_md._pad1"
-          bitwidth: 1
-        }
-        fields {
-          id: 9
-          name: "ig_intr_md.packet_version"
-          bitwidth: 2
-        }
-        fields {
-          id: 10
-          name: "ig_intr_md._pad2"
-          bitwidth: 3
-        }
-        fields {
-          id: 11
-          name: "ig_intr_md.ingress_port"
-          bitwidth: 9
-        }
-        fields {
-          id: 12
-          name: "ig_intr_md.ingress_mac_tstamp"
-          bitwidth: 48
-        }
-        fields {
-          id: 13
-          name: "ig_prsr_md.global_tstamp"
-          bitwidth: 48
-        }
-        fields {
-          id: 14
-          name: "ig_prsr_md.global_ver"
-          bitwidth: 32
-        }
-        fields {
-          id: 15
-          name: "ig_prsr_md.parser_err"
-          bitwidth: 16
-        }
-        fields {
-          id: 16
-          name: "ig_dprsr_md.drop_ctl"
-          bitwidth: 3
-        }
-        fields {
-          id: 17
-          name: "ig_dprsr_md.digest_type"
-          bitwidth: 3
-        }
-        fields {
-          id: 18
-          name: "ig_dprsr_md.resubmit_type"
-          bitwidth: 3
-        }
-        fields {
-          id: 19
-          name: "ig_dprsr_md.mirror_type"
-          bitwidth: 3
-        }
-        fields {
-          id: 20
-          name: "ig_tm_md.ucast_egress_port"
-          bitwidth: 9
-        }
-        fields {
-          id: 21
-          name: "ig_tm_md.bypass_egress"
-          bitwidth: 1
-        }
-        fields {
-          id: 22
-          name: "ig_tm_md.deflect_on_drop"
-          bitwidth: 1
-        }
-        fields {
-          id: 23
-          name: "ig_tm_md.ingress_cos"
-          bitwidth: 3
-        }
-        fields {
-          id: 24
-          name: "ig_tm_md.qid"
-          bitwidth: 5
-        }
-        fields {
-          id: 25
-          name: "ig_tm_md.icos_for_copy_to_cpu"
-          bitwidth: 3
-        }
-        fields {
-          id: 26
-          name: "ig_tm_md.copy_to_cpu"
-          bitwidth: 1
-        }
-        fields {
-          id: 27
-          name: "ig_tm_md.packet_color"
-          bitwidth: 2
-        }
-        fields {
-          id: 28
-          name: "ig_tm_md.disable_ucast_cutthru"
-          bitwidth: 1
-        }
-        fields {
-          id: 29
-          name: "ig_tm_md.enable_mcast_cutthru"
-          bitwidth: 1
-        }
-        fields {
-          id: 30
-          name: "ig_tm_md.mcast_grp_a"
-          bitwidth: 16
-        }
-        fields {
-          id: 31
-          name: "ig_tm_md.mcast_grp_b"
-          bitwidth: 16
-        }
-        fields {
-          id: 32
-          name: "ig_tm_md.level1_mcast_hash"
-          bitwidth: 13
-        }
-        fields {
-          id: 33
-          name: "ig_tm_md.level2_mcast_hash"
-          bitwidth: 13
-        }
-        fields {
-          id: 34
-          name: "ig_tm_md.level1_exclusion_id"
-          bitwidth: 16
-        }
-        fields {
-          id: 35
-          name: "ig_tm_md.level2_exclusion_id"
-          bitwidth: 9
-        }
-        fields {
-          id: 36
-          name: "ig_tm_md.rid"
-          bitwidth: 16
-        }
-      }
-    }
-  }
   instances {
     preamble {
       id: 2447364724
@@ -641,6 +316,198 @@ externs {
           id: 70
           name: "eg_oport_md.update_delay_on_tx"
           bitwidth: 1
+        }
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2432714103
+      name: "pipe.SwitchIngress.SwitchIngress"
+      alias: "SwitchIngress"
+    }
+    info {
+      [type.googleapis.com/barefoot.Snapshot] {
+        pipe: "pipe"
+        fields {
+          id: 1
+          name: "hdr.ethernet.$valid"
+          bitwidth: 1
+        }
+        fields {
+          id: 2
+          name: "hdr.ethernet.dst_addr"
+          bitwidth: 48
+        }
+        fields {
+          id: 3
+          name: "hdr.ethernet.src_addr"
+          bitwidth: 48
+        }
+        fields {
+          id: 4
+          name: "hdr.ethernet.ether_type"
+          bitwidth: 16
+        }
+        fields {
+          id: 5
+          name: "meta.counter_index"
+          bitwidth: 32
+        }
+        fields {
+          id: 6
+          name: "meta.increment_amount"
+          bitwidth: 32
+        }
+        fields {
+          id: 7
+          name: "ig_intr_md.resubmit_flag"
+          bitwidth: 1
+        }
+        fields {
+          id: 8
+          name: "ig_intr_md._pad1"
+          bitwidth: 1
+        }
+        fields {
+          id: 9
+          name: "ig_intr_md.packet_version"
+          bitwidth: 2
+        }
+        fields {
+          id: 10
+          name: "ig_intr_md._pad2"
+          bitwidth: 3
+        }
+        fields {
+          id: 11
+          name: "ig_intr_md.ingress_port"
+          bitwidth: 9
+        }
+        fields {
+          id: 12
+          name: "ig_intr_md.ingress_mac_tstamp"
+          bitwidth: 48
+        }
+        fields {
+          id: 13
+          name: "ig_prsr_md.global_tstamp"
+          bitwidth: 48
+        }
+        fields {
+          id: 14
+          name: "ig_prsr_md.global_ver"
+          bitwidth: 32
+        }
+        fields {
+          id: 15
+          name: "ig_prsr_md.parser_err"
+          bitwidth: 16
+        }
+        fields {
+          id: 16
+          name: "ig_dprsr_md.drop_ctl"
+          bitwidth: 3
+        }
+        fields {
+          id: 17
+          name: "ig_dprsr_md.digest_type"
+          bitwidth: 3
+        }
+        fields {
+          id: 18
+          name: "ig_dprsr_md.resubmit_type"
+          bitwidth: 3
+        }
+        fields {
+          id: 19
+          name: "ig_dprsr_md.mirror_type"
+          bitwidth: 3
+        }
+        fields {
+          id: 20
+          name: "ig_tm_md.ucast_egress_port"
+          bitwidth: 9
+        }
+        fields {
+          id: 21
+          name: "ig_tm_md.bypass_egress"
+          bitwidth: 1
+        }
+        fields {
+          id: 22
+          name: "ig_tm_md.deflect_on_drop"
+          bitwidth: 1
+        }
+        fields {
+          id: 23
+          name: "ig_tm_md.ingress_cos"
+          bitwidth: 3
+        }
+        fields {
+          id: 24
+          name: "ig_tm_md.qid"
+          bitwidth: 5
+        }
+        fields {
+          id: 25
+          name: "ig_tm_md.icos_for_copy_to_cpu"
+          bitwidth: 3
+        }
+        fields {
+          id: 26
+          name: "ig_tm_md.copy_to_cpu"
+          bitwidth: 1
+        }
+        fields {
+          id: 27
+          name: "ig_tm_md.packet_color"
+          bitwidth: 2
+        }
+        fields {
+          id: 28
+          name: "ig_tm_md.disable_ucast_cutthru"
+          bitwidth: 1
+        }
+        fields {
+          id: 29
+          name: "ig_tm_md.enable_mcast_cutthru"
+          bitwidth: 1
+        }
+        fields {
+          id: 30
+          name: "ig_tm_md.mcast_grp_a"
+          bitwidth: 16
+        }
+        fields {
+          id: 31
+          name: "ig_tm_md.mcast_grp_b"
+          bitwidth: 16
+        }
+        fields {
+          id: 32
+          name: "ig_tm_md.level1_mcast_hash"
+          bitwidth: 13
+        }
+        fields {
+          id: 33
+          name: "ig_tm_md.level2_mcast_hash"
+          bitwidth: 13
+        }
+        fields {
+          id: 34
+          name: "ig_tm_md.level1_exclusion_id"
+          bitwidth: 16
+        }
+        fields {
+          id: 35
+          name: "ig_tm_md.level2_exclusion_id"
+          bitwidth: 9
+        }
+        fields {
+          id: 36
+          name: "ig_tm_md.rid"
+          bitwidth: 16
         }
       }
     }

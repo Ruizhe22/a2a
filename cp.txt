@@ -1,0 +1,3 @@
+scp -r -o "ProxyJump zrz@162.105.218.62:2332" /Users/ray/netlab/moe/a2a root@10.0.0.100:/root/zrz
+scp -r -o "ProxyJump zrz@162.105.218.62:2332" root@10.0.0.100:/root/zrz/a2a/build/t1 /Users/ray/netlab/moe/a2a
+    

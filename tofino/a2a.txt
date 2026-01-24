@@ -1,0 +1,3385 @@
+# proto-file: p4/config/v1/p4info.proto
+# proto-message: p4.config.v1.P4Info
+
+pkg_info {
+  arch: "tna"
+}
+tables {
+  preamble {
+    id: 37396829
+    name: "pipe.A2AIngress.combine_ctrl.tbl_rank_to_clear_mask"
+    alias: "tbl_rank_to_clear_mask"
+  }
+  match_fields {
+    id: 1
+    name: "ig_md.ing_rank_id"
+    bitwidth: 32
+    match_type: EXACT
+  }
+  action_refs {
+    id: 25221030
+  }
+  initial_default_action {
+    action_id: 25221030
+    arguments {
+      param_id: 1
+      value: "\000\000\000\000"
+    }
+  }
+  size: 8
+  is_const_table: true
+  has_initial_entries: true
+}
+tables {
+  preamble {
+    id: 48531407
+    name: "pipe.A2AIngress.traffic_classify"
+    alias: "traffic_classify"
+  }
+  match_fields {
+    id: 1
+    name: "hdr.ipv4.src_addr"
+    bitwidth: 32
+    match_type: EXACT
+  }
+  match_fields {
+    id: 2
+    name: "hdr.ipv4.dst_addr"
+    bitwidth: 32
+    match_type: EXACT
+  }
+  match_fields {
+    id: 3
+    name: "hdr.bth.dst_qp"
+    bitwidth: 32
+    match_type: EXACT
+  }
+  action_refs {
+    id: 23149940
+  }
+  action_refs {
+    id: 16844530
+  }
+  initial_default_action {
+    action_id: 16844530
+  }
+  size: 32768
+}
+tables {
+  preamble {
+    id: 33975341
+    name: "pipe.A2AEgress.dispatch_egress.dispatch_rank_info"
+    alias: "dispatch_rank_info"
+  }
+  match_fields {
+    id: 1
+    name: "eg_md.channel_id"
+    bitwidth: 32
+    match_type: EXACT
+  }
+  match_fields {
+    id: 2
+    name: "eg_intr_md.egress_port"
+    bitwidth: 9
+    match_type: EXACT
+  }
+  action_refs {
+    id: 19408829
+  }
+  action_refs {
+    id: 21257015
+  }
+  initial_default_action {
+    action_id: 21257015
+  }
+  size: 1024
+}
+tables {
+  preamble {
+    id: 44982543
+    name: "pipe.A2AEgress.dispatch_egress.dispatch_rx_info"
+    alias: "dispatch_rx_info"
+  }
+  match_fields {
+    id: 1
+    name: "eg_md.channel_id"
+    bitwidth: 32
+    match_type: EXACT
+  }
+  match_fields {
+    id: 2
+    name: "eg_md.eg_rank_id"
+    bitwidth: 32
+    match_type: EXACT
+  }
+  action_refs {
+    id: 19675933
+  }
+  action_refs {
+    id: 21257015
+  }
+  initial_default_action {
+    action_id: 21257015
+  }
+  size: 1024
+}
+tables {
+  preamble {
+    id: 38238392
+    name: "pipe.A2AEgress.combine_egress.tbl_rx_info"
+    alias: "tbl_rx_info"
+  }
+  match_fields {
+    id: 1
+    name: "eg_md.channel_id"
+    bitwidth: 32
+    match_type: EXACT
+  }
+  match_fields {
+    id: 2
+    name: "eg_md.root_rank_id"
+    bitwidth: 32
+    match_type: EXACT
+  }
+  action_refs {
+    id: 18460354
+  }
+  action_refs {
+    id: 21257015
+  }
+  initial_default_action {
+    action_id: 21257015
+  }
+  size: 1024
+}
+actions {
+  preamble {
+    id: 26342838
+    name: "A2AIngress.dispatch_ctrl.mul_256"
+    alias: "dispatch_ctrl.mul_256"
+  }
+}
+actions {
+  preamble {
+    id: 22498553
+    name: "A2AIngress.dispatch_ctrl.set_aeth_msn"
+    alias: "dispatch_ctrl.set_aeth_msn"
+  }
+}
+actions {
+  preamble {
+    id: 31550484
+    name: "A2AIngress.dispatch_ctrl.set_aeth_syndrome"
+    alias: "dispatch_ctrl.set_aeth_syndrome"
+  }
+}
+actions {
+  preamble {
+    id: 29256268
+    name: "A2AIngress.dispatch_ctrl.set_aeth_psn"
+    alias: "dispatch_ctrl.set_aeth_psn"
+  }
+}
+actions {
+  preamble {
+    id: 32740879
+    name: "A2AIngress.dispatch_ctrl.do_init_tx_epsn"
+    alias: "do_init_tx_epsn"
+  }
+}
+actions {
+  preamble {
+    id: 29111771
+    name: "A2AIngress.dispatch_ctrl.do_read_cond_inc_tx_epsn"
+    alias: "dispatch_ctrl.do_read_cond_inc_tx_epsn"
+  }
+}
+actions {
+  preamble {
+    id: 32511051
+    name: "A2AIngress.combine_ctrl.do_read_cond_inc_tx_epsn"
+    alias: "combine_ctrl.do_read_cond_inc_tx_epsn"
+  }
+}
+actions {
+  preamble {
+    id: 25104460
+    name: "A2AIngress.combine_ctrl.do_read_tx_msn"
+    alias: "do_read_tx_msn"
+  }
+}
+actions {
+  preamble {
+    id: 30788156
+    name: "A2AIngress.combine_ctrl.do_read_inc_tx_msn"
+    alias: "do_read_inc_tx_msn"
+  }
+}
+actions {
+  preamble {
+    id: 20071036
+    name: "A2AIngress.combine_ctrl.do_read_tx_loc"
+    alias: "do_read_tx_loc"
+  }
+}
+actions {
+  preamble {
+    id: 32618076
+    name: "A2AIngress.combine_ctrl.do_write_tx_loc"
+    alias: "do_write_tx_loc"
+  }
+}
+actions {
+  preamble {
+    id: 17537607
+    name: "A2AIngress.combine_ctrl.do_read_inc_tx_offset"
+    alias: "do_read_inc_tx_offset"
+  }
+}
+actions {
+  preamble {
+    id: 29694101
+    name: "A2AIngress.combine_ctrl.do_reset_tx_offset"
+    alias: "do_reset_tx_offset"
+  }
+}
+actions {
+  preamble {
+    id: 21763327
+    name: "A2AIngress.combine_ctrl.do_read_cond_inc_rx_bitmap_epsn"
+    alias: "do_read_cond_inc_rx_bitmap_epsn"
+  }
+}
+actions {
+  preamble {
+    id: 30592437
+    name: "A2AIngress.combine_ctrl.do_read_add_rx_token_epsn"
+    alias: "do_read_add_rx_token_epsn"
+  }
+}
+actions {
+  preamble {
+    id: 20584549
+    name: "A2AIngress.combine_ctrl.queue_head_0_do_cond_inc"
+    alias: "queue_head_0_do_cond_inc"
+  }
+}
+actions {
+  preamble {
+    id: 26692731
+    name: "A2AIngress.combine_ctrl.queue_head_0_do_inc"
+    alias: "queue_head_0_do_inc"
+  }
+}
+actions {
+  preamble {
+    id: 17143425
+    name: "A2AIngress.combine_ctrl.queue_tail_0_do_read"
+    alias: "queue_tail_0_do_read"
+  }
+}
+actions {
+  preamble {
+    id: 18700567
+    name: "A2AIngress.combine_ctrl.queue_tail_0_do_read_add"
+    alias: "queue_tail_0_do_read_add"
+  }
+}
+actions {
+  preamble {
+    id: 21957559
+    name: "A2AIngress.combine_ctrl.bitmap_0_do_read"
+    alias: "bitmap_0_do_read"
+  }
+}
+actions {
+  preamble {
+    id: 31259543
+    name: "A2AIngress.combine_ctrl.bitmap_0_do_write"
+    alias: "bitmap_0_do_write"
+  }
+}
+actions {
+  preamble {
+    id: 21785218
+    name: "A2AIngress.combine_ctrl.bitmap_0_do_clear_bit"
+    alias: "bitmap_0_do_clear_bit"
+  }
+}
+actions {
+  preamble {
+    id: 28837636
+    name: "A2AIngress.combine_ctrl.addr_0_do_read_lo"
+    alias: "addr_0_do_read_lo"
+  }
+}
+actions {
+  preamble {
+    id: 31023326
+    name: "A2AIngress.combine_ctrl.addr_0_do_read_hi"
+    alias: "addr_0_do_read_hi"
+  }
+}
+actions {
+  preamble {
+    id: 21454549
+    name: "A2AIngress.combine_ctrl.addr_0_do_write_lo"
+    alias: "addr_0_do_write_lo"
+  }
+}
+actions {
+  preamble {
+    id: 23854731
+    name: "A2AIngress.combine_ctrl.addr_0_do_write_hi"
+    alias: "addr_0_do_write_hi"
+  }
+}
+actions {
+  preamble {
+    id: 29623030
+    name: "A2AIngress.combine_ctrl.mul_256"
+    alias: "combine_ctrl.mul_256"
+  }
+}
+actions {
+  preamble {
+    id: 31070732
+    name: "A2AIngress.combine_ctrl.set_aeth_msn"
+    alias: "combine_ctrl.set_aeth_msn"
+  }
+}
+actions {
+  preamble {
+    id: 29042212
+    name: "A2AIngress.combine_ctrl.set_aeth_syndrome"
+    alias: "combine_ctrl.set_aeth_syndrome"
+  }
+}
+actions {
+  preamble {
+    id: 29650905
+    name: "A2AIngress.combine_ctrl.set_aeth_psn"
+    alias: "combine_ctrl.set_aeth_psn"
+  }
+}
+actions {
+  preamble {
+    id: 25221030
+    name: "A2AIngress.combine_ctrl.set_bitmap_clear_mask"
+    alias: "set_bitmap_clear_mask"
+  }
+  params {
+    id: 1
+    name: "m"
+    bitwidth: 32
+  }
+}
+actions {
+  preamble {
+    id: 18925597
+    name: "A2AIngress.combine_ctrl.step1_calc_token_idx_from_tail"
+    alias: "step1_calc_token_idx_from_tail"
+  }
+}
+actions {
+  preamble {
+    id: 19461363
+    name: "A2AIngress.combine_ctrl.step2_calc_token_idx_from_tail"
+    alias: "step2_calc_token_idx_from_tail"
+  }
+}
+actions {
+  preamble {
+    id: 27382451
+    name: "A2AIngress.combine_ctrl.step3_calc_token_idx_from_tail"
+    alias: "step3_calc_token_idx_from_tail"
+  }
+}
+actions {
+  preamble {
+    id: 19577311
+    name: "A2AIngress.combine_ctrl.calc_slot_index_from_token_idx"
+    alias: "calc_slot_index_from_token_idx"
+  }
+}
+actions {
+  preamble {
+    id: 22764220
+    name: "A2AIngress.combine_ctrl.calc_slot_id_from_token_idx"
+    alias: "calc_slot_id_from_token_idx"
+  }
+}
+actions {
+  preamble {
+    id: 31029939
+    name: "A2AIngress.combine_ctrl.calc_slot_index_from_next_token_idx"
+    alias: "calc_slot_index_from_next_token_idx"
+  }
+}
+actions {
+  preamble {
+    id: 22472066
+    name: "A2AIngress.combine_ctrl.calc_slot_id_from_next_token_idx"
+    alias: "calc_slot_id_from_next_token_idx"
+  }
+}
+actions {
+  preamble {
+    id: 22718605
+    name: "A2AIngress.combine_ctrl.step1_calc_token_idx_from_tx_loc"
+    alias: "step1_calc_token_idx_from_tx_loc"
+  }
+}
+actions {
+  preamble {
+    id: 18411650
+    name: "A2AIngress.combine_ctrl.step2_calc_token_idx_from_tx_loc"
+    alias: "step2_calc_token_idx_from_tx_loc"
+  }
+}
+actions {
+  preamble {
+    id: 26946928
+    name: "A2AIngress.combine_ctrl.step3_calc_token_idx_from_tx_loc"
+    alias: "step3_calc_token_idx_from_tx_loc"
+  }
+}
+actions {
+  preamble {
+    id: 31246154
+    name: "A2AIngress.combine_ctrl.step1_calc_next_token_idx"
+    alias: "step1_calc_next_token_idx"
+  }
+}
+actions {
+  preamble {
+    id: 23861168
+    name: "A2AIngress.combine_ctrl.step2_calc_next_token_idx"
+    alias: "step2_calc_next_token_idx"
+  }
+}
+actions {
+  preamble {
+    id: 21253178
+    name: "A2AIngress.combine_ctrl.step3_calc_next_token_idx"
+    alias: "step3_calc_next_token_idx"
+  }
+}
+actions {
+  preamble {
+    id: 23149940
+    name: "A2AIngress.set_a2a_traffic"
+    alias: "set_a2a_traffic"
+  }
+  params {
+    id: 1
+    name: "conn_phase"
+    bitwidth: 2
+  }
+  params {
+    id: 2
+    name: "conn_semantics"
+    bitwidth: 2
+  }
+  params {
+    id: 3
+    name: "channel_id"
+    bitwidth: 32
+  }
+  params {
+    id: 4
+    name: "channel_class"
+    bitwidth: 32
+  }
+  params {
+    id: 5
+    name: "ing_rank_id"
+    bitwidth: 32
+  }
+  params {
+    id: 6
+    name: "root_rank_id"
+    bitwidth: 32
+  }
+}
+actions {
+  preamble {
+    id: 16844530
+    name: "A2AIngress.set_unknown_traffic"
+    alias: "set_unknown_traffic"
+  }
+}
+actions {
+  preamble {
+    id: 21257015
+    name: "NoAction"
+    alias: "NoAction"
+    annotations: "@noWarn(\"unused\")"
+  }
+}
+actions {
+  preamble {
+    id: 19408829
+    name: "A2AEgress.dispatch_egress.get_rank_id"
+    alias: "get_rank_id"
+  }
+  params {
+    id: 1
+    name: "rank_id"
+    bitwidth: 32
+  }
+}
+actions {
+  preamble {
+    id: 19675933
+    name: "A2AEgress.dispatch_egress.set_rx_info"
+    alias: "dispatch_egress.set_rx_info"
+  }
+  params {
+    id: 1
+    name: "dst_mac"
+    bitwidth: 48
+  }
+  params {
+    id: 2
+    name: "dst_ip"
+    bitwidth: 32
+  }
+  params {
+    id: 3
+    name: "dst_qp"
+    bitwidth: 32
+  }
+  params {
+    id: 4
+    name: "rkey"
+    bitwidth: 32
+  }
+}
+actions {
+  preamble {
+    id: 18309930
+    name: "A2AEgress.dispatch_egress.set_ack_egress"
+    alias: "set_ack_egress"
+  }
+}
+actions {
+  preamble {
+    id: 18397510
+    name: "A2AEgress.combine_egress.swap_l2_l3_l4"
+    alias: "swap_l2_l3_l4"
+  }
+}
+actions {
+  preamble {
+    id: 22807759
+    name: "A2AEgress.combine_egress.set_ack_len"
+    alias: "set_ack_len"
+  }
+}
+actions {
+  preamble {
+    id: 33138219
+    name: "A2AEgress.combine_egress.set_write_first_len"
+    alias: "set_write_first_len"
+  }
+}
+actions {
+  preamble {
+    id: 29238883
+    name: "A2AEgress.combine_egress.set_write_middle_len"
+    alias: "set_write_middle_len"
+  }
+}
+actions {
+  preamble {
+    id: 18460354
+    name: "A2AEgress.combine_egress.set_rx_info"
+    alias: "combine_egress.set_rx_info"
+  }
+  params {
+    id: 1
+    name: "dst_mac"
+    bitwidth: 48
+  }
+  params {
+    id: 2
+    name: "dst_ip"
+    bitwidth: 32
+  }
+  params {
+    id: 3
+    name: "dst_qp"
+    bitwidth: 32
+  }
+  params {
+    id: 4
+    name: "rkey"
+    bitwidth: 32
+  }
+}
+actions {
+  preamble {
+    id: 23258857
+    name: "A2AEgress.combine_egress.step1_calc_buffer_idx"
+    alias: "step1_calc_buffer_idx"
+  }
+}
+actions {
+  preamble {
+    id: 31838547
+    name: "A2AEgress.combine_egress.step2_calc_buffer_idx"
+    alias: "step2_calc_buffer_idx"
+  }
+}
+actions {
+  preamble {
+    id: 18861092
+    name: "A2AEgress.combine_egress.step3_calc_buffer_idx"
+    alias: "step3_calc_buffer_idx"
+  }
+}
+actions {
+  preamble {
+    id: 20523490
+    name: "A2AEgress.combine_egress.step4a_set_loc_from_tx_loc"
+    alias: "step4a_set_loc_from_tx_loc"
+  }
+}
+actions {
+  preamble {
+    id: 26937625
+    name: "A2AEgress.combine_egress.step4b_calc_loc_mul_8"
+    alias: "step4b_calc_loc_mul_8"
+  }
+}
+actions {
+  preamble {
+    id: 19073808
+    name: "A2AEgress.combine_egress.step5_calc_loc_mul_7"
+    alias: "step5_calc_loc_mul_7"
+  }
+}
+actions {
+  preamble {
+    id: 33100515
+    name: "A2AEgress.combine_egress.step6_calc_buffer_idx"
+    alias: "step6_calc_buffer_idx"
+  }
+}
+actions {
+  preamble {
+    id: 17775426
+    name: "A2AEgress.combine_egress.step7a_set_offset_from_rid"
+    alias: "step7a_set_offset_from_rid"
+  }
+}
+actions {
+  preamble {
+    id: 27629401
+    name: "A2AEgress.combine_egress.step7a_set_offset_from_eg"
+    alias: "step7a_set_offset_from_eg"
+  }
+}
+actions {
+  preamble {
+    id: 28858090
+    name: "A2AEgress.combine_egress.step7b_add_offset"
+    alias: "step7b_add_offset"
+  }
+}
+externs {
+  extern_type_id: 139
+  extern_type_name: "Register"
+  instances {
+    preamble {
+      id: 2341644863
+      name: "pipe.A2AIngress.dispatch_ctrl.reg_tx_epsn"
+      alias: "dispatch_ctrl.reg_tx_epsn"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 64
+        data_field_name: "A2AIngress.dispatch_ctrl.reg_tx_epsn"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2339679755
+      name: "pipe.A2AIngress.dispatch_ctrl.reg_tx_msn"
+      alias: "dispatch_ctrl.reg_tx_msn"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 64
+        data_field_name: "A2AIngress.dispatch_ctrl.reg_tx_msn"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2343150531
+      name: "pipe.A2AIngress.dispatch_ctrl.reg_tx_bitmap"
+      alias: "reg_tx_bitmap"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 64
+        data_field_name: "A2AIngress.dispatch_ctrl.reg_tx_bitmap"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2343600876
+      name: "pipe.A2AIngress.combine_ctrl.reg_tx_epsn"
+      alias: "combine_ctrl.reg_tx_epsn"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 512
+        data_field_name: "A2AIngress.combine_ctrl.reg_tx_epsn"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2340158723
+      name: "pipe.A2AIngress.combine_ctrl.reg_tx_msn"
+      alias: "combine_ctrl.reg_tx_msn"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 512
+        data_field_name: "A2AIngress.combine_ctrl.reg_tx_msn"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2346139256
+      name: "pipe.A2AIngress.combine_ctrl.reg_tx_loc"
+      alias: "reg_tx_loc"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 512
+        data_field_name: "A2AIngress.combine_ctrl.reg_tx_loc"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2347825713
+      name: "pipe.A2AIngress.combine_ctrl.reg_tx_packet_offset"
+      alias: "reg_tx_packet_offset"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 512
+        data_field_name: "A2AIngress.combine_ctrl.reg_tx_packet_offset"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2348297824
+      name: "pipe.A2AIngress.combine_ctrl.reg_rx_bitmap_epsn"
+      alias: "reg_rx_bitmap_epsn"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 64
+        data_field_name: "A2AIngress.combine_ctrl.reg_rx_bitmap_epsn"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2335397515
+      name: "pipe.A2AIngress.combine_ctrl.reg_rx_token_epsn"
+      alias: "reg_rx_token_epsn"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 64
+        data_field_name: "A2AIngress.combine_ctrl.reg_rx_token_epsn"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2338232094
+      name: "pipe.A2AIngress.combine_ctrl.reg_rx_token_msn"
+      alias: "reg_rx_token_msn"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 64
+        data_field_name: "A2AIngress.combine_ctrl.reg_rx_token_msn"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2345865016
+      name: "pipe.A2AIngress.combine_ctrl.queue_head_0_reg"
+      alias: "queue_head_0_reg"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AIngress.combine_ctrl.queue_head_0_reg"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2336203832
+      name: "pipe.A2AIngress.combine_ctrl.queue_head_1_reg"
+      alias: "queue_head_1_reg"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AIngress.combine_ctrl.queue_head_1_reg"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2344843695
+      name: "pipe.A2AIngress.combine_ctrl.queue_head_2_reg"
+      alias: "queue_head_2_reg"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AIngress.combine_ctrl.queue_head_2_reg"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2347404613
+      name: "pipe.A2AIngress.combine_ctrl.queue_head_3_reg"
+      alias: "queue_head_3_reg"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AIngress.combine_ctrl.queue_head_3_reg"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2338700475
+      name: "pipe.A2AIngress.combine_ctrl.queue_head_4_reg"
+      alias: "queue_head_4_reg"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AIngress.combine_ctrl.queue_head_4_reg"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2348423523
+      name: "pipe.A2AIngress.combine_ctrl.queue_head_5_reg"
+      alias: "queue_head_5_reg"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AIngress.combine_ctrl.queue_head_5_reg"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2338685462
+      name: "pipe.A2AIngress.combine_ctrl.queue_head_6_reg"
+      alias: "queue_head_6_reg"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AIngress.combine_ctrl.queue_head_6_reg"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2344936392
+      name: "pipe.A2AIngress.combine_ctrl.queue_head_7_reg"
+      alias: "queue_head_7_reg"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AIngress.combine_ctrl.queue_head_7_reg"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2342414363
+      name: "pipe.A2AIngress.combine_ctrl.queue_tail_0_reg"
+      alias: "queue_tail_0_reg"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AIngress.combine_ctrl.queue_tail_0_reg"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2341751589
+      name: "pipe.A2AIngress.combine_ctrl.queue_tail_1_reg"
+      alias: "queue_tail_1_reg"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AIngress.combine_ctrl.queue_tail_1_reg"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2342737073
+      name: "pipe.A2AIngress.combine_ctrl.queue_tail_2_reg"
+      alias: "queue_tail_2_reg"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AIngress.combine_ctrl.queue_tail_2_reg"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2344419293
+      name: "pipe.A2AIngress.combine_ctrl.queue_tail_3_reg"
+      alias: "queue_tail_3_reg"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AIngress.combine_ctrl.queue_tail_3_reg"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2339826625
+      name: "pipe.A2AIngress.combine_ctrl.queue_tail_4_reg"
+      alias: "queue_tail_4_reg"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AIngress.combine_ctrl.queue_tail_4_reg"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2332565405
+      name: "pipe.A2AIngress.combine_ctrl.queue_tail_5_reg"
+      alias: "queue_tail_5_reg"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AIngress.combine_ctrl.queue_tail_5_reg"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2339541787
+      name: "pipe.A2AIngress.combine_ctrl.queue_tail_6_reg"
+      alias: "queue_tail_6_reg"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AIngress.combine_ctrl.queue_tail_6_reg"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2333311345
+      name: "pipe.A2AIngress.combine_ctrl.queue_tail_7_reg"
+      alias: "queue_tail_7_reg"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AIngress.combine_ctrl.queue_tail_7_reg"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2343681639
+      name: "pipe.A2AIngress.combine_ctrl.reg_queue_incomplete"
+      alias: "reg_queue_incomplete"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 64
+        data_field_name: "A2AIngress.combine_ctrl.reg_queue_incomplete"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2347820481
+      name: "pipe.A2AIngress.combine_ctrl.bitmap_0_reg"
+      alias: "bitmap_0_reg"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 512
+        data_field_name: "A2AIngress.combine_ctrl.bitmap_0_reg"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2335045347
+      name: "pipe.A2AIngress.combine_ctrl.bitmap_1_reg"
+      alias: "bitmap_1_reg"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 512
+        data_field_name: "A2AIngress.combine_ctrl.bitmap_1_reg"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2343162724
+      name: "pipe.A2AIngress.combine_ctrl.bitmap_2_reg"
+      alias: "bitmap_2_reg"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 512
+        data_field_name: "A2AIngress.combine_ctrl.bitmap_2_reg"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2338320172
+      name: "pipe.A2AIngress.combine_ctrl.bitmap_3_reg"
+      alias: "bitmap_3_reg"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 512
+        data_field_name: "A2AIngress.combine_ctrl.bitmap_3_reg"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2341786316
+      name: "pipe.A2AIngress.combine_ctrl.bitmap_4_reg"
+      alias: "bitmap_4_reg"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 512
+        data_field_name: "A2AIngress.combine_ctrl.bitmap_4_reg"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2337962861
+      name: "pipe.A2AIngress.combine_ctrl.bitmap_5_reg"
+      alias: "bitmap_5_reg"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 512
+        data_field_name: "A2AIngress.combine_ctrl.bitmap_5_reg"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2343108073
+      name: "pipe.A2AIngress.combine_ctrl.bitmap_6_reg"
+      alias: "bitmap_6_reg"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 512
+        data_field_name: "A2AIngress.combine_ctrl.bitmap_6_reg"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2345932382
+      name: "pipe.A2AIngress.combine_ctrl.bitmap_7_reg"
+      alias: "bitmap_7_reg"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 512
+        data_field_name: "A2AIngress.combine_ctrl.bitmap_7_reg"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2337722234
+      name: "pipe.A2AIngress.combine_ctrl.addr_0_reg_lo"
+      alias: "addr_0_reg_lo"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 512
+        data_field_name: "A2AIngress.combine_ctrl.addr_0_reg_lo"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2332186288
+      name: "pipe.A2AIngress.combine_ctrl.addr_0_reg_hi"
+      alias: "addr_0_reg_hi"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 512
+        data_field_name: "A2AIngress.combine_ctrl.addr_0_reg_hi"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2335339088
+      name: "pipe.A2AIngress.combine_ctrl.addr_1_reg_lo"
+      alias: "addr_1_reg_lo"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 512
+        data_field_name: "A2AIngress.combine_ctrl.addr_1_reg_lo"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2344618701
+      name: "pipe.A2AIngress.combine_ctrl.addr_1_reg_hi"
+      alias: "addr_1_reg_hi"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 512
+        data_field_name: "A2AIngress.combine_ctrl.addr_1_reg_hi"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2344893920
+      name: "pipe.A2AIngress.combine_ctrl.addr_2_reg_lo"
+      alias: "addr_2_reg_lo"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 512
+        data_field_name: "A2AIngress.combine_ctrl.addr_2_reg_lo"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2341712337
+      name: "pipe.A2AIngress.combine_ctrl.addr_2_reg_hi"
+      alias: "addr_2_reg_hi"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 512
+        data_field_name: "A2AIngress.combine_ctrl.addr_2_reg_hi"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2344977507
+      name: "pipe.A2AIngress.combine_ctrl.addr_3_reg_lo"
+      alias: "addr_3_reg_lo"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 512
+        data_field_name: "A2AIngress.combine_ctrl.addr_3_reg_lo"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2348757752
+      name: "pipe.A2AIngress.combine_ctrl.addr_3_reg_hi"
+      alias: "addr_3_reg_hi"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 512
+        data_field_name: "A2AIngress.combine_ctrl.addr_3_reg_hi"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2343784831
+      name: "pipe.A2AIngress.combine_ctrl.addr_4_reg_lo"
+      alias: "addr_4_reg_lo"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 512
+        data_field_name: "A2AIngress.combine_ctrl.addr_4_reg_lo"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2348150820
+      name: "pipe.A2AIngress.combine_ctrl.addr_4_reg_hi"
+      alias: "addr_4_reg_hi"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 512
+        data_field_name: "A2AIngress.combine_ctrl.addr_4_reg_hi"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2334105479
+      name: "pipe.A2AIngress.combine_ctrl.addr_5_reg_lo"
+      alias: "addr_5_reg_lo"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 512
+        data_field_name: "A2AIngress.combine_ctrl.addr_5_reg_lo"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2335132385
+      name: "pipe.A2AIngress.combine_ctrl.addr_5_reg_hi"
+      alias: "addr_5_reg_hi"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 512
+        data_field_name: "A2AIngress.combine_ctrl.addr_5_reg_hi"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2337334616
+      name: "pipe.A2AIngress.combine_ctrl.addr_6_reg_lo"
+      alias: "addr_6_reg_lo"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 512
+        data_field_name: "A2AIngress.combine_ctrl.addr_6_reg_lo"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2338733279
+      name: "pipe.A2AIngress.combine_ctrl.addr_6_reg_hi"
+      alias: "addr_6_reg_hi"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 512
+        data_field_name: "A2AIngress.combine_ctrl.addr_6_reg_hi"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2334796251
+      name: "pipe.A2AIngress.combine_ctrl.addr_7_reg_lo"
+      alias: "addr_7_reg_lo"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 512
+        data_field_name: "A2AIngress.combine_ctrl.addr_7_reg_lo"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2347028429
+      name: "pipe.A2AIngress.combine_ctrl.addr_7_reg_hi"
+      alias: "addr_7_reg_hi"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 512
+        data_field_name: "A2AIngress.combine_ctrl.addr_7_reg_hi"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2335438089
+      name: "pipe.A2AEgress.dispatch_egress.psn_slot_0.reg_psn"
+      alias: "psn_slot_0.reg_psn"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 64
+        data_field_name: "A2AEgress.dispatch_egress.psn_slot_0.reg_psn"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2332290238
+      name: "pipe.A2AEgress.dispatch_egress.psn_slot_1.reg_psn"
+      alias: "psn_slot_1.reg_psn"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 64
+        data_field_name: "A2AEgress.dispatch_egress.psn_slot_1.reg_psn"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2339612641
+      name: "pipe.A2AEgress.dispatch_egress.psn_slot_2.reg_psn"
+      alias: "psn_slot_2.reg_psn"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 64
+        data_field_name: "A2AEgress.dispatch_egress.psn_slot_2.reg_psn"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2343260876
+      name: "pipe.A2AEgress.dispatch_egress.psn_slot_3.reg_psn"
+      alias: "psn_slot_3.reg_psn"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 64
+        data_field_name: "A2AEgress.dispatch_egress.psn_slot_3.reg_psn"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2340099646
+      name: "pipe.A2AEgress.dispatch_egress.psn_slot_4.reg_psn"
+      alias: "psn_slot_4.reg_psn"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 64
+        data_field_name: "A2AEgress.dispatch_egress.psn_slot_4.reg_psn"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2345465247
+      name: "pipe.A2AEgress.dispatch_egress.psn_slot_5.reg_psn"
+      alias: "psn_slot_5.reg_psn"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 64
+        data_field_name: "A2AEgress.dispatch_egress.psn_slot_5.reg_psn"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2338773481
+      name: "pipe.A2AEgress.dispatch_egress.psn_slot_6.reg_psn"
+      alias: "psn_slot_6.reg_psn"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 64
+        data_field_name: "A2AEgress.dispatch_egress.psn_slot_6.reg_psn"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2347292993
+      name: "pipe.A2AEgress.dispatch_egress.psn_slot_7.reg_psn"
+      alias: "psn_slot_7.reg_psn"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 64
+        data_field_name: "A2AEgress.dispatch_egress.psn_slot_7.reg_psn"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2332519851
+      name: "pipe.A2AEgress.dispatch_egress.addr_slot_0.reg_addr_lo"
+      alias: "addr_slot_0.reg_addr_lo"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AEgress.dispatch_egress.addr_slot_0.reg_addr_lo"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2343413331
+      name: "pipe.A2AEgress.dispatch_egress.addr_slot_0.reg_addr_hi"
+      alias: "addr_slot_0.reg_addr_hi"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AEgress.dispatch_egress.addr_slot_0.reg_addr_hi"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2348306721
+      name: "pipe.A2AEgress.dispatch_egress.addr_slot_1.reg_addr_lo"
+      alias: "addr_slot_1.reg_addr_lo"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AEgress.dispatch_egress.addr_slot_1.reg_addr_lo"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2342439116
+      name: "pipe.A2AEgress.dispatch_egress.addr_slot_1.reg_addr_hi"
+      alias: "addr_slot_1.reg_addr_hi"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AEgress.dispatch_egress.addr_slot_1.reg_addr_hi"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2345375315
+      name: "pipe.A2AEgress.dispatch_egress.addr_slot_2.reg_addr_lo"
+      alias: "addr_slot_2.reg_addr_lo"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AEgress.dispatch_egress.addr_slot_2.reg_addr_lo"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2345295405
+      name: "pipe.A2AEgress.dispatch_egress.addr_slot_2.reg_addr_hi"
+      alias: "addr_slot_2.reg_addr_hi"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AEgress.dispatch_egress.addr_slot_2.reg_addr_hi"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2341432205
+      name: "pipe.A2AEgress.dispatch_egress.addr_slot_3.reg_addr_lo"
+      alias: "addr_slot_3.reg_addr_lo"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AEgress.dispatch_egress.addr_slot_3.reg_addr_lo"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2345135316
+      name: "pipe.A2AEgress.dispatch_egress.addr_slot_3.reg_addr_hi"
+      alias: "addr_slot_3.reg_addr_hi"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AEgress.dispatch_egress.addr_slot_3.reg_addr_hi"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2336593746
+      name: "pipe.A2AEgress.dispatch_egress.addr_slot_4.reg_addr_lo"
+      alias: "addr_slot_4.reg_addr_lo"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AEgress.dispatch_egress.addr_slot_4.reg_addr_lo"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2347447461
+      name: "pipe.A2AEgress.dispatch_egress.addr_slot_4.reg_addr_hi"
+      alias: "addr_slot_4.reg_addr_hi"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AEgress.dispatch_egress.addr_slot_4.reg_addr_hi"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2335645836
+      name: "pipe.A2AEgress.dispatch_egress.addr_slot_5.reg_addr_lo"
+      alias: "addr_slot_5.reg_addr_lo"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AEgress.dispatch_egress.addr_slot_5.reg_addr_lo"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2342900220
+      name: "pipe.A2AEgress.dispatch_egress.addr_slot_5.reg_addr_hi"
+      alias: "addr_slot_5.reg_addr_hi"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AEgress.dispatch_egress.addr_slot_5.reg_addr_hi"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2347655290
+      name: "pipe.A2AEgress.dispatch_egress.addr_slot_6.reg_addr_lo"
+      alias: "addr_slot_6.reg_addr_lo"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AEgress.dispatch_egress.addr_slot_6.reg_addr_lo"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2342974991
+      name: "pipe.A2AEgress.dispatch_egress.addr_slot_6.reg_addr_hi"
+      alias: "addr_slot_6.reg_addr_hi"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AEgress.dispatch_egress.addr_slot_6.reg_addr_hi"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2341300231
+      name: "pipe.A2AEgress.dispatch_egress.addr_slot_7.reg_addr_lo"
+      alias: "addr_slot_7.reg_addr_lo"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AEgress.dispatch_egress.addr_slot_7.reg_addr_lo"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2332689275
+      name: "pipe.A2AEgress.dispatch_egress.addr_slot_7.reg_addr_hi"
+      alias: "addr_slot_7.reg_addr_hi"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 8
+        data_field_name: "A2AEgress.dispatch_egress.addr_slot_7.reg_addr_hi"
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2348058227
+      name: "pipe.A2AEgress.combine_egress.reg_agg"
+      alias: "reg_agg"
+    }
+    info {
+      [type.googleapis.com/barefoot.Register] {
+        type_spec {
+          bitstring {
+            bit {
+              bitwidth: 32
+            }
+          }
+        }
+        size: 28672
+        data_field_name: "A2AEgress.combine_egress.reg_agg"
+      }
+    }
+  }
+}
+externs {
+  extern_type_id: 144
+  extern_type_name: "PortMetadata"
+  instances {
+    preamble {
+      id: 2430195110
+      name: "pipe.A2AIngressParser.$PORT_METADATA"
+      alias: "$PORT_METADATA"
+    }
+    info {
+      [type.googleapis.com/barefoot.PortMetadata] {
+        key_name: "ig_intr_md"
+      }
+    }
+  }
+}
+externs {
+  extern_type_id: 145
+  extern_type_name: "Snapshot"
+  instances {
+    preamble {
+      id: 2434175017
+      name: "pipe.A2AEgress.A2AEgress"
+      alias: "A2AEgress"
+    }
+    info {
+      [type.googleapis.com/barefoot.Snapshot] {
+        pipe: "pipe"
+        direction: DIRECTION_EGRESS
+        fields {
+          id: 1
+          name: "hdr.eth.$valid"
+          bitwidth: 1
+        }
+        fields {
+          id: 2
+          name: "hdr.eth.dst_addr"
+          bitwidth: 48
+        }
+        fields {
+          id: 3
+          name: "hdr.eth.src_addr"
+          bitwidth: 48
+        }
+        fields {
+          id: 4
+          name: "hdr.eth.ether_type"
+          bitwidth: 16
+        }
+        fields {
+          id: 5
+          name: "hdr.ipv4.$valid"
+          bitwidth: 1
+        }
+        fields {
+          id: 6
+          name: "hdr.ipv4.ver_ihl"
+          bitwidth: 8
+        }
+        fields {
+          id: 7
+          name: "hdr.ipv4.diffserv"
+          bitwidth: 8
+        }
+        fields {
+          id: 8
+          name: "hdr.ipv4.total_len"
+          bitwidth: 16
+        }
+        fields {
+          id: 9
+          name: "hdr.ipv4.identification"
+          bitwidth: 16
+        }
+        fields {
+          id: 10
+          name: "hdr.ipv4.flag_offset"
+          bitwidth: 16
+        }
+        fields {
+          id: 11
+          name: "hdr.ipv4.ttl"
+          bitwidth: 8
+        }
+        fields {
+          id: 12
+          name: "hdr.ipv4.protocol"
+          bitwidth: 8
+        }
+        fields {
+          id: 13
+          name: "hdr.ipv4.hdr_checksum"
+          bitwidth: 16
+        }
+        fields {
+          id: 14
+          name: "hdr.ipv4.src_addr"
+          bitwidth: 32
+        }
+        fields {
+          id: 15
+          name: "hdr.ipv4.dst_addr"
+          bitwidth: 32
+        }
+        fields {
+          id: 16
+          name: "hdr.udp.$valid"
+          bitwidth: 1
+        }
+        fields {
+          id: 17
+          name: "hdr.udp.src_port"
+          bitwidth: 16
+        }
+        fields {
+          id: 18
+          name: "hdr.udp.dst_port"
+          bitwidth: 16
+        }
+        fields {
+          id: 19
+          name: "hdr.udp.length"
+          bitwidth: 16
+        }
+        fields {
+          id: 20
+          name: "hdr.udp.checksum"
+          bitwidth: 16
+        }
+        fields {
+          id: 21
+          name: "hdr.bth.$valid"
+          bitwidth: 1
+        }
+        fields {
+          id: 22
+          name: "hdr.bth.opcode"
+          bitwidth: 8
+        }
+        fields {
+          id: 23
+          name: "hdr.bth.se_migreq_pad_ver"
+          bitwidth: 8
+        }
+        fields {
+          id: 24
+          name: "hdr.bth.pkey"
+          bitwidth: 16
+        }
+        fields {
+          id: 25
+          name: "hdr.bth.dst_qp"
+          bitwidth: 32
+        }
+        fields {
+          id: 26
+          name: "hdr.bth.psn"
+          bitwidth: 32
+        }
+        fields {
+          id: 27
+          name: "hdr.bridge.$valid"
+          bitwidth: 1
+        }
+        fields {
+          id: 28
+          name: "hdr.bridge.ing_rank_id"
+          bitwidth: 32
+        }
+        fields {
+          id: 29
+          name: "hdr.bridge.has_reth"
+          bitwidth: 1
+        }
+        fields {
+          id: 30
+          name: "hdr.bridge.has_aeth"
+          bitwidth: 1
+        }
+        fields {
+          id: 31
+          name: "hdr.bridge.has_payload"
+          bitwidth: 1
+        }
+        fields {
+          id: 32
+          name: "hdr.bridge.is_loopback"
+          bitwidth: 1
+        }
+        fields {
+          id: 33
+          name: "hdr.bridge.conn_phase"
+          bitwidth: 2
+        }
+        fields {
+          id: 34
+          name: "hdr.bridge.conn_semantics"
+          bitwidth: 2
+        }
+        fields {
+          id: 35
+          name: "hdr.bridge.channel_id"
+          bitwidth: 32
+        }
+        fields {
+          id: 36
+          name: "hdr.bridge.bitmap"
+          bitwidth: 32
+        }
+        fields {
+          id: 37
+          name: "hdr.bridge.tx_loc_val"
+          bitwidth: 32
+        }
+        fields {
+          id: 38
+          name: "hdr.bridge.tx_offset_val"
+          bitwidth: 32
+        }
+        fields {
+          id: 39
+          name: "hdr.bridge.root_rank_id"
+          bitwidth: 32
+        }
+        fields {
+          id: 40
+          name: "hdr.bridge.next_token_addr"
+          bitwidth: 64
+        }
+        fields {
+          id: 41
+          name: "hdr.bridge.agg_op"
+          bitwidth: 8
+        }
+        fields {
+          id: 42
+          name: "hdr.aeth.$valid"
+          bitwidth: 1
+        }
+        fields {
+          id: 43
+          name: "hdr.aeth.msn"
+          bitwidth: 32
+        }
+        fields {
+          id: 44
+          name: "hdr.reth.$valid"
+          bitwidth: 1
+        }
+        fields {
+          id: 45
+          name: "hdr.reth.addr"
+          bitwidth: 64
+        }
+        fields {
+          id: 46
+          name: "hdr.reth.rkey"
+          bitwidth: 32
+        }
+        fields {
+          id: 47
+          name: "hdr.reth.len"
+          bitwidth: 32
+        }
+        fields {
+          id: 48
+          name: "hdr.payload_first_word.$valid"
+          bitwidth: 1
+        }
+        fields {
+          id: 49
+          name: "hdr.payload_first_word.data"
+          bitwidth: 32
+        }
+        fields {
+          id: 50
+          name: "hdr.payload.$valid"
+          bitwidth: 1
+        }
+        fields {
+          id: 51
+          name: "hdr.payload.data00"
+          bitwidth: 32
+        }
+        fields {
+          id: 52
+          name: "hdr.icrc.$valid"
+          bitwidth: 1
+        }
+        fields {
+          id: 53
+          name: "hdr.icrc.v0"
+          bitwidth: 8
+        }
+        fields {
+          id: 54
+          name: "hdr.icrc.v1"
+          bitwidth: 8
+        }
+        fields {
+          id: 55
+          name: "hdr.icrc.v2"
+          bitwidth: 8
+        }
+        fields {
+          id: 56
+          name: "hdr.icrc.v3"
+          bitwidth: 8
+        }
+        fields {
+          id: 109
+          name: "eg_md.diff"
+          bitwidth: 32
+        }
+        fields {
+          id: 110
+          name: "eg_md.cmp"
+          bitwidth: 32
+        }
+        fields {
+          id: 111
+          name: "eg_md.ing_rank_id"
+          bitwidth: 32
+        }
+        fields {
+          id: 112
+          name: "eg_md.conn_phase"
+          bitwidth: 2
+        }
+        fields {
+          id: 113
+          name: "eg_md.conn_semantics"
+          bitwidth: 2
+        }
+        fields {
+          id: 114
+          name: "eg_md.channel_id"
+          bitwidth: 32
+        }
+        fields {
+          id: 115
+          name: "eg_md.bitmap"
+          bitwidth: 32
+        }
+        fields {
+          id: 116
+          name: "eg_md.tx_loc_val"
+          bitwidth: 32
+        }
+        fields {
+          id: 117
+          name: "eg_md.tx_offset_val"
+          bitwidth: 32
+        }
+        fields {
+          id: 118
+          name: "eg_md.root_rank_id"
+          bitwidth: 32
+        }
+        fields {
+          id: 119
+          name: "eg_md.next_token_addr"
+          bitwidth: 64
+        }
+        fields {
+          id: 120
+          name: "eg_md.agg_op"
+          bitwidth: 8
+        }
+        fields {
+          id: 121
+          name: "eg_md.psn"
+          bitwidth: 32
+        }
+        fields {
+          id: 122
+          name: "eg_md.eg_rank_id"
+          bitwidth: 32
+        }
+        fields {
+          id: 123
+          name: "eg_md.egress_rid"
+          bitwidth: 32
+        }
+        fields {
+          id: 124
+          name: "eg_md.tmp_a"
+          bitwidth: 32
+        }
+        fields {
+          id: 125
+          name: "eg_md.tmp_b"
+          bitwidth: 32
+        }
+        fields {
+          id: 126
+          name: "eg_md.tmp_c"
+          bitwidth: 32
+        }
+        fields {
+          id: 127
+          name: "eg_intr_md._pad0"
+          bitwidth: 7
+        }
+        fields {
+          id: 128
+          name: "eg_intr_md.egress_port"
+          bitwidth: 9
+        }
+        fields {
+          id: 129
+          name: "eg_intr_md._pad1"
+          bitwidth: 5
+        }
+        fields {
+          id: 130
+          name: "eg_intr_md.enq_qdepth"
+          bitwidth: 19
+        }
+        fields {
+          id: 131
+          name: "eg_intr_md._pad2"
+          bitwidth: 6
+        }
+        fields {
+          id: 132
+          name: "eg_intr_md.enq_congest_stat"
+          bitwidth: 2
+        }
+        fields {
+          id: 133
+          name: "eg_intr_md._pad3"
+          bitwidth: 14
+        }
+        fields {
+          id: 134
+          name: "eg_intr_md.enq_tstamp"
+          bitwidth: 18
+        }
+        fields {
+          id: 135
+          name: "eg_intr_md._pad4"
+          bitwidth: 5
+        }
+        fields {
+          id: 136
+          name: "eg_intr_md.deq_qdepth"
+          bitwidth: 19
+        }
+        fields {
+          id: 137
+          name: "eg_intr_md._pad5"
+          bitwidth: 6
+        }
+        fields {
+          id: 138
+          name: "eg_intr_md.deq_congest_stat"
+          bitwidth: 2
+        }
+        fields {
+          id: 139
+          name: "eg_intr_md.app_pool_congest_stat"
+          bitwidth: 8
+        }
+        fields {
+          id: 140
+          name: "eg_intr_md._pad6"
+          bitwidth: 14
+        }
+        fields {
+          id: 141
+          name: "eg_intr_md.deq_timedelta"
+          bitwidth: 18
+        }
+        fields {
+          id: 142
+          name: "eg_intr_md.egress_rid"
+          bitwidth: 16
+        }
+        fields {
+          id: 143
+          name: "eg_intr_md._pad7"
+          bitwidth: 7
+        }
+        fields {
+          id: 144
+          name: "eg_intr_md.egress_rid_first"
+          bitwidth: 1
+        }
+        fields {
+          id: 145
+          name: "eg_intr_md._pad8"
+          bitwidth: 3
+        }
+        fields {
+          id: 146
+          name: "eg_intr_md.egress_qid"
+          bitwidth: 5
+        }
+        fields {
+          id: 147
+          name: "eg_intr_md._pad9"
+          bitwidth: 5
+        }
+        fields {
+          id: 148
+          name: "eg_intr_md.egress_cos"
+          bitwidth: 3
+        }
+        fields {
+          id: 149
+          name: "eg_intr_md._pad10"
+          bitwidth: 7
+        }
+        fields {
+          id: 150
+          name: "eg_intr_md.deflection_flag"
+          bitwidth: 1
+        }
+        fields {
+          id: 151
+          name: "eg_intr_md.pkt_length"
+          bitwidth: 16
+        }
+        fields {
+          id: 152
+          name: "eg_prsr_md.global_tstamp"
+          bitwidth: 48
+        }
+        fields {
+          id: 153
+          name: "eg_prsr_md.global_ver"
+          bitwidth: 32
+        }
+        fields {
+          id: 154
+          name: "eg_prsr_md.parser_err"
+          bitwidth: 16
+        }
+        fields {
+          id: 155
+          name: "eg_dprsr_md.drop_ctl"
+          bitwidth: 3
+        }
+        fields {
+          id: 156
+          name: "eg_dprsr_md.mirror_type"
+          bitwidth: 3
+        }
+        fields {
+          id: 157
+          name: "eg_dprsr_md.coalesce_flush"
+          bitwidth: 1
+        }
+        fields {
+          id: 158
+          name: "eg_dprsr_md.coalesce_length"
+          bitwidth: 7
+        }
+        fields {
+          id: 159
+          name: "eg_oport_md.capture_tstamp_on_tx"
+          bitwidth: 1
+        }
+        fields {
+          id: 160
+          name: "eg_oport_md.update_delay_on_tx"
+          bitwidth: 1
+        }
+      }
+    }
+  }
+  instances {
+    preamble {
+      id: 2438988453
+      name: "pipe.A2AIngress.A2AIngress"
+      alias: "A2AIngress"
+    }
+    info {
+      [type.googleapis.com/barefoot.Snapshot] {
+        pipe: "pipe"
+        fields {
+          id: 1
+          name: "hdr.eth.$valid"
+          bitwidth: 1
+        }
+        fields {
+          id: 2
+          name: "hdr.eth.dst_addr"
+          bitwidth: 48
+        }
+        fields {
+          id: 3
+          name: "hdr.eth.src_addr"
+          bitwidth: 48
+        }
+        fields {
+          id: 4
+          name: "hdr.eth.ether_type"
+          bitwidth: 16
+        }
+        fields {
+          id: 5
+          name: "hdr.ipv4.$valid"
+          bitwidth: 1
+        }
+        fields {
+          id: 6
+          name: "hdr.ipv4.ver_ihl"
+          bitwidth: 8
+        }
+        fields {
+          id: 7
+          name: "hdr.ipv4.diffserv"
+          bitwidth: 8
+        }
+        fields {
+          id: 8
+          name: "hdr.ipv4.total_len"
+          bitwidth: 16
+        }
+        fields {
+          id: 9
+          name: "hdr.ipv4.identification"
+          bitwidth: 16
+        }
+        fields {
+          id: 10
+          name: "hdr.ipv4.flag_offset"
+          bitwidth: 16
+        }
+        fields {
+          id: 11
+          name: "hdr.ipv4.ttl"
+          bitwidth: 8
+        }
+        fields {
+          id: 12
+          name: "hdr.ipv4.protocol"
+          bitwidth: 8
+        }
+        fields {
+          id: 13
+          name: "hdr.ipv4.hdr_checksum"
+          bitwidth: 16
+        }
+        fields {
+          id: 14
+          name: "hdr.ipv4.src_addr"
+          bitwidth: 32
+        }
+        fields {
+          id: 15
+          name: "hdr.ipv4.dst_addr"
+          bitwidth: 32
+        }
+        fields {
+          id: 16
+          name: "hdr.udp.$valid"
+          bitwidth: 1
+        }
+        fields {
+          id: 17
+          name: "hdr.udp.src_port"
+          bitwidth: 16
+        }
+        fields {
+          id: 18
+          name: "hdr.udp.dst_port"
+          bitwidth: 16
+        }
+        fields {
+          id: 19
+          name: "hdr.udp.length"
+          bitwidth: 16
+        }
+        fields {
+          id: 20
+          name: "hdr.udp.checksum"
+          bitwidth: 16
+        }
+        fields {
+          id: 21
+          name: "hdr.bth.$valid"
+          bitwidth: 1
+        }
+        fields {
+          id: 22
+          name: "hdr.bth.opcode"
+          bitwidth: 8
+        }
+        fields {
+          id: 23
+          name: "hdr.bth.se_migreq_pad_ver"
+          bitwidth: 8
+        }
+        fields {
+          id: 24
+          name: "hdr.bth.pkey"
+          bitwidth: 16
+        }
+        fields {
+          id: 25
+          name: "hdr.bth.dst_qp"
+          bitwidth: 32
+        }
+        fields {
+          id: 26
+          name: "hdr.bth.psn"
+          bitwidth: 32
+        }
+        fields {
+          id: 27
+          name: "hdr.bridge.$valid"
+          bitwidth: 1
+        }
+        fields {
+          id: 28
+          name: "hdr.bridge.ing_rank_id"
+          bitwidth: 32
+        }
+        fields {
+          id: 29
+          name: "hdr.bridge.has_reth"
+          bitwidth: 1
+        }
+        fields {
+          id: 30
+          name: "hdr.bridge.has_aeth"
+          bitwidth: 1
+        }
+        fields {
+          id: 31
+          name: "hdr.bridge.has_payload"
+          bitwidth: 1
+        }
+        fields {
+          id: 32
+          name: "hdr.bridge.is_loopback"
+          bitwidth: 1
+        }
+        fields {
+          id: 33
+          name: "hdr.bridge.conn_phase"
+          bitwidth: 2
+        }
+        fields {
+          id: 34
+          name: "hdr.bridge.conn_semantics"
+          bitwidth: 2
+        }
+        fields {
+          id: 35
+          name: "hdr.bridge.channel_id"
+          bitwidth: 32
+        }
+        fields {
+          id: 36
+          name: "hdr.bridge.bitmap"
+          bitwidth: 32
+        }
+        fields {
+          id: 37
+          name: "hdr.bridge.tx_loc_val"
+          bitwidth: 32
+        }
+        fields {
+          id: 38
+          name: "hdr.bridge.tx_offset_val"
+          bitwidth: 32
+        }
+        fields {
+          id: 39
+          name: "hdr.bridge.root_rank_id"
+          bitwidth: 32
+        }
+        fields {
+          id: 40
+          name: "hdr.bridge.next_token_addr"
+          bitwidth: 64
+        }
+        fields {
+          id: 41
+          name: "hdr.bridge.agg_op"
+          bitwidth: 8
+        }
+        fields {
+          id: 42
+          name: "hdr.aeth.$valid"
+          bitwidth: 1
+        }
+        fields {
+          id: 43
+          name: "hdr.aeth.msn"
+          bitwidth: 32
+        }
+        fields {
+          id: 44
+          name: "hdr.reth.$valid"
+          bitwidth: 1
+        }
+        fields {
+          id: 45
+          name: "hdr.reth.addr"
+          bitwidth: 64
+        }
+        fields {
+          id: 46
+          name: "hdr.reth.rkey"
+          bitwidth: 32
+        }
+        fields {
+          id: 47
+          name: "hdr.reth.len"
+          bitwidth: 32
+        }
+        fields {
+          id: 48
+          name: "hdr.payload_first_word.$valid"
+          bitwidth: 1
+        }
+        fields {
+          id: 49
+          name: "hdr.payload_first_word.data"
+          bitwidth: 32
+        }
+        fields {
+          id: 50
+          name: "hdr.payload.$valid"
+          bitwidth: 1
+        }
+        fields {
+          id: 51
+          name: "hdr.payload.data00"
+          bitwidth: 32
+        }
+        fields {
+          id: 52
+          name: "hdr.icrc.$valid"
+          bitwidth: 1
+        }
+        fields {
+          id: 53
+          name: "hdr.icrc.v0"
+          bitwidth: 8
+        }
+        fields {
+          id: 54
+          name: "hdr.icrc.v1"
+          bitwidth: 8
+        }
+        fields {
+          id: 55
+          name: "hdr.icrc.v2"
+          bitwidth: 8
+        }
+        fields {
+          id: 56
+          name: "hdr.icrc.v3"
+          bitwidth: 8
+        }
+        fields {
+          id: 57
+          name: "ig_md.psn_diff"
+          bitwidth: 32
+        }
+        fields {
+          id: 58
+          name: "ig_md.psn_cmp"
+          bitwidth: 8
+        }
+        fields {
+          id: 59
+          name: "ig_md.psn"
+          bitwidth: 32
+        }
+        fields {
+          id: 60
+          name: "ig_md.msn"
+          bitwidth: 32
+        }
+        fields {
+          id: 61
+          name: "ig_md.syndrome"
+          bitwidth: 32
+        }
+        fields {
+          id: 62
+          name: "ig_md.channel_class"
+          bitwidth: 32
+        }
+        fields {
+          id: 63
+          name: "ig_md.tmp_a"
+          bitwidth: 32
+        }
+        fields {
+          id: 64
+          name: "ig_md.tmp_b"
+          bitwidth: 32
+        }
+        fields {
+          id: 65
+          name: "ig_md.tmp_c"
+          bitwidth: 32
+        }
+        fields {
+          id: 66
+          name: "ig_md.tmp_d"
+          bitwidth: 32
+        }
+        fields {
+          id: 67
+          name: "ig_md.tmp_e"
+          bitwidth: 32
+        }
+        fields {
+          id: 68
+          name: "ig_md.ing_rank_id"
+          bitwidth: 32
+        }
+        fields {
+          id: 69
+          name: "ig_md.conn_phase"
+          bitwidth: 2
+        }
+        fields {
+          id: 70
+          name: "ig_md.conn_semantics"
+          bitwidth: 2
+        }
+        fields {
+          id: 71
+          name: "ig_md.agg_op"
+          bitwidth: 8
+        }
+        fields {
+          id: 72
+          name: "ig_md.channel_id"
+          bitwidth: 32
+        }
+        fields {
+          id: 73
+          name: "ig_md.bitmap"
+          bitwidth: 32
+        }
+        fields {
+          id: 74
+          name: "ig_md.tx_reg_idx"
+          bitwidth: 32
+        }
+        fields {
+          id: 75
+          name: "ig_md.tx_loc_val"
+          bitwidth: 32
+        }
+        fields {
+          id: 76
+          name: "ig_md.tx_offset_val"
+          bitwidth: 32
+        }
+        fields {
+          id: 77
+          name: "ig_md.root_rank_id"
+          bitwidth: 32
+        }
+        fields {
+          id: 78
+          name: "ig_md.next_token_addr"
+          bitwidth: 64
+        }
+        fields {
+          id: 79
+          name: "ig_intr_md.resubmit_flag"
+          bitwidth: 1
+        }
+        fields {
+          id: 80
+          name: "ig_intr_md._pad1"
+          bitwidth: 1
+        }
+        fields {
+          id: 81
+          name: "ig_intr_md.packet_version"
+          bitwidth: 2
+        }
+        fields {
+          id: 82
+          name: "ig_intr_md._pad2"
+          bitwidth: 3
+        }
+        fields {
+          id: 83
+          name: "ig_intr_md.ingress_port"
+          bitwidth: 9
+        }
+        fields {
+          id: 84
+          name: "ig_intr_md.ingress_mac_tstamp"
+          bitwidth: 48
+        }
+        fields {
+          id: 85
+          name: "ig_prsr_md.global_tstamp"
+          bitwidth: 48
+        }
+        fields {
+          id: 86
+          name: "ig_prsr_md.global_ver"
+          bitwidth: 32
+        }
+        fields {
+          id: 87
+          name: "ig_prsr_md.parser_err"
+          bitwidth: 16
+        }
+        fields {
+          id: 88
+          name: "ig_dprsr_md.drop_ctl"
+          bitwidth: 3
+        }
+        fields {
+          id: 89
+          name: "ig_dprsr_md.digest_type"
+          bitwidth: 3
+        }
+        fields {
+          id: 90
+          name: "ig_dprsr_md.resubmit_type"
+          bitwidth: 3
+        }
+        fields {
+          id: 91
+          name: "ig_dprsr_md.mirror_type"
+          bitwidth: 3
+        }
+        fields {
+          id: 92
+          name: "ig_tm_md.ucast_egress_port"
+          bitwidth: 9
+        }
+        fields {
+          id: 93
+          name: "ig_tm_md.bypass_egress"
+          bitwidth: 1
+        }
+        fields {
+          id: 94
+          name: "ig_tm_md.deflect_on_drop"
+          bitwidth: 1
+        }
+        fields {
+          id: 95
+          name: "ig_tm_md.ingress_cos"
+          bitwidth: 3
+        }
+        fields {
+          id: 96
+          name: "ig_tm_md.qid"
+          bitwidth: 5
+        }
+        fields {
+          id: 97
+          name: "ig_tm_md.icos_for_copy_to_cpu"
+          bitwidth: 3
+        }
+        fields {
+          id: 98
+          name: "ig_tm_md.copy_to_cpu"
+          bitwidth: 1
+        }
+        fields {
+          id: 99
+          name: "ig_tm_md.packet_color"
+          bitwidth: 2
+        }
+        fields {
+          id: 100
+          name: "ig_tm_md.disable_ucast_cutthru"
+          bitwidth: 1
+        }
+        fields {
+          id: 101
+          name: "ig_tm_md.enable_mcast_cutthru"
+          bitwidth: 1
+        }
+        fields {
+          id: 102
+          name: "ig_tm_md.mcast_grp_a"
+          bitwidth: 16
+        }
+        fields {
+          id: 103
+          name: "ig_tm_md.mcast_grp_b"
+          bitwidth: 16
+        }
+        fields {
+          id: 104
+          name: "ig_tm_md.level1_mcast_hash"
+          bitwidth: 13
+        }
+        fields {
+          id: 105
+          name: "ig_tm_md.level2_mcast_hash"
+          bitwidth: 13
+        }
+        fields {
+          id: 106
+          name: "ig_tm_md.level1_exclusion_id"
+          bitwidth: 16
+        }
+        fields {
+          id: 107
+          name: "ig_tm_md.level2_exclusion_id"
+          bitwidth: 9
+        }
+        fields {
+          id: 108
+          name: "ig_tm_md.rid"
+          bitwidth: 16
+        }
+      }
+    }
+  }
+}
+type_info {
+  serializable_enums {
+    key: "CONN_PHASE"
+    value {
+      underlying_type {
+        bitwidth: 2
+      }
+      members {
+        name: "CONN_DISPATCH"
+        value: "\001"
+      }
+      members {
+        name: "CONN_COMBINE"
+        value: "\002"
+      }
+      members {
+        name: "CONN_UNKNOWN"
+        value: "\000"
+      }
+    }
+  }
+  serializable_enums {
+    key: "CONN_SEMANTICS"
+    value {
+      underlying_type {
+        bitwidth: 2
+      }
+      members {
+        name: "CONN_CONTROL"
+        value: "\000"
+      }
+      members {
+        name: "CONN_TX"
+        value: "\001"
+      }
+      members {
+        name: "CONN_RX"
+        value: "\002"
+      }
+      members {
+        name: "CONN_BITMAP"
+        value: "\003"
+      }
+    }
+  }
+}

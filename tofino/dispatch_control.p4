@@ -50,6 +50,10 @@ control DispatchIngress(
     RegisterAction<bit<32>, bit<32>, bit<32>>(reg_tx_msn) ra_read_tx_msn = {
         void apply(inout bit<32> value, out bit<32> result) {
             result = value;
+            if(hdr.bth.opcode == RDMA_OP_WRITE_ONLY || 
+                hdr.bth.opcode == RDMA_OP_WRITE_LAST){
+                    value = value + 1;
+                }
         }
     };
     
@@ -115,19 +119,27 @@ control DispatchIngress(
     /***************************************************************************
      * Compare Table
      ***************************************************************************/
-    action set_cmp(bit<32> cmp){
-        ig_md.cmp = cmp;
+    action set_cmp(bit<8> cmp){
+        ig_md.psn_cmp = cmp;
     }
 
     table tbl_compare {
         key = {
-            ig_md.diff : ternary;
+            ig_md.psn_diff : ternary;
         }
         actions = {
             set_cmp;
         }
     }
     
+
+    action do_init_tx_epsn(){
+        ra_init_tx_epsn.execute(ig_md.channel_id);
+    }
+
+    action do_read_cond_inc_tx_epsn(){
+        ig_md.tmp_a = ra_read_cond_inc_tx_epsn.execute(ig_md.channel_id); // ig_md.tmp_a ig_md.expected_epsn
+    }
     /***************************************************************************
      * Apply
      ***************************************************************************/
@@ -136,18 +148,18 @@ control DispatchIngress(
 
         // process ACK/NAK from rx
         if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_RX && hdr.bth.opcode == RDMA_OP_ACK) {
-            if (ig_md.syndrome[6:6] == 1) {
-                ra_invalidate_tx_epsn.execute(ig_md.channel_id);
-            }
+            // if (ig_md.syndrome[6:6] == 1) {
+            //     ra_invalidate_tx_epsn.execute(ig_md.channel_id);
+            // }
             ig_dprsr_md.drop_ctl = 1;
             return;
         }
 
         // process control connection
-        if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_CONTROL) {
+        else if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_CONTROL) {
+            do_init_tx_epsn();
             ra_init_tx_msn.execute(ig_md.channel_id);
             // should be extract from payload, but we set 0 as an agreement with the endpoint
-            ra_init_tx_epsn.execute(ig_md.channel_id);
             //set_ack_ingress(AETH_ACK_CREDIT_INVALID, ig_md.psn, ig_md.psn+1);
             ig_md.msn = ig_md.psn+1;
             mul_256();
@@ -162,25 +174,18 @@ control DispatchIngress(
         }
         
         // process data from tx
-        if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_TX) {
-            if (hdr.bth.opcode != RDMA_OP_WRITE_FIRST && 
-                hdr.bth.opcode != RDMA_OP_WRITE_MIDDLE &&
-                hdr.bth.opcode != RDMA_OP_WRITE_LAST &&
-                hdr.bth.opcode != RDMA_OP_WRITE_ONLY) {
-                ig_dprsr_md.drop_ctl = 1;
-                return;
-            }
-            
+        else if (ig_md.conn_semantics == CONN_SEMANTICS.CONN_TX) {            
             // PSN validation
 
-            ig_md.tmp_a = ra_read_cond_inc_tx_epsn.execute(ig_md.channel_id); // ig_md.tmp_a ig_md.expected_epsn
+            //ig_md.tmp_a = ra_read_cond_inc_tx_epsn.execute(ig_md.channel_id); // ig_md.tmp_a ig_md.expected_epsn
+            do_read_cond_inc_tx_epsn();
             ig_md.tmp_b = ra_read_tx_msn.execute(ig_md.channel_id); // ig_md.tmp_b ig_md.msn_saved
             
-            ig_md.diff = ig_md.psn - ig_md.tmp_a;
+            ig_md.psn_diff = ig_md.psn - ig_md.tmp_a;
 
             //tbl_compare.apply();
 
-            if(ig_md.cmp == 1) {
+            if(ig_md.psn_cmp == 1) {
                 //set_ack_ingress(AETH_NAK_SEQ_ERR, ig_md.expected_epsn-1, ig_md.msn_saved);
                 ig_md.msn = ig_md.tmp_b;
                 mul_256();
@@ -192,7 +197,7 @@ control DispatchIngress(
                 //ig_intr_md_for_dprsr.drop_ctl = 1;
                 //ig_tm_md.mirror_session_id = ig_md.ing_rank_id;
                 return;
-            } else if(ig_md.cmp == 0){
+            } else if(ig_md.psn_cmp == 0){
                 //set_ack_ingress(AETH_ACK_CREDIT_INVALID, ig_md.expected_epsn-1, ig_md.msn_saved);
                 ig_md.msn = ig_md.tmp_b;
                 mul_256();
@@ -225,11 +230,7 @@ control DispatchIngress(
             set_aeth_psn(ig_md.tmp_a-1);
             ig_md.has_aeth = true;
             ig_tm_md.ucast_egress_port = ig_intr_md.ingress_port;
-            // MSN
-            if (hdr.bth.opcode == RDMA_OP_WRITE_ONLY || 
-                hdr.bth.opcode == RDMA_OP_WRITE_LAST) {
-                ra_inc_tx_msn.execute(ig_md.channel_id);
-            }
+        
         }
     }
 }

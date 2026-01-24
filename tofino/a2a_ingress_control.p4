@@ -48,15 +48,15 @@ control A2AIngress(
     }
 
     action set_bridge_has_reth() {
-        hdr.bridge.has_reth = ig_md.has_reth;
+        hdr.bridge.has_reth = (bit<1>)ig_md.has_reth;
     }
 
     action set_bridge_has_aeth() {
-        hdr.bridge.has_aeth = ig_md.has_aeth;
+        hdr.bridge.has_aeth = (bit<1>)ig_md.has_aeth;
     }
 
     action set_bridge_has_payload() {
-        hdr.bridge.has_payload = ig_md.has_payload;
+        hdr.bridge.has_payload = (bit<1>)ig_md.has_payload;
     }
 
     action set_bridge_conn_phase() {
@@ -88,7 +88,7 @@ control A2AIngress(
     }
 
     action set_bridge_is_loopback() {
-        hdr.bridge.is_loopback = ig_md.is_loopback;
+        hdr.bridge.is_loopback = (bit<1>)ig_md.is_loopback;
     }
 
     action set_bridge_root_rank_id_lo() {
@@ -136,22 +136,38 @@ control A2AIngress(
         }
 
         hdr.bridge.setValid();
-        set_bridge_ing_rank_id();
-        set_bridge_has_reth();
-        set_bridge_has_aeth();
-        set_bridge_has_payload();
-        set_bridge_conn_phase();
-        set_bridge_conn_semantics();
-        set_bridge_channel_id();
-        set_bridge_bitmap();
-        set_bridge_tx_loc_val();
-        set_bridge_tx_offset_val();
-        set_bridge_agg_op();
-        set_bridge_is_loopback();
-        set_bridge_root_rank_id_hi();
-        set_bridge_root_rank_id_lo();
-        set_bridge_next_token_addr_hi();
-        set_bridge_next_token_addr_lo();
+        hdr.bridge.ing_rank_id = ig_md.ing_rank_id;
+        hdr.bridge.has_reth = (bit<1>)ig_md.has_reth;
+        hdr.bridge.has_aeth = (bit<1>)ig_md.has_aeth;
+        hdr.bridge.has_payload = (bit<1>)ig_md.has_payload;
+        hdr.bridge.conn_phase = ig_md.conn_phase;
+        hdr.bridge.conn_semantics = ig_md.conn_semantics;
+        hdr.bridge.channel_id = ig_md.channel_id;
+        hdr.bridge.bitmap = ig_md.bitmap;
+        hdr.bridge.tx_loc_val = ig_md.tx_loc_val;
+        hdr.bridge.tx_offset_val = ig_md.tx_offset_val;
+        hdr.bridge.agg_op = ig_md.agg_op;
+        hdr.bridge.is_loopback = (bit<1>)ig_md.is_loopback;
+        hdr.bridge.root_rank_id[15:0] = ig_md.root_rank_id[15:0];
+        hdr.bridge.root_rank_id[31:16] = ig_md.root_rank_id[31:16];
+        hdr.bridge.next_token_addr[63:32] = ig_md.next_token_addr[63:32];
+        hdr.bridge.next_token_addr[31:0] = ig_md.next_token_addr[31:0];
+        // set_bridge_ing_rank_id();
+        // set_bridge_has_reth();
+        // set_bridge_has_aeth();
+        // set_bridge_has_payload();
+        // set_bridge_conn_phase();
+        // set_bridge_conn_semantics();
+        // set_bridge_channel_id();
+        // set_bridge_bitmap();
+        // set_bridge_tx_loc_val();
+        // set_bridge_tx_offset_val();
+        // set_bridge_agg_op();
+        // set_bridge_is_loopback();
+        // set_bridge_root_rank_id_hi();
+        // set_bridge_root_rank_id_lo();
+        // set_bridge_next_token_addr_hi();
+        // set_bridge_next_token_addr_lo();
     }
 }
 

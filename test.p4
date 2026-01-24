@@ -24,6 +24,7 @@ struct header_t {
 struct metadata_t {
     bit<32> counter_index;
     bit<32> increment_amount;
+    bool inc;
 }
 
 /*************************************************************************
@@ -50,27 +51,6 @@ parser SwitchIngressParser(
     }
 }
 
-/*************************************************************************
- **********  R E G I S T E R   C O N T R O L  ****************************
- *************************************************************************/
-
-control CounterControl(in metadata_t meta) {
-
-    bit<32> inc_val;
-
-    Register<bit<32>, bit<32>>(4096) counters;
-
-    RegisterAction<bit<32>, bit<32>, void>(counters) increment_counter = {
-        void apply(inout bit<32> value) {
-            value = value + meta.increment_amount;
-        }
-    };
-
-
-    apply {
-        increment_counter.execute(meta.counter_index);
-    }
-}
 
 /*************************************************************************
  **************  I N G R E S S   P R O C E S S I N G   *******************
@@ -84,14 +64,20 @@ control SwitchIngress(
     inout ingress_intrinsic_metadata_for_deparser_t ig_dprsr_md,
     inout ingress_intrinsic_metadata_for_tm_t ig_tm_md)
 {
-    CounterControl() counter_ctrl_1;
-    CounterControl() counter_ctrl_2;
-    CounterControl() counter_ctrl_3;
-    CounterControl() counter_ctrl_4;
-    CounterControl() counter_ctrl_5;
-    CounterControl() counter_ctrl_6;
-    CounterControl() counter_ctrl_7;
-    CounterControl() counter_ctrl_8;
+    Register<bit<32>, bit<32>>(4096) counters;
+
+    RegisterAction<bit<32>, bit<32>, void>(counters) increment_counter = {
+        void apply(inout bit<32> value) {
+            value = value + meta.increment_amount;
+        }
+    };
+
+    RegisterAction<bit<32>, bit<32>, bit<32>>(counters) read_counter = {
+        void apply(inout bit<32> value, out bit<32> result) {
+            result = value;
+        }
+    };
+
 
     action forward(PortId_t port) {
         ig_tm_md.ucast_egress_port = port;
@@ -114,28 +100,55 @@ control SwitchIngress(
         default_action = drop();
     }
 
+    action ainc(){
+        meta.increment_amount = meta.increment_amount + 1;
+    }
+
     apply {
         // 用 src_addr 的低 12 位作为 counter index
         meta.counter_index = (bit<32>)hdr.ethernet.src_addr[11:0];
         meta.increment_amount = 1;
+        if(meta.inc){
+            ainc();
+            ainc();
+            ainc();
+            ainc();
+            ainc();
+            ainc();
+            ainc();
+            ainc();
+            ainc();
+            ainc();
+            if(meta.increment_amount == 100){
+                increment_counter.execute(meta.counter_index);
+            }
+        }
+        else {
+            bit<32> res = read_counter.execute(meta.counter_index);
+            increment_counter.execute(meta.counter_index);
+            increment_counter.execute(meta.counter_index);
+            increment_counter.execute(meta.counter_index);
+            increment_counter.execute(meta.counter_index);
+            increment_counter.execute(meta.counter_index);
+            increment_counter.execute(meta.counter_index);
+            increment_counter.execute(meta.counter_index);
+            increment_counter.execute(meta.counter_index);
+            increment_counter.execute(meta.counter_index);
+            increment_counter.execute(meta.counter_index);
+            increment_counter.execute(meta.counter_index);
+            increment_counter.execute(meta.counter_index);
+            increment_counter.execute(meta.counter_index);
+            increment_counter.execute(meta.counter_index);
+            increment_counter.execute(meta.counter_index);
+            increment_counter.execute(meta.counter_index);
+            increment_counter.execute(meta.counter_index);
+            increment_counter.execute(meta.counter_index);
+            increment_counter.execute(meta.counter_index);
 
-        // 调用 counter control
-        meta.counter_index = meta.counter_index >> 3 + 1 ;
-        counter_ctrl_1.apply(meta);
-        meta.counter_index = meta.counter_index >> 3 + 1 ;
-        counter_ctrl_2.apply(meta);
-        meta.counter_index = meta.counter_index >> 3 + 1 ;
-        counter_ctrl_3.apply(meta);
-        meta.counter_index = meta.counter_index >> 3 + 1 ;
-        counter_ctrl_4.apply(meta);
-        meta.counter_index = meta.counter_index >> 3 + 1 ;
-        counter_ctrl_5.apply(meta);
-        meta.counter_index = meta.counter_index >> 3 + 1 ;
-        counter_ctrl_6.apply(meta);
-        meta.counter_index = meta.counter_index >> 3 + 1 ;
-        counter_ctrl_7.apply(meta);
-        meta.counter_index = meta.counter_index >> 3 + 1 ;
-        counter_ctrl_8.apply(meta);
+
+
+        }
+        
 
         // 转发逻辑
         dmac_table.apply();

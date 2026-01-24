@@ -6,18 +6,21 @@ parser A2AEgressParser(
 {  
     state start { 
 
-        pkt.extract(eg_intr_md); 
-        pkt.extract(hdr.bridge);
+        pkt.extract(eg_intr_md);
         pkt.extract(hdr.eth); 
         pkt.extract(hdr.ipv4);
         pkt.extract(hdr.udp);
         pkt.extract(hdr.bth);
-        
-        transition select(hdr.bridge.has_aeth) {
-            true  : parse_aeth;
-            false : check_reth; 
-        } 
+        pkt.extract(hdr.bridge); 
+        transition check_aeth;
     }  
+
+    state check_aeth {
+        transition select(hdr.bridge.has_aeth) {
+            1  : parse_aeth;
+            0 : check_reth; 
+        } 
+    }
 
     state parse_aeth {
         pkt.extract(hdr.aeth);
@@ -26,8 +29,8 @@ parser A2AEgressParser(
 
     state check_reth {
         transition select(hdr.bridge.has_reth) {
-            true  : parse_reth;
-            false : check_payload;
+            1  : parse_reth;
+            0 : check_payload;
         }
     }
 
@@ -38,8 +41,8 @@ parser A2AEgressParser(
 
     state check_payload {
         transition select(hdr.bridge.has_payload) {
-            true  : parse_payload;
-            false : accept;
+            1  : parse_payload;
+            0 : accept;
         }
     }
 

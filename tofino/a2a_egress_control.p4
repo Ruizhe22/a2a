@@ -11,10 +11,10 @@ control A2AEgress(
     
     apply {
         eg_md.ing_rank_id     = hdr.bridge.ing_rank_id;
-        eg_md.has_reth        = hdr.bridge.has_reth;
-        eg_md.has_aeth        = hdr.bridge.has_aeth;
-        eg_md.has_payload     = hdr.bridge.has_payload;
-        eg_md.is_loopback     = hdr.bridge.is_loopback;
+        eg_md.has_reth        = (bool)hdr.bridge.has_reth;
+        eg_md.has_aeth        = (bool)hdr.bridge.has_aeth;
+        eg_md.has_payload     = (bool)hdr.bridge.has_payload;
+        eg_md.is_loopback     = (bool)hdr.bridge.is_loopback;
         eg_md.conn_phase      = hdr.bridge.conn_phase;
         eg_md.conn_semantics  = hdr.bridge.conn_semantics;
         eg_md.channel_id      = hdr.bridge.channel_id;

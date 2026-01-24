@@ -1,34 +1,5 @@
 #include "std_types.p4"
 
-
-// @pa_container_size("ingress", "hdr.payload.data00", 32)
-// @pa_container_size("ingress", "hdr.payload.data01", 32)
-// @pa_container_size("ingress", "hdr.payload.data02", 32)
-// @pa_container_size("ingress", "hdr.payload.data03", 32)
-// @pa_container_size("ingress", "hdr.payload.data04", 32)
-// @pa_container_size("ingress", "hdr.payload.data05", 32)
-// @pa_container_size("ingress", "hdr.payload.data06", 32)
-// @pa_container_size("ingress", "hdr.payload.data07", 32)
-// @pa_container_size("ingress", "hdr.payload.data08", 32)
-// @pa_container_size("ingress", "hdr.payload.data09", 32)
-// @pa_container_size("ingress", "hdr.payload.data0a", 32)
-// @pa_container_size("ingress", "hdr.payload.data0b", 32)
-// @pa_container_size("ingress", "hdr.payload.data0c", 32)
-// @pa_container_size("ingress", "hdr.payload.data0d", 32)
-// @pa_container_size("ingress", "hdr.payload.data0e", 32)
-// @pa_container_size("ingress", "hdr.payload.data0f", 32)
-// @pa_container_size("ingress", "hdr.payload.data10", 32)
-// @pa_container_size("ingress", "hdr.payload.data11", 32)
-// @pa_container_size("ingress", "hdr.payload.data12", 32)
-// @pa_container_size("ingress", "hdr.payload.data13", 32)
-// @pa_container_size("ingress", "hdr.payload.data14", 32)
-// @pa_container_size("ingress", "hdr.payload.data15", 32)
-// @pa_container_size("ingress", "hdr.payload.data16", 32)
-// @pa_container_size("ingress", "hdr.payload.data17", 32)
-
-
-
-
 #define EP_SIZE 8
 
 #define LOOPBACK_PORT 192
@@ -94,10 +65,10 @@ header payload_word_h {
 header bridge_h {
     // dispatch or combine 8bytes
     bit<32> ing_rank_id;
-    bool has_reth;
-    bool has_aeth;
-    bool has_payload;
-    bool is_loopback;
+    bit<1> has_reth;
+    bit<1> has_aeth;
+    bit<1> has_payload;
+    bit<1> is_loopback;
     CONN_PHASE  conn_phase;  
     CONN_SEMANTICS conn_semantics;
     bit<32>  channel_id;
@@ -113,11 +84,11 @@ header bridge_h {
 }
 
 struct a2a_headers_t {
-    bridge_h bridge;  
     eth_h eth; 
     ipv4_h ipv4;
     udp_h udp;
     bth_h bth;
+    bridge_h bridge;
     aeth_h aeth;
     reth_h reth;
     payload_word_h payload_first_word;
@@ -127,8 +98,8 @@ struct a2a_headers_t {
 
 
 struct a2a_ingress_metadata_t {
-    bit<32> diff;
-    bit<32> cmp; // 0==, 1>, 2<
+    bit<32> psn_diff;
+    bit<8> psn_cmp; // 0==, 1>, 2<
     
     
     bit<32> psn;
