@@ -72,43 +72,6 @@ a2a/
 | `combine_control.p4` | Aggregation buffer, bitmap completion tracking |
 | `combine_macros.p4` | Queue pointer, bitmap, and address slot macros |
 
-## Key Data Structures
-
-### Bridge Header
-
-Carries metadata from ingress to egress pipeline:
-
-```p4
-header bridge_h {
-    bit<32>        ing_rank_id;      // Source rank identifier
-    bit<1>         has_reth;         // RETH header present
-    bit<1>         has_aeth;         // AETH header present
-    bit<1>         has_payload;      // Payload present
-    bit<1>         is_loopback;      // Loopback packet flag
-    CONN_PHASE     conn_phase;       // DISPATCH or COMBINE
-    CONN_SEMANTICS conn_semantics;   // CONTROL, TX, RX, BITMAP, LOOPBACK
-    bit<32>        channel_id;       // Communication channel
-    bitmap_tofino_t bitmap;          // Destination bitmap (32 bits)
-    bit<32>        tx_loc_val;       // Token location
-    bit<32>        tx_offset_val;    // Packet offset within token
-    bit<32>        root_rank_id;     // Root for aggregation
-    bit<64>        next_token_addr;  // Next token address
-    bit<8>         agg_op;           // Aggregation operation
-}
-```
-
-### Connection Semantics
-
-```p4
-enum bit<3> CONN_SEMANTICS {
-    CONN_CONTROL  = 0,  // Initialization/control messages
-    CONN_TX       = 1,  // Data transmission path
-    CONN_RX       = 2,  // Data reception path
-    CONN_BITMAP   = 3,  // Bitmap updates (combine only)
-    CONN_LOOPBACK = 4   // Loopback for aggregation completion
-}
-```
-
 ## Configuration
 
 ### Constants (in `a2a_types.p4` and `combine_control.p4`)
@@ -129,14 +92,14 @@ enum bit<3> CONN_SEMANTICS {
 | `traffic_classify` | 128 | Traffic classification entries |
 | `dispatch_rank_info` | 1024 | Rank ID lookup |
 | `dispatch_rx_info` | 1024 | RX connection info |
-| `tbl_in_bitmap` | 64 | Bitmap membership check |
+| `tbl_in_bitmap` | 512 | Bitmap membership check |
 | `tbl_rx_info` | 128 | Combine RX info lookup |
 
 ## Building and Running
 
 ### Prerequisites
 
-- Intel P4 Studio (SDE) version 9.x or later
+- Intel P4 Studio (SDE) version 9.7 or later
 - Tofino ASIC or model
 
 ### Compilation
@@ -151,26 +114,6 @@ bf-p4c a2a.p4 \
     --arch tna \
     -o build/ \
     --p4runtime-files build/a2a.p4info.pb.txt
-```
-
-### Running on Tofino Model
-
-```bash
-# Start the Tofino model
-$SDE/run_tofino_model.sh -p a2a
-
-# In another terminal, start the driver
-$SDE/run_switchd.sh -p a2a
-```
-
-### Running on Hardware
-
-```bash
-# Start the driver on hardware
-$SDE/run_switchd.sh -p a2a -- --background
-
-# Load the program
-bfshell -b /path/to/setup_script.py
 ```
 
 ## Control Plane Setup
@@ -244,34 +187,6 @@ mc_associate_node 100 100
 - Single aggregation operation (sum) implemented
 - Fixed token and payload sizes
 
-## Troubleshooting
-
-### Common Issues
-
-1. **Compilation errors about duplicate variables**: Ensure macros are used correctly in `combine_control.p4`
-
-2. **Packets dropped unexpectedly**: Check `tbl_in_bitmap` entries and bitmap values
-
-3. **PSN sequence errors**: Verify register initialization via control connection
-
-4. **Missing ACKs**: Ensure `traffic_classify` entries exist for both TX and RX directions
-
-### Debug Tips
-
-```bash
-# Check table entries
-bfshell> bfrt.a2a.pipe.A2AIngress.traffic_classify.dump()
-
-# Check register values
-bfshell> bfrt.a2a.pipe.DispatchIngress.reg_tx_epsn.dump()
-
-# Monitor counters
-bfshell> bfrt.a2a.pipe.A2AIngress.$COUNTER_SPEC.dump()
-```
-
-## License
-
-[Add your license here]
 
 ## References
 
